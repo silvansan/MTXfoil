@@ -1,0 +1,22 @@
+# Production overrides — pin images and tighten defaults
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:1.11.3
+    restart: always
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+
+  dashboard:
+    restart: always
+    environment:
+      NODE_ENV: production
+      PAYLOAD_DB_PUSH: "false"
+
+  worker:
+    restart: always

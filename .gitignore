@@ -1,0 +1,71 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js / Payload
+.next/
+out/
+dist/
+build/
+.turbo/
+.vercel/
+
+# Environment and secrets (keep *.example committed)
+.env
+.env.*
+!.env.example
+!.env.*.example
+dashboard/.env
+worker/.env
+deploy/portainer/stack.env
+*.pem
+*.key
+credentials.json
+secrets.json
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# TypeScript
+*.tsbuildinfo
+
+# Payload
+dashboard/src/payload-types.ts
+dashboard/.payload/
+
+# Runtime data
+recordings/*
+!recordings/.gitkeep
+mediamtx/backups/*
+!mediamtx/backups/.gitkeep
+
+# Test / coverage
+coverage/
+.nyc_output/
+
+# Docker
+docker-compose.override.yml
+
+# PostgreSQL dumps and local data
+postgres-data/
+*.sql
+*.sql.gz
+*-backup.sql
+
+# Cursor / agent local artifacts
+.cursor/
+agent-transcripts/

@@ -1,0 +1,24 @@
+{
+  "name": "mtxfoil-worker",
+  "version": "0.1.0",
+  "description": "MTXfoil — FFmpeg job worker (Bull queue)",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "bull": "^4.16.5",
+    "dotenv": "16.4.7",
+    "ioredis": "^5.6.1",
+    "pg": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.9",
+    "@types/pg": "^8.15.2",
+    "tsx": "4.21.0",
+    "typescript": "5.7.3"
+  }
+}

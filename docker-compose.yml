@@ -1,0 +1,104 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: mtxfoil-mediamtx
+    restart: unless-stopped
+    volumes:
+      - ./mediamtx/mediamtx.yml:/mediamtx.yml:ro
+      - ./recordings:/recordings
+    ports:
+      - "${RTMP_PORT:-1935}:1935/tcp"
+      - "${RTMPS_PORT:-1936}:1936/tcp"
+      - "${RTSP_PORT:-8554}:8554/tcp"
+      - "${HLS_PORT:-8888}:8888/tcp"
+      - "${WEBRTC_HTTP_PORT:-8889}:8889/tcp"
+      - "${WEBRTC_ICE_PORT:-8189}:8189/udp"
+      - "${SRT_PORT:-8890}:8890/udp"
+    networks:
+      - mtxfoil
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: mtxfoil-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mtxfoil}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mtxfoil}
+      POSTGRES_DB: ${POSTGRES_DB:-mtxfoil}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mtxfoil}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - mtxfoil
+
+  redis:
+    image: redis:7-alpine
+    container_name: mtxfoil-redis
+    restart: unless-stopped
+    networks:
+      - mtxfoil
+
+  dashboard:
+    build: ./dashboard
+    container_name: mtxfoil-dashboard
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD:-mtxfoil}@postgres:5432/${POSTGRES_DB:-mtxfoil}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      MEDIAMTX_API_URL: http://mediamtx:9997
+      MEDIAMTX_METRICS_URL: http://mediamtx:9998
+      MEDIAMTX_CONFIG_PATH: /app/mediamtx-config/mediamtx.yml
+      MEDIAMTX_BACKUP_DIR: /app/mediamtx-config/backups
+      PUBLIC_STREAM_DOMAIN: ${PUBLIC_STREAM_DOMAIN:-localhost}
+      HLS_BASE_URL: ${HLS_BASE_URL:-http://localhost:8888}
+      WEBRTC_BASE_URL: ${WEBRTC_BASE_URL:-http://localhost:8889}
+      SRT_PORT: ${SRT_PORT:-8890}
+      RTMP_PORT: ${RTMP_PORT:-1935}
+      RTMPS_PORT: ${RTMPS_PORT:-1936}
+      RTSP_PORT: ${RTSP_PORT:-8554}
+      PLAYBACK_TOKEN_SECRET: ${PLAYBACK_TOKEN_SECRET:-dev-playback-secret}
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    volumes:
+      - ./mediamtx:/app/mediamtx-config
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mediamtx:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - mtxfoil
+
+  worker:
+    build: ./worker
+    container_name: mtxfoil-worker
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD:-mtxfoil}@postgres:5432/${POSTGRES_DB:-mtxfoil}
+      REDIS_URL: redis://redis:6379
+      MEDIAMTX_API_URL: http://mediamtx:9997
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mediamtx:
+        condition: service_started
+    networks:
+      - mtxfoil
+
+networks:
+  mtxfoil:
+    name: mtxfoil
+
+volumes:
+  postgres-data:
