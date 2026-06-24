@@ -8,6 +8,35 @@ import { mapCorsToYaml, type CorsSettings } from './cors'
 import { mtxFetch } from './client'
 import type { PathConf } from './types'
 
+export function getMediaMtxInternalCredentials(): { user: string; pass: string } {
+  return {
+    user: process.env.MEDIAMTX_INTERNAL_USER || 'mtxfoil',
+    pass: process.env.MEDIAMTX_INTERNAL_PASS || 'mtxfoil',
+  }
+}
+
+export function buildInternalAuthSection(): Record<string, unknown> {
+  const { user, pass } = getMediaMtxInternalCredentials()
+
+  return {
+    authMethod: 'internal',
+    authInternalUsers: [
+      {
+        user,
+        pass,
+        ips: [],
+        permissions: [
+          { action: 'publish', path: '' },
+          { action: 'read', path: '' },
+          { action: 'playback', path: '' },
+          { action: 'api', path: '' },
+          { action: 'metrics', path: '' },
+        ],
+      },
+    ],
+  }
+}
+
 export function getConfigPath(): string {
   return process.env.MEDIAMTX_CONFIG_PATH || path.join(process.cwd(), '../mediamtx/mediamtx.yml')
 }
@@ -68,6 +97,7 @@ export async function generateYamlDocument(
 
   return {
     ...current,
+    ...buildInternalAuthSection(),
     ...(cors ? mapCorsToYaml(cors) : {}),
     ...(protocolPatch || {}),
     paths,

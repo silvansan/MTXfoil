@@ -27,6 +27,7 @@ export default async function CorsPage() {
   }
 
   const warnings = getCorsWarnings(settings)
+  const isProduction = process.env.NODE_ENV === 'production'
 
   const sections = [
     ['API', settings.apiAllowOrigins],
@@ -42,6 +43,12 @@ export default async function CorsPage() {
         <h1 className="text-3xl font-bold">CORS Origins</h1>
         <p className="mt-2 text-zinc-400">Review allowed origins per service. Edit in Admin globals.</p>
       </div>
+
+      {isProduction && warnings.length > 0 && (
+        <p className="text-sm text-amber-300">
+          Production mode is active. Wildcard CORS origins must be replaced before go-live.
+        </p>
+      )}
 
       {warnings.length > 0 && (
         <Card className="border-amber-500/40">

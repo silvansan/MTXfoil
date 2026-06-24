@@ -32,9 +32,15 @@ export function getCorsWarnings(settings: CorsSettings): string[] {
     ['Metrics', settings.metricsAllowOrigins],
   ]
 
+  const production = process.env.NODE_ENV === 'production'
+
   for (const [label, origins] of fields) {
     if (hasWildcardOrigin(origins)) {
-      warnings.push(`${label} CORS allows wildcard (*) — not recommended in production`)
+      warnings.push(
+        production
+          ? `${label} CORS allows wildcard (*) — lock down origins before serving production traffic`
+          : `${label} CORS allows wildcard (*) — not recommended in production`,
+      )
     }
   }
 

@@ -57,3 +57,11 @@ export function canAccessOperatorRoute(user: unknown, pathname: string): boolean
 export function canApplyConfig(user: unknown): boolean {
   return isAdmin(user)
 }
+
+export function canIssuePlaybackToken(user: unknown): boolean {
+  return isOperator(user)
+}
+
+export function canReadStreamCatalog(user: unknown): boolean {
+  return Boolean(user)
+}

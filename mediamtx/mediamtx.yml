@@ -17,7 +17,7 @@ metrics: yes
 metricsAddress: :9998
 metricsAllowOrigins: ['http://localhost:3000']
 
-# Security defaults
+# Security defaults — dashboard regenerates authInternalUsers from MEDIAMTX_INTERNAL_USER/PASS on config apply
 authMethod: internal
 authInternalUsers:
   - user: mtxfoil
@@ -54,15 +54,15 @@ srt: yes
 srtAddress: :8890
 hls: yes
 hlsAddress: :8888
-hlsAllowOrigins: ['*']
+hlsAllowOrigins: ['http://localhost:3000']
 webrtc: yes
 webrtcAddress: :8889
 webrtcICEServers2: []
-webrtcAllowOrigins: ['*']
+webrtcAllowOrigins: ['http://localhost:3000']
 
 playback: yes
 playbackAddress: :9996
-playbackAllowOrigins: ['*']
+playbackAllowOrigins: ['http://localhost:3000']
 
 pprof: no
 

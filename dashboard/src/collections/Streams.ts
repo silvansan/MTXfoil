@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { syncStreamToMediaMtx } from '@/lib/config-sync'
-import { isAdmin, isOperator } from '@/lib/permissions'
+import { canReadStreamCatalog, isAdmin, isOperator } from '@/lib/permissions'
 
 export const Streams: CollectionConfig = {
   slug: 'streams',
@@ -10,7 +10,7 @@ export const Streams: CollectionConfig = {
     defaultColumns: ['name', 'slug', 'enabled', 'status'],
   },
   access: {
-    read: () => true,
+    read: ({ req }) => canReadStreamCatalog(req.user),
     create: ({ req }) => isOperator(req.user),
     update: ({ req }) => isOperator(req.user),
     delete: ({ req }) => isAdmin(req.user),

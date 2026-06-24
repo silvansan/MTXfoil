@@ -1,0 +1,101 @@
+# MTXfoil Production Checklist
+
+Use this checklist when deploying MTXfoil beyond local development.
+
+## 1. Secrets and environment
+
+Copy `.env.example` to `.env` and set strong values:
+
+| Variable | Requirement |
+|----------|-------------|
+| `PAYLOAD_SECRET` | 32+ random characters; app refuses dev placeholders when `NODE_ENV=production` |
+| `PLAYBACK_TOKEN_SECRET` | 32+ characters, separate from `PAYLOAD_SECRET` |
+| `POSTGRES_PASSWORD` | Strong password; match `DATABASE_URL` |
+| `REDIS_PASSWORD` | Required with `docker-compose.prod.yml` |
+| `MEDIAMTX_INTERNAL_USER` / `MEDIAMTX_INTERNAL_PASS` | Rotate from defaults; written to `mediamtx.yml` on config apply |
+
+Deploy with both compose files:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+
+## 2. TLS and reverse proxy
+
+- Put [Nginx Proxy Manager](nginx-proxy-manager.md) (or similar) in front of the dashboard on port 3000.
+- Enable HTTPS and WebSocket support for the operator UI and Payload admin.
+- Set `PUBLIC_STREAM_DOMAIN`, `HLS_BASE_URL`, and `WEBRTC_BASE_URL` to your public media hostname.
+
+## 3. Firewall and media ports
+
+Publish only what you need on the host:
+
+| Port | Service |
+|------|---------|
+| 3000 | Dashboard (or proxy only) |
+| 1935 / 1936 | RTMP / RTMPS |
+| 8554 | RTSP |
+| 8888 | HLS |
+| 8889 | WebRTC HTTP |
+| 8189/udp | WebRTC ICE |
+| 8890/udp | SRT |
+
+Do **not** expose MediaMTX control API (9997) or metrics (9998) to the public internet.
+
+## 4. CORS lockdown
+
+1. Open `/cors` in the operator UI.
+2. Replace wildcard (`*`) origins for HLS, WebRTC, and playback before go-live.
+3. Edit origins in Payload admin → Globals → CORS Origins.
+4. Apply config from `/settings`.
+
+Baseline `mediamtx.yml` uses localhost-only playback origins; production globals should list your real domains.
+
+## 5. Auth and RBAC
+
+- Create admin users at `/admin` with appropriate roles (`superadmin`, `admin`, `operator`, `viewer`).
+- Viewers are limited to `/player/*`.
+- Operator APIs require authentication:
+  - Config apply/preview: admin+
+  - Status, metrics, logs: operator+
+  - Playback token issuance: operator+
+- Token- and password-gated streams enforce access on `/player/[slug]`.
+
+## 6. Healthchecks and dependencies
+
+Production compose adds healthchecks for dashboard, Redis, and MediaMTX. Services wait on healthy dependencies where configured.
+
+Verify manually:
+
+```bash
+curl -s http://localhost:3000/api/health/mediamtx
+node scripts/smoke-test.mjs
+```
+
+## 7. Backups
+
+- Schedule Postgres backups: see [BACKUPS.md](BACKUPS.md)
+- Retain MediaMTX YAML backups from `MEDIAMTX_BACKUP_DIR`
+- Plan separate backup for the recordings volume
+
+## 8. Schema and upgrades
+
+- Production sets `PAYLOAD_DB_PUSH=false`. Use Payload migrations for schema changes.
+- Pin image tags in Portainer or compose overrides (MediaMTX, Postgres, Redis).
+- After upgrading MediaMTX, regenerate OpenAPI types: `npm run generate:openapi` in `dashboard/`.
+
+## 9. Post-deploy smoke test
+
+1. `docker compose ps` — all services healthy
+2. `node scripts/smoke-test.mjs` — dashboard health OK
+3. Log in at `/admin`, create a test stream
+4. Publish a test pattern (SRT/RTMP), confirm live status on `/`
+5. Open `/player/<slug>` and verify HLS/WebRTC preview
+6. Review `/cors` for wildcard warnings
+7. Run config preview/apply from `/settings` as admin
+
+## Related docs
+
+- [Portainer stack](portainer/README.md)
+- [Nginx Proxy Manager](nginx-proxy-manager.md)
+- [Backups](BACKUPS.md)

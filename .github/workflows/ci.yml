@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - name: Install dashboard dependencies
+        run: npm ci
+
+      - name: Lint dashboard
+        run: npm run lint
+
+      - name: Build dashboard
+        env:
+          DATABASE_URL: postgres://ci:ci@localhost:5432/ci
+          PAYLOAD_SECRET: ci-build-secret-minimum-32-characters-long
+          PLAYBACK_TOKEN_SECRET: ci-playback-secret-minimum-32-characters
+          PAYLOAD_DB_PUSH: 'false'
+        run: npm run build
+
+  worker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+
+      - name: Install worker dependencies
+        run: npm ci
+
+      - name: Build worker
+        run: npm run build
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Docker Compose files
+        env:
+          PAYLOAD_SECRET: ci-compose-secret-minimum-32-characters
+          PLAYBACK_TOKEN_SECRET: ci-playback-secret-minimum-32-characters
+          REDIS_PASSWORD: ci-redis-password
+          MEDIAMTX_INTERNAL_USER: mtxfoil
+          MEDIAMTX_INTERNAL_PASS: mtxfoil
+        run: |
+          docker compose -f docker-compose.yml config > /dev/null
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml config > /dev/null

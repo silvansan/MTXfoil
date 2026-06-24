@@ -8,6 +8,7 @@ import sharp from 'sharp'
 
 loadEnv()
 
+import { validateProductionEnv, requirePayloadSecret } from './lib/env-validation'
 import { CorsPresets } from './collections/CorsPresets'
 import { Events } from './collections/Events'
 import { ForwardingJobs } from './collections/ForwardingJobs'
@@ -20,16 +21,10 @@ import { SystemSettings } from './globals/SystemSettings'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+validateProductionEnv()
+
 const databaseUrl = process.env.DATABASE_URL || ''
 const pushDatabaseSchema = process.env.PAYLOAD_DB_PUSH !== 'false'
-
-function requirePayloadSecret(): string {
-  const secret = process.env.PAYLOAD_SECRET?.trim()
-  if (!secret) {
-    return 'dev-only-secret-minimum-32-characters-long'
-  }
-  return secret
-}
 
 export default buildConfig({
   admin: {

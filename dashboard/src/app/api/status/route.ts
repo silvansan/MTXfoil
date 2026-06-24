@@ -2,13 +2,18 @@ import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
+import { requireApiPermission } from '@/lib/api-auth'
 import { mtxHealthCheck } from '@/lib/mediamtx/client'
 import { listStreamStatuses } from '@/lib/mediamtx/paths'
 import { buildStreamUrls } from '@/lib/mediamtx/urls'
+import { canViewMetrics } from '@/lib/permissions'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
+  const auth = await requireApiPermission(canViewMetrics)
+  if (auth instanceof NextResponse) return auth
+
   const health = await mtxHealthCheck()
 
   let streams: Array<{

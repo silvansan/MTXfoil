@@ -1,5 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
+import { requirePlaybackTokenSecret } from './env-validation'
+
 export type PlaybackTokenPayload = {
   slug: string
   exp: number
@@ -52,5 +54,5 @@ export function verifyPlaybackToken(
 }
 
 export function getPlaybackTokenSecret(): string {
-  return process.env.PLAYBACK_TOKEN_SECRET || process.env.PAYLOAD_SECRET || 'dev-secret'
+  return requirePlaybackTokenSecret()
 }

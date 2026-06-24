@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { isAdmin, isOperator } from '@/lib/permissions'
+import { canReadStreamCatalog, isAdmin, isOperator } from '@/lib/permissions'
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -9,7 +9,7 @@ export const Events: CollectionConfig = {
     defaultColumns: ['title', 'slug', 'status', 'date'],
   },
   access: {
-    read: () => true,
+    read: ({ req }) => canReadStreamCatalog(req.user),
     create: ({ req }) => isOperator(req.user),
     update: ({ req }) => isOperator(req.user),
     delete: ({ req }) => isAdmin(req.user),
