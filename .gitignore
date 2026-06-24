@@ -69,3 +69,4 @@ postgres-data/
 # Cursor / agent local artifacts
 .cursor/
 agent-transcripts/
+AGENTS.md
