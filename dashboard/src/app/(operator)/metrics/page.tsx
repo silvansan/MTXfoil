@@ -1,4 +1,5 @@
 import { getDashboardMetrics, listRtmpConnections, listSrtConnections, listWebRtcSessions } from '@/lib/mediamtx/metrics'
+import { MediaMtxLogs } from '@/components/operator/mediamtx-logs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function MetricsPage() {
@@ -74,6 +75,8 @@ export default async function MetricsPage() {
           </Card>
         ))}
       </div>
+
+      <MediaMtxLogs />
     </div>
   )
 }

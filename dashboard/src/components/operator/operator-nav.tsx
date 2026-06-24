@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 
-const links = [
+const allLinks = [
   { href: '/', label: 'Dashboard' },
   { href: '/streams', label: 'Streams' },
   { href: '/events', label: 'Events' },
@@ -17,8 +17,9 @@ const links = [
   { href: '/settings', label: 'Settings' },
 ]
 
-export function OperatorNav() {
+export function OperatorNav({ viewerOnly = false }: { viewerOnly?: boolean }) {
   const pathname = usePathname()
+  const links = viewerOnly ? [] : allLinks
 
   return (
     <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
@@ -42,12 +43,14 @@ export function OperatorNav() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/admin"
-            className="ml-2 rounded-md border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-900"
-          >
-            Admin →
-          </Link>
+          {!viewerOnly && (
+            <Link
+              href="/admin"
+              className="ml-2 rounded-md border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-900"
+            >
+              Admin →
+            </Link>
+          )}
         </nav>
       </div>
     </header>

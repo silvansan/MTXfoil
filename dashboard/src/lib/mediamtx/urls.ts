@@ -76,3 +76,12 @@ export function buildStreamUrls(path: string, templates?: Partial<UrlTemplates>)
 export function buildEmbedSnippet(playerUrl: string, width = 640, height = 360): string {
   return `<iframe src="${playerUrl}" width="${width}" height="${height}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`
 }
+
+/** MediaMTX WHEP endpoint for WebRTC playback (append to webrtcPlayback URL). */
+export function buildWhepUrl(webrtcPlayback: string): string {
+  return `${webrtcPlayback.replace(/\/$/, '')}/whep`
+}
+
+export function buildWordPressShortcode(playerUrl: string, width = 640, height = 360): string {
+  return `[mtxfoil_player url="${playerUrl}" width="${width}" height="${height}"]`
+}

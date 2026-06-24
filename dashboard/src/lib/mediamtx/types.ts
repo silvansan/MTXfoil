@@ -1,3 +1,8 @@
+/**
+ * Hand-curated types for paths/recordings used by the dashboard.
+ * For the full MediaMTX OpenAPI schema, run `npm run generate:openapi` (see openapi-types.ts).
+ */
+
 export type PathSource =
   | { type: 'publisher' }
   | { type: 'redirect'; redirect: string }

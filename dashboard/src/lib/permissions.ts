@@ -40,8 +40,18 @@ export function canManageForwarding(user: unknown): boolean {
   return isAdmin(user)
 }
 
+export function isViewer(user: unknown): boolean {
+  return getUserRole(user) === 'viewer'
+}
+
 export function canViewMetrics(user: unknown): boolean {
   return isOperator(user)
+}
+
+export function canAccessOperatorRoute(user: unknown, pathname: string): boolean {
+  if (!user) return false
+  if (isViewer(user)) return pathname.startsWith('/player/')
+  return true
 }
 
 export function canApplyConfig(user: unknown): boolean {

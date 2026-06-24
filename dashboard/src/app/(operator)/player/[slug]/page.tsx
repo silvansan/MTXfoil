@@ -4,9 +4,14 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { CopyButton } from '@/components/operator/copy-button'
-import { HlsPlayer } from '@/components/operator/hls-player'
+import { PlayerPreview } from '@/components/operator/player-preview'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { buildEmbedSnippet, buildStreamUrls } from '@/lib/mediamtx/urls'
+import {
+  buildEmbedSnippet,
+  buildStreamUrls,
+  buildWhepUrl,
+  buildWordPressShortcode,
+} from '@/lib/mediamtx/urls'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -36,9 +41,12 @@ export default async function PlayerPage({ params, searchParams }: Props) {
 
   const urls = buildStreamUrls(stream.slug)
   const playerUrl = `/player/${stream.slug}${token ? `?token=${encodeURIComponent(token)}` : ''}`
-  const embed = buildEmbedSnippet(
-    `${process.env.PUBLIC_STREAM_DOMAIN ? `https://${process.env.PUBLIC_STREAM_DOMAIN}` : 'http://localhost:3000'}${playerUrl}`,
-  )
+  const absolutePlayerUrl = `${
+    process.env.PUBLIC_STREAM_DOMAIN ? `https://${process.env.PUBLIC_STREAM_DOMAIN}` : 'http://localhost:3000'
+  }${playerUrl}`
+  const embed = buildEmbedSnippet(absolutePlayerUrl)
+  const wpShortcode = buildWordPressShortcode(absolutePlayerUrl)
+  const whepUrl = buildWhepUrl(urls.webrtcPlayback)
 
   return (
     <div className="space-y-6">
@@ -49,7 +57,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
         <h1 className="text-3xl font-bold">Player</h1>
       </div>
 
-      <HlsPlayer src={urls.hlsPlayback} />
+      <PlayerPreview hlsSrc={urls.hlsPlayback} whepUrl={whepUrl} />
 
       <Card>
         <CardHeader>
@@ -64,6 +72,19 @@ export default async function PlayerPage({ params, searchParams }: Props) {
               /api/playback/token
             </Link>
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>WordPress shortcode</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-zinc-500">
+            Paste into a post or page. Requires an <code>mtxfoil_player</code> shortcode handler (plugin stub).
+          </p>
+          <pre className="overflow-x-auto rounded-md bg-zinc-950 p-3 text-xs">{wpShortcode}</pre>
+          <CopyButton value={wpShortcode} label="Copy shortcode" />
         </CardContent>
       </Card>
     </div>
