@@ -123,9 +123,46 @@ REDIS_PASSWORD=<output of openssl rand -hex 16>
 
 After updating env vars: **Stacks** → your stack → **Update the stack** (or Pull and redeploy). Then open **Settings** → apply config so MediaMTX receives the new internal credentials.
 
-### Symptom: HTTP 500 with weak-credential message
+### Symptom: HTTP 500 on load / `MEDIAMTX_INTERNAL_USER`
 
-If the site returns 500 and logs mention `MEDIAMTX_INTERNAL_USER must not use the default or a common weak value`, your stack still has `MEDIAMTX_INTERNAL_USER=mtxfoil` (from an older `stack.env.example`). Set a unique username and redeploy — validation is intentional and cannot be bypassed.
+The dashboard calls `validateProductionEnv()` when Payload loads (`payload.config.ts`). In production, weak credentials throw immediately — Next.js surfaces this as **HTTP 500** with a digest (not a friendly page). Container logs show the real message, e.g.:
+
+```text
+MEDIAMTX_INTERNAL_USER must not use the default or a common weak value in production
+```
+
+**Most common cause:** Portainer env still has `MEDIAMTX_INTERNAL_USER=mtxfoil` from an older `stack.env.example`. The compose files no longer default this value, but an existing stack keeps whatever you pasted on first deploy.
+
+**Fix in Portainer (no SSH):**
+
+1. **Stacks** → select your `mtxfoil` stack → **Editor** (or **Environment variables**).
+2. In **Advanced mode**, find and replace these lines (generate your own values — do not copy examples):
+
+   ```env
+   MEDIAMTX_INTERNAL_USER=mtxctl_a1b2c3d4
+   MEDIAMTX_INTERNAL_PASS=<openssl rand -hex 16>
+   ```
+
+   Rules: username must **not** be `mtxfoil`, `admin`, `mediamtx`, `postgres`, etc.; password must differ from the username.
+
+3. While here, confirm the other required secrets are set (not `CHANGE_ME`):
+
+   ```env
+   PAYLOAD_SECRET=<openssl rand -hex 32>
+   PLAYBACK_TOKEN_SECRET=<different openssl rand -hex 32>
+   POSTGRES_PASSWORD=<openssl rand -hex 16>
+   REDIS_PASSWORD=<openssl rand -hex 16>
+   DASHBOARD_PUBLIC_URL=https://mtx.silvans.ch
+   HLS_BASE_URL=https://<stream-host>/hls
+   WEBRTC_BASE_URL=https://<stream-host>/webrtc
+   PUBLIC_STREAM_DOMAIN=<stream-host>
+   ```
+
+4. **Update the stack** (or **Pull and redeploy** if using Repository deploy).
+5. **Containers** → `mtxfoil-dashboard` → **Logs** — confirm no credential errors on startup.
+6. Open the dashboard → **Settings** → **Apply config** so MediaMTX receives the new internal credentials.
+
+Validation is intentional and cannot be bypassed. Unset required vars now fail at **deploy** time (`${VAR:?…}` in current stack YAML) instead of a silent 500.
 
 ---
 

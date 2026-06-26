@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-mtxfoil}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Portainer stack env}
       POSTGRES_DB: ${POSTGRES_DB:-mtxfoil}
     volumes:
       - mtxfoil-postgres-data:/var/lib/postgresql/data
@@ -73,9 +73,9 @@ services:
     image: redis:7-alpine
     container_name: mtxfoil-redis
     restart: unless-stopped
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}
     healthcheck:
       test: ['CMD-SHELL', 'redis-cli -a "$$REDIS_PASSWORD" ping | grep -q PONG']
       interval: 5s
@@ -94,20 +94,20 @@ services:
     container_name: mtxfoil-dashboard
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-mtxfoil}
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Portainer stack env}@postgres:5432/${POSTGRES_DB:-mtxfoil}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Set PAYLOAD_SECRET (32+ chars) in Portainer stack env}
       MEDIAMTX_API_URL: http://mediamtx:9997
       MEDIAMTX_METRICS_URL: http://mediamtx:9998
       MEDIAMTX_CONFIG_PATH: /app/mediamtx-config/mediamtx.yml
       MEDIAMTX_BACKUP_DIR: /app/mediamtx-config/backups
-      MEDIAMTX_INTERNAL_USER: ${MEDIAMTX_INTERNAL_USER}
-      MEDIAMTX_INTERNAL_PASS: ${MEDIAMTX_INTERNAL_PASS}
-      PUBLIC_STREAM_DOMAIN: ${PUBLIC_STREAM_DOMAIN}
-      DASHBOARD_PUBLIC_URL: ${DASHBOARD_PUBLIC_URL}
-      HLS_BASE_URL: ${HLS_BASE_URL}
-      WEBRTC_BASE_URL: ${WEBRTC_BASE_URL}
-      PLAYBACK_TOKEN_SECRET: ${PLAYBACK_TOKEN_SECRET}
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      MEDIAMTX_INTERNAL_USER: ${MEDIAMTX_INTERNAL_USER:?Set MEDIAMTX_INTERNAL_USER — unique username, not mtxfoil/admin}
+      MEDIAMTX_INTERNAL_PASS: ${MEDIAMTX_INTERNAL_PASS:?Set MEDIAMTX_INTERNAL_PASS — strong password, different from user}
+      PUBLIC_STREAM_DOMAIN: ${PUBLIC_STREAM_DOMAIN:?Set PUBLIC_STREAM_DOMAIN in Portainer stack env}
+      DASHBOARD_PUBLIC_URL: ${DASHBOARD_PUBLIC_URL:?Set DASHBOARD_PUBLIC_URL (https://) in Portainer stack env}
+      HLS_BASE_URL: ${HLS_BASE_URL:?Set HLS_BASE_URL (https://) in Portainer stack env}
+      WEBRTC_BASE_URL: ${WEBRTC_BASE_URL:?Set WEBRTC_BASE_URL (https://) in Portainer stack env}
+      PLAYBACK_TOKEN_SECRET: ${PLAYBACK_TOKEN_SECRET:?Set PLAYBACK_TOKEN_SECRET (32+ chars) in Portainer stack env}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}@redis:6379
       NODE_ENV: production
       PAYLOAD_DB_PUSH: "false"
     volumes:
@@ -141,12 +141,12 @@ services:
     container_name: mtxfoil-worker
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-mtxfoil}
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Portainer stack env}@postgres:5432/${POSTGRES_DB:-mtxfoil}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}@redis:6379
       MEDIAMTX_API_URL: http://mediamtx:9997
       MEDIAMTX_HOST: mediamtx
-      MEDIAMTX_INTERNAL_USER: ${MEDIAMTX_INTERNAL_USER}
-      MEDIAMTX_INTERNAL_PASS: ${MEDIAMTX_INTERNAL_PASS}
+      MEDIAMTX_INTERNAL_USER: ${MEDIAMTX_INTERNAL_USER:?Set MEDIAMTX_INTERNAL_USER — unique username, not mtxfoil/admin}
+      MEDIAMTX_INTERNAL_PASS: ${MEDIAMTX_INTERNAL_PASS:?Set MEDIAMTX_INTERNAL_PASS — strong password, different from user}
       WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-2}
       WORKER_HEALTH_PORT: ${WORKER_HEALTH_PORT:-9999}
     depends_on:
