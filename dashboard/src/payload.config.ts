@@ -39,6 +39,11 @@ export default buildConfig({
         '@/components/admin/OperatorLink#OperatorLink',
         '@/components/admin/AdminThemeToggle#AdminThemeToggle',
       ],
+      views: {
+        dashboard: {
+          Component: '@/components/admin/AdminDashboardRedirect#AdminDashboardRedirect',
+        },
+      },
       graphics: {
         Logo: '@/components/admin/Logo#Logo',
         Icon: '@/components/admin/Icon#Icon',
