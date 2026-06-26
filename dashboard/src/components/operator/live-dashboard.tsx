@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-import { MetricsSummary, type MetricsData } from '@/components/operator/metrics-summary'
 import { StreamCard } from '@/components/operator/stream-card'
+import { SystemMetricsPanel, type HostMetricsData } from '@/components/operator/system-metrics-panel'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { StreamStatus } from '@/lib/mediamtx/paths'
+import type { MetricsData } from '@/components/operator/metrics-summary'
 
 type DashboardData = {
   health: { ok: boolean; latencyMs: number; error?: string }
@@ -20,6 +21,7 @@ type DashboardData = {
     status?: StreamStatus | null
   }>
   metrics?: MetricsData | null
+  host?: HostMetricsData | null
 }
 
 type Rates = { rx: number | null; tx: number | null }
@@ -40,8 +42,6 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
         const json = (await res.json()) as DashboardData
         if (!active) return
 
-        // Derive a rough throughput rate from deltas of the cumulative byte
-        // counters between successive polls.
         if (json.metrics) {
           const rx = json.metrics.paths.reduce((s, p) => s + p.bytesReceived, 0)
           const tx = json.metrics.paths.reduce((s, p) => s + p.bytesSent, 0)
@@ -73,7 +73,7 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
   }, [intervalSec])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
@@ -81,23 +81,28 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
             {data?.health.ok ? <Badge variant="success">Connected</Badge> : <Badge variant="danger">Disconnected</Badge>}
           </CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-zinc-400">
+        <CardContent className="text-sm text-muted">
           {data ? (
             <p>Latency: {data.health.latencyMs}ms {data.health.error ? `— ${data.health.error}` : ''}</p>
           ) : (
             <p>Checking connection…</p>
           )}
           {error && (
-            <p className="text-red-400" role="alert">
+            <p className="text-red-600 dark:text-red-400" role="alert">
               {error}
             </p>
           )}
         </CardContent>
       </Card>
 
-      {data?.metrics && <MetricsSummary metrics={data.metrics} rxRate={rates.rx} txRate={rates.tx} />}
+      <SystemMetricsPanel
+        host={data?.host ?? null}
+        metrics={data?.metrics ?? null}
+        mtxRxRate={rates.rx}
+        mtxTxRate={rates.tx}
+      />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="space-y-2">
         {data?.streams.map((stream) => (
           <StreamCard key={stream.id} stream={stream} status={stream.status} urls={stream.urls} />
         ))}
@@ -105,8 +110,8 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
 
       {data?.streams.length === 0 && (
         <Card>
-          <CardContent className="py-8 text-center text-zinc-400">
-            No streams configured yet. <Link href="/streams/new" className="text-emerald-400 underline">Create a stream</Link> or use <Link href="/admin" className="text-emerald-400 underline">Admin</Link>.
+          <CardContent className="py-8 text-center text-muted">
+            No streams configured yet. <Link href="/streams/new" className="text-emerald-600 underline dark:text-emerald-400">Create a stream</Link> or use <Link href="/admin" className="text-emerald-600 underline dark:text-emerald-400">Admin</Link>.
           </CardContent>
         </Card>
       )}

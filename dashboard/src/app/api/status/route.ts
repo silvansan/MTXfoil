@@ -3,6 +3,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { requireApiPermission } from '@/lib/api-auth'
+import { collectHostMetrics, type HostMetrics } from '@/lib/host-metrics'
+import { buildMetricsSample, recordMetricsSample } from '@/lib/metrics-history'
 import { mtxHealthCheck } from '@/lib/mediamtx/client'
 import { getDashboardMetrics, type DashboardMetrics } from '@/lib/mediamtx/metrics'
 import { listStreamStatuses } from '@/lib/mediamtx/paths'
@@ -19,10 +21,18 @@ export async function GET() {
   const health = await mtxHealthCheck()
 
   let metrics: DashboardMetrics | null = null
+  let host: HostMetrics | null = null
   try {
     metrics = await getDashboardMetrics()
   } catch {
     metrics = null
+  }
+
+  try {
+    host = await collectHostMetrics()
+    void recordMetricsSample(buildMetricsSample(host, metrics))
+  } catch {
+    host = null
   }
 
   let streams: Array<{
@@ -54,5 +64,5 @@ export async function GET() {
     streams = []
   }
 
-  return NextResponse.json({ health, streams, metrics })
+  return NextResponse.json({ health, streams, metrics, host })
 }

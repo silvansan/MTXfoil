@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ClickableRow } from '@/components/operator/clickable-row'
 
 export type RelatedStream = { slug: string; name: string }
 
@@ -267,49 +268,61 @@ export function EventsManager({
               </CardContent>
             </Card>
           ) : (
-            <Card key={ev.id}>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>{ev.title}</CardTitle>
-                <Badge variant={ev.status === 'active' ? 'success' : 'muted'}>{ev.status}</Badge>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm text-zinc-400">
-                <p>Slug: {ev.slug}</p>
-                {ev.date && <p>Date: {new Date(ev.date).toLocaleDateString()}</p>}
-                {ev.description && <p>{ev.description}</p>}
-                <div className="pt-2">
-                  <p className="text-xs uppercase tracking-wide text-zinc-500">Streams ({ev.streams.length})</p>
-                  {ev.streams.length === 0 ? (
-                    <p className="text-zinc-500">No streams linked to this event.</p>
-                  ) : (
-                    <ul className="mt-1 space-y-1">
-                      {ev.streams.map((s) => (
-                        <li key={s.slug}>
-                          <Link href={`/streams/${s.slug}`} className="text-emerald-400 hover:underline">
-                            {s.name}
-                          </Link>
-                          {' · '}
-                          <Link href={`/player/${s.slug}`} className="text-zinc-400 hover:underline">
-                            Player
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                {canManage && (
-                  <div className="flex flex-wrap items-center gap-2 pt-2">
-                    <Button variant="outline" size="sm" onClick={() => { setCreating(false); setEditingId(ev.id) }} disabled={busyId === ev.id}>
-                      Edit
-                    </Button>
-                    {canDelete && (
-                      <Button variant="destructive" size="sm" onClick={() => remove(ev)} disabled={busyId === ev.id}>
-                        Delete
-                      </Button>
+            <ClickableRow
+              key={ev.id}
+              disabled={!canManage}
+              onActivate={() => {
+                if (canManage) {
+                  setCreating(false)
+                  setEditingId(ev.id)
+                }
+              }}
+              ariaLabel={canManage ? `Edit event ${ev.title}` : ev.title}
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>{ev.title}</CardTitle>
+                  <Badge variant={ev.status === 'active' ? 'success' : 'muted'}>{ev.status}</Badge>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm text-muted">
+                  <p>Slug: {ev.slug}</p>
+                  {ev.date && <p>Date: {new Date(ev.date).toLocaleDateString()}</p>}
+                  {ev.description && <p>{ev.description}</p>}
+                  <div className="pt-2">
+                    <p className="text-xs uppercase tracking-wide text-zinc-500">Streams ({ev.streams.length})</p>
+                    {ev.streams.length === 0 ? (
+                      <p className="text-zinc-500">No streams linked to this event.</p>
+                    ) : (
+                      <ul className="mt-1 space-y-1">
+                        {ev.streams.map((s) => (
+                          <li key={s.slug}>
+                            <Link href={`/streams/${s.slug}`} className="text-emerald-600 hover:underline dark:text-emerald-400" data-no-row-nav>
+                              {s.name}
+                            </Link>
+                            {' · '}
+                            <Link href={`/player/${s.slug}`} className="text-muted hover:underline" data-no-row-nav>
+                              Player
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
                     )}
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  {canManage && (
+                    <div className="flex flex-wrap items-center gap-2 pt-2" data-no-row-nav>
+                      <Button variant="outline" size="sm" onClick={() => { setCreating(false); setEditingId(ev.id) }} disabled={busyId === ev.id}>
+                        Edit
+                      </Button>
+                      {canDelete && (
+                        <Button variant="destructive" size="sm" onClick={() => remove(ev)} disabled={busyId === ev.id}>
+                          Delete
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </ClickableRow>
           ),
         )}
         {events.length === 0 && !creating && (

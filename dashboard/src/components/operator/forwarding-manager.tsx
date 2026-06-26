@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { ClickableRow } from '@/components/operator/clickable-row'
 
 export type StreamOption = { id: string; name: string }
 
@@ -300,37 +301,49 @@ export function ForwardingManager({
               </CardContent>
             </Card>
           ) : (
-            <Card key={job.id}>
-              <CardHeader className="flex flex-row items-center justify-between gap-4">
-                <CardTitle>{job.name}</CardTitle>
-                <Badge variant={job.workerStatus === 'running' ? 'success' : job.enabled ? 'warning' : 'muted'}>
-                  {job.workerStatus || (job.enabled ? 'queued' : 'disabled')}
-                </Badge>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3 text-sm text-zinc-400 sm:flex-row sm:items-end sm:justify-between">
-                <div className="space-y-1">
-                  <p>Stream: {job.streamName}</p>
-                  <p>Type: {job.type}</p>
-                  <p className="break-all">Destination: {job.destinationUrl}</p>
-                  <p>Auto-start: {job.autoStart ? 'Yes' : 'No'}</p>
-                </div>
-                {canManage && (
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => toggleEnabled(job)} disabled={busyId === job.id}>
-                      {job.enabled ? 'Disable' : 'Enable'}
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => { setCreating(false); setEditingId(job.id) }} disabled={busyId === job.id}>
-                      Edit
-                    </Button>
-                    {canDelete && (
-                      <Button variant="destructive" size="sm" onClick={() => remove(job)} disabled={busyId === job.id}>
-                        Delete
-                      </Button>
-                    )}
+            <ClickableRow
+              key={job.id}
+              disabled={!canManage}
+              onActivate={() => {
+                if (canManage) {
+                  setCreating(false)
+                  setEditingId(job.id)
+                }
+              }}
+              ariaLabel={canManage ? `Edit forwarding job ${job.name}` : job.name}
+            >
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-4">
+                  <CardTitle>{job.name}</CardTitle>
+                  <Badge variant={job.workerStatus === 'running' ? 'success' : job.enabled ? 'warning' : 'muted'}>
+                    {job.workerStatus || (job.enabled ? 'queued' : 'disabled')}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-3 text-sm text-muted sm:flex-row sm:items-end sm:justify-between">
+                  <div className="space-y-1">
+                    <p>Stream: {job.streamName}</p>
+                    <p>Type: {job.type}</p>
+                    <p className="break-all">Destination: {job.destinationUrl}</p>
+                    <p>Auto-start: {job.autoStart ? 'Yes' : 'No'}</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                  {canManage && (
+                    <div className="flex flex-wrap items-center gap-2" data-no-row-nav>
+                      <Button variant="outline" size="sm" onClick={() => toggleEnabled(job)} disabled={busyId === job.id}>
+                        {job.enabled ? 'Disable' : 'Enable'}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => { setCreating(false); setEditingId(job.id) }} disabled={busyId === job.id}>
+                        Edit
+                      </Button>
+                      {canDelete && (
+                        <Button variant="destructive" size="sm" onClick={() => remove(job)} disabled={busyId === job.id}>
+                          Delete
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </ClickableRow>
           ),
         )}
         {jobs.length === 0 && !creating && (

@@ -3,6 +3,7 @@ import config from '@payload-config'
 
 import { DeleteRecordingButton } from '@/components/operator/delete-recording-button'
 import { CopyButton } from '@/components/operator/copy-button'
+import { ClickableRow } from '@/components/operator/clickable-row'
 import { listRecordings, formatRecordingPlaybackUrl } from '@/lib/mediamtx/recordings'
 import { loadUrlTemplates } from '@/lib/url-templates'
 import { isAdmin } from '@/lib/permissions'
@@ -39,20 +40,32 @@ export default async function RecordingsPage() {
 
       <div className="grid gap-4">
         {items.map((item) => (
-          <Card key={`${item.path}-${item.start}`}>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>{item.path}</CardTitle>
-              {canDelete && <DeleteRecordingButton path={item.path} start={item.start} />}
-            </CardHeader>
-            <CardContent className="space-y-2 text-sm text-zinc-400">
-              <p>Start: {item.start}</p>
-              <p>Duration: {item.duration}s</p>
-              <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
-                <span className="truncate">{item.playbackUrl}</span>
-                <CopyButton value={item.playbackUrl} />
-              </div>
-            </CardContent>
-          </Card>
+          <ClickableRow
+            key={`${item.path}-${item.start}`}
+            href={`/streams/${item.path}`}
+            ariaLabel={`Open stream ${item.path}`}
+          >
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>{item.path}</CardTitle>
+                {canDelete && (
+                  <div data-no-row-nav>
+                    <DeleteRecordingButton path={item.path} start={item.start} />
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-muted">
+                <p>Start: {item.start}</p>
+                <p>Duration: {item.duration}s</p>
+                <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-100 p-2 font-mono text-xs dark:bg-zinc-950">
+                  <span className="truncate">{item.playbackUrl}</span>
+                  <div data-no-row-nav>
+                    <CopyButton value={item.playbackUrl} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </ClickableRow>
         ))}
         {items.length === 0 && (
           <Card>

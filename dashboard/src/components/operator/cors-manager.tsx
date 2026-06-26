@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 
 import { ApplyCorsPresetButton } from '@/components/operator/apply-cors-preset-button'
+import { ClickableRow } from '@/components/operator/clickable-row'
 
 import { Badge } from '@/components/ui/badge'
 
@@ -754,8 +755,16 @@ export function CorsManager({
             <p className="text-sm text-zinc-500">No presets yet — create one above.</p>
           ) : (
             presets.map((preset) => (
-              <div
+              <ClickableRow
                 key={preset.id}
+                disabled={!canManage}
+                onActivate={() => {
+                  if (canManage) {
+                    setEditingPreset(preset)
+                    setPresetMode('edit')
+                  }
+                }}
+                ariaLabel={canManage ? `Edit preset ${preset.name}` : preset.name}
                 className="flex flex-col gap-3 rounded-md border border-zinc-800 p-3 sm:flex-row sm:items-start sm:justify-between"
               >
                 <div className="min-w-0 flex-1">
@@ -772,7 +781,7 @@ export function CorsManager({
                     <p className="mt-1 text-xs text-zinc-500">Services: {preset.services.join(', ')}</p>
                   ) : null}
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2" data-no-row-nav>
                   <ApplyCorsPresetButton presetId={preset.id} presetName={preset.name} />
                   {canManage && (
                     <Button
@@ -799,7 +808,7 @@ export function CorsManager({
                     </Button>
                   )}
                 </div>
-              </div>
+              </ClickableRow>
             ))
           )}
         </CardContent>

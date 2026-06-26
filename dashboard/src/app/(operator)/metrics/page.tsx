@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { getDashboardMetrics, listRtmpConnections, listSrtConnections, listWebRtcSessions } from '@/lib/mediamtx/metrics'
 import { MediaMtxLogs } from '@/components/operator/mediamtx-logs'
 import { MediaMtxServerBadge } from '@/components/operator/mediamtx-server-badge'
@@ -37,10 +39,14 @@ export default async function MetricsPage() {
           </CardHeader>
           <CardContent className="space-y-2 text-sm font-mono">
             {dashboard?.paths.map((p) => (
-              <div key={p.name} className="flex justify-between gap-4">
+              <Link
+                key={p.name}
+                href={`/streams/${p.name}`}
+                className="flex justify-between gap-4 rounded-md px-1 py-0.5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
                 <span>{p.name}</span>
                 <span className="text-zinc-500">↓{p.bytesReceived} ↑{p.bytesSent}</span>
-              </div>
+              </Link>
             )) || <p className="text-zinc-500">No metrics available</p>}
           </CardContent>
         </Card>
