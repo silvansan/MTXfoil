@@ -44,7 +44,8 @@ services:
       - "${WEBRTC_HTTP_PORT:-8889}:8889/tcp"
       - "${WEBRTC_ICE_PORT:-8189}:8189/udp"
       - "${SRT_PORT:-8890}:8890/udp"
-    command: ["/mediamtx", "/mediamtx-config/mediamtx.yml"]
+    # Image ENTRYPOINT is already /mediamtx — pass only the config path (not /mediamtx again).
+    command: ["/mediamtx-config/mediamtx.yml"]
     depends_on:
       mediamtx-config-init:
         condition: service_completed_successfully

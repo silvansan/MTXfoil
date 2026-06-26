@@ -67,6 +67,18 @@ const schemas = {
       ok: { type: 'boolean', example: true },
       latencyMs: { type: 'integer', example: 12 },
       error: { type: 'string', nullable: true },
+      target: {
+        type: 'string',
+        nullable: true,
+        description: 'Redacted MEDIAMTX_API_URL used for the probe',
+        example: 'http://mediamtx:9997',
+      },
+      cause: {
+        type: 'string',
+        nullable: true,
+        description: 'Underlying network error when fetch fails before HTTP',
+        example: 'connect ECONNREFUSED 172.18.0.4:9997',
+      },
     },
     required: ['ok', 'latencyMs'],
   },

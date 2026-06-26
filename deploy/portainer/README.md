@@ -178,6 +178,43 @@ Validation is intentional and cannot be bypassed. Unset required vars now fail a
 
 ---
 
+## Troubleshooting: MediaMTX Disconnected / dashboard unhealthy
+
+The dashboard Docker **healthcheck** calls `GET /api/health/mediamtx` inside the container. That endpoint probes MediaMTX at `MEDIAMTX_API_URL` (default `http://mediamtx:9997`). It does **not** check Postgres or Redis.
+
+| Symptom | Meaning |
+|---------|---------|
+| UI **Disconnected** + `fetch failed` / `ECONNREFUSED` | Dashboard container cannot open TCP to MediaMTX API (network, API disabled, or wrong URL). |
+| UI **Disconnected** + `401` / `403` | MediaMTX is reachable but `MEDIAMTX_INTERNAL_USER/PASS` do not match `mediamtx.yml` — open **Settings → Apply config**. |
+| Portainer **mtxfoil-dashboard unhealthy** | Same as above — healthcheck fails when MediaMTX probe fails. |
+| **mtxfoil-mediamtx running** but dashboard still disconnected | Container is up but API may be off, on another network, or config on the volume is wrong. |
+
+### Portainer checklist (no SSH)
+
+1. **Containers** → confirm all `mtxfoil-*` services are on network **`mtxfoil`** (stack YAML sets `networks.mtxfoil.name: mtxfoil`). If dashboard and mediamtx are on different networks, redeploy the full stack — do not attach containers manually across stacks.
+
+2. **Containers** → `mtxfoil-dashboard` → **Inspect** → **Env** → verify:
+   - `MEDIAMTX_API_URL=http://mediamtx:9997` (not `localhost`, not `https`, not the host IP)
+   - Do **not** add a Portainer env override like `MEDIAMTX_API_URL=https://…` unless you also change the compose file to use `${MEDIAMTX_API_URL:-http://mediamtx:9997}`.
+
+3. **Containers** → `mtxfoil-mediamtx` → **Logs** — look for config parse errors or `listener opened on :9997` (API). If the process exits and restarts, fix the YAML on the volume.
+
+4. **Containers** → `mtxfoil-mediamtx-config-init` → **Logs** — should show `Config already present` or a successful GitHub seed. Init needs outbound HTTPS to `raw.githubusercontent.com` on first deploy.
+
+5. **Volumes** → `mtxfoil-mediamtx-config` — if `mediamtx.yml` has `api: false` or wrong `apiAddress`, either:
+   - Open dashboard **Settings → Apply config** (regenerates YAML from Postgres + env), or
+   - Remove the volume and redeploy to re-seed from GitHub (`MTXFOIL_CONFIG_REF`), then **Apply config** again for credentials.
+
+6. After fixing env or config: **Stacks** → **Update the stack** → open **Settings → Apply config** so MediaMTX internal user/password match `MEDIAMTX_INTERNAL_USER/PASS`.
+
+7. **Quick probe** (if you have host shell access):  
+   `docker exec mtxfoil-dashboard node -e "fetch('http://mediamtx:9997/v3/paths/list',{headers:{Authorization:'Basic '+Buffer.from(process.env.MEDIAMTX_INTERNAL_USER+':'+process.env.MEDIAMTX_INTERNAL_PASS).toString('base64')}}).then(r=>console.log(r.status)).catch(e=>console.error(e))"`  
+   Expect `200`. `ECONNREFUSED` = network/API off; `401` = apply config.
+
+The operator UI and `/api/health/mediamtx` response now include the **redacted target URL** and underlying **cause** (e.g. `ECONNREFUSED`) to speed up debugging.
+
+---
+
 ## Troubleshooting: port bind / unhealthy mediamtx
 
 | Symptom | Cause | Fix (Portainer only) |
@@ -185,6 +222,7 @@ Validation is intentional and cannot be bypassed. Unset required vars now fail a
 | `Bind for 0.0.0.0:1935 failed: port already allocated` | Host port still bound by a previous stack, another service, or `RTMP_PORT` not set in env | **Stacks** → remove the failed stack (or stop/delete `mtxfoil-*` containers). Set `RTMP_PORT` / `RTMPS_PORT` (and any other `*_PORT` vars) in **Environment variables**, then redeploy. |
 | `dependency failed to start: container mtxfoil-mediamtx is unhealthy` | Older stack YAML used `wget` in a MediaMTX healthcheck; official `bluenviron/mediamtx` has no shell or `wget` | Pull/redeploy with current `PORTAINER_STACK*.yml` (no MediaMTX healthcheck; dashboard waits on `service_started` and probes API itself). |
 | Dashboard stuck starting | MediaMTX not reachable on Docker network | Check **mediamtx** container logs. Confirm `mediamtx-config-init` completed (Alpine + `wget` seeds config once; existing volume skips re-download). |
+| `mediamtx: error: unexpected argument /mediamtx-config/mediamtx.yml` | Stack `command` duplicated the binary (`["/mediamtx", "/mediamtx-config/..."]`) while the image ENTRYPOINT is already `/mediamtx` | Pull/redeploy with current `PORTAINER_STACK*.yml` where `command` is only `["/mediamtx-config/mediamtx.yml"]`. Pin `MEDIAMTX_IMAGE_TAG=1.11.3` in stack env. |
 
 **Remap RTMP example** (host 1940/1941 when 1935/1936 are taken):
 

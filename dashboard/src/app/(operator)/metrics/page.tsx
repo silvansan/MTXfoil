@@ -68,7 +68,7 @@ export default async function MetricsPage() {
   }
 
   const offlineHint =
-    'Metrics and session tables require a live MediaMTX connection. Ensure mtxfoil-mediamtx is running and credentials match /settings.'
+    'Metrics and session tables require a live MediaMTX connection. See deploy/portainer/README.md (MediaMTX Disconnected) if mtxfoil-mediamtx is running but the dashboard shows Disconnected.'
 
   return (
     <div className="space-y-6">

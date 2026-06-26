@@ -5,6 +5,8 @@ export type MediaMtxHealth = {
   ok: boolean
   latencyMs: number
   error?: string
+  target?: string
+  cause?: string
 }
 
 type MediaMtxConnectionCardProps = {
@@ -37,6 +39,12 @@ export function MediaMtxConnectionCard({
           Latency: {health.latencyMs}ms
           {health.error ? ` — ${health.error}` : ''}
         </p>
+        {!health.ok && health.target && !health.error?.includes(health.target) && (
+          <p className="font-mono text-xs">Target: {health.target}</p>
+        )}
+        {!health.ok && health.cause && !health.error?.includes(health.cause) && (
+          <p className="font-mono text-xs text-muted">Cause: {health.cause}</p>
+        )}
         {!health.ok && offlineHint && (
           <p className="text-red-600 dark:text-red-400" role="alert">
             {offlineHint}

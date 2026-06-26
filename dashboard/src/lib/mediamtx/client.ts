@@ -111,34 +111,87 @@ export async function mtxFetch<T = unknown>(
   return JSON.parse(text) as T
 }
 
-function formatMtxHealthError(err: unknown): string {
+/** Redact credentials from a MediaMTX base URL for operator-visible diagnostics. */
+export function redactMediaMtxUrl(url: string): string {
+  try {
+    const parsed = new URL(url)
+    if (parsed.password) parsed.password = '***'
+    if (parsed.username) parsed.username = '***'
+    return parsed.toString().replace(/\/$/, '')
+  } catch {
+    return url.replace(/:\/\/[^:@/]+:[^@/]+@/, '://***:***@')
+  }
+}
+
+export function getRedactedApiBaseUrl(): string {
+  return redactMediaMtxUrl(getApiBaseUrl())
+}
+
+function getFetchCause(err: unknown): string | undefined {
+  if (!(err instanceof Error) || !('cause' in err)) return undefined
+  const { cause } = err
+  if (cause instanceof Error && cause.message && cause.message !== err.message) {
+    return cause.message
+  }
+  if (typeof cause === 'string' && cause !== err.message) {
+    return cause
+  }
+  return undefined
+}
+
+/** Human-readable reachability error for API/metrics fetch failures. */
+export function formatMtxReachabilityError(err: unknown, baseUrl = getApiBaseUrl()): string {
+  const target = redactMediaMtxUrl(baseUrl)
+
   if (err instanceof MediaMtxError) {
     if (err.status === 401 || err.status === 403) {
-      return `API auth failed (${err.status}) — MEDIAMTX_INTERNAL_USER/PASS may not match mediamtx.yml; apply config from /settings`
+      return `API auth failed (${err.status}) at ${target} — MEDIAMTX_INTERNAL_USER/PASS may not match mediamtx.yml; apply config from /settings`
     }
-    return err.message
+    return `${err.message} (${target})`
   }
 
   const message = err instanceof Error ? err.message : 'Unknown error'
-  if (message.includes('fetch failed') || message.includes('ECONNREFUSED')) {
-    return 'fetch failed — MediaMTX unreachable at MEDIAMTX_API_URL (is mtxfoil-mediamtx running?)'
+  const cause = getFetchCause(err)
+  const detail = cause && !message.includes(cause) ? `${message} (${cause})` : message
+
+  if (
+    message.includes('fetch failed') ||
+    message.includes('ECONNREFUSED') ||
+    cause?.includes('ECONNREFUSED') ||
+    cause?.includes('ENOTFOUND') ||
+    cause?.includes('EHOSTUNREACH')
+  ) {
+    return `${detail} — MediaMTX unreachable at ${target} (is mtxfoil-mediamtx running on network mtxfoil?)`
   }
-  if (message.includes('timeout') || message.includes('ETIMEDOUT')) {
-    return `${message} — MediaMTX not responding (check container logs)`
+  if (message.includes('timeout') || message.includes('ETIMEDOUT') || cause?.includes('ETIMEDOUT')) {
+    return `${detail} — MediaMTX not responding at ${target} (check mtxfoil-mediamtx logs; confirm api: yes in mediamtx.yml)`
   }
-  return message
+  return `${detail} (${target})`
 }
 
-export async function mtxHealthCheck(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
+export type MtxHealthResult = {
+  ok: boolean
+  latencyMs: number
+  error?: string
+  /** Redacted MEDIAMTX_API_URL used for the probe */
+  target?: string
+  /** Underlying network error when fetch fails before HTTP */
+  cause?: string
+}
+
+export async function mtxHealthCheck(): Promise<MtxHealthResult> {
+  const target = getRedactedApiBaseUrl()
   const start = Date.now()
   try {
     await mtxFetch('/v3/paths/list', { signal: AbortSignal.timeout(8_000) })
-    return { ok: true, latencyMs: Date.now() - start }
+    return { ok: true, latencyMs: Date.now() - start, target }
   } catch (err) {
     return {
       ok: false,
       latencyMs: Date.now() - start,
-      error: formatMtxHealthError(err),
+      target,
+      cause: getFetchCause(err),
+      error: formatMtxReachabilityError(err),
     }
   }
 }

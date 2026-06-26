@@ -1,4 +1,4 @@
-import { MediaMtxError, mtxFetch } from './client'
+import { formatMtxReachabilityError, getMetricsBaseUrl, mtxFetch } from './client'
 import type { components } from './openapi-types'
 
 export type SRTConnList = components['schemas']['SRTConnList']
@@ -6,18 +6,7 @@ export type RTMPConnList = components['schemas']['RTMPConnList']
 export type WebRTCSessionList = components['schemas']['WebRTCSessionList']
 
 export function formatMetricsFetchError(err: unknown): string {
-  if (err instanceof MediaMtxError) {
-    if (err.status === 401 || err.status === 403) {
-      return `API auth failed (${err.status}) — MEDIAMTX_INTERNAL_USER/PASS may not match mediamtx.yml; apply config from /settings`
-    }
-    return err.message
-  }
-
-  const message = err instanceof Error ? err.message : 'Request failed'
-  if (message.includes('fetch failed') || message.includes('ECONNREFUSED')) {
-    return 'MediaMTX unreachable at MEDIAMTX_API_URL (is mtxfoil-mediamtx running?)'
-  }
-  return message
+  return formatMtxReachabilityError(err, getMetricsBaseUrl())
 }
 
 export type ParsedMetric = {
