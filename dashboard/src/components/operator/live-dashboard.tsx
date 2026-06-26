@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import { StreamCard } from '@/components/operator/stream-card'
+import { MediaMtxConnectionCard } from '@/components/operator/mediamtx-connection-card'
 import { SystemMetricsPanel, type HostMetricsData } from '@/components/operator/system-metrics-panel'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import type { StreamStatus } from '@/lib/mediamtx/paths'
 import type { MetricsData } from '@/components/operator/metrics-summary'
 
@@ -74,26 +74,14 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            MediaMTX Connection
-            {data?.health.ok ? <Badge variant="success">Connected</Badge> : <Badge variant="danger">Disconnected</Badge>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-muted">
-          {data ? (
-            <p>Latency: {data.health.latencyMs}ms {data.health.error ? `— ${data.health.error}` : ''}</p>
-          ) : (
-            <p>Checking connection…</p>
-          )}
-          {error && (
-            <p className="text-red-600 dark:text-red-400" role="alert">
-              {error}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      {data ? (
+        <MediaMtxConnectionCard health={data.health} fetchError={error} />
+      ) : (
+        <MediaMtxConnectionCard
+          health={{ ok: false, latencyMs: 0, error: 'Checking connection…' }}
+          fetchError={error}
+        />
+      )}
 
       <SystemMetricsPanel
         host={data?.host ?? null}
