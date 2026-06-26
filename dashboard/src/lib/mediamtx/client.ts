@@ -71,6 +71,28 @@ export function getMtxAuthHeaders(): Record<string, string> {
 
 export type MtxFetchOptions = RequestInit & {
   parseJson?: boolean
+  /** Request timeout in ms; defaults to 8000 unless `signal` is provided. */
+  timeoutMs?: number
+}
+
+const DEFAULT_MTX_FETCH_TIMEOUT_MS = 8_000
+
+async function readResponseBody(res: Response): Promise<unknown> {
+  const text = await res.text()
+  if (!text) return undefined
+  try {
+    return JSON.parse(text) as unknown
+  } catch {
+    return text
+  }
+}
+
+function resolveFetchSignal(
+  signal: AbortSignal | null | undefined,
+  timeoutMs: number,
+): AbortSignal | undefined {
+  if (signal) return signal
+  return AbortSignal.timeout(timeoutMs)
 }
 
 export async function mtxFetch<T = unknown>(
@@ -79,10 +101,11 @@ export async function mtxFetch<T = unknown>(
 ): Promise<T> {
   const base = path.startsWith('/metrics') ? getMetricsBaseUrl() : getApiBaseUrl()
   const url = path.startsWith('http') ? path : `${base}${path}`
-  const { parseJson = true, ...init } = options
+  const { parseJson = true, timeoutMs = DEFAULT_MTX_FETCH_TIMEOUT_MS, signal, ...init } = options
 
   const res = await fetch(url, {
     ...init,
+    signal: resolveFetchSignal(signal, timeoutMs),
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -93,12 +116,7 @@ export async function mtxFetch<T = unknown>(
   })
 
   if (!res.ok) {
-    let body: unknown
-    try {
-      body = await res.json()
-    } catch {
-      body = await res.text()
-    }
+    const body = await readResponseBody(res)
     throw new MediaMtxError(`MediaMTX request failed: ${res.status}`, res.status, body)
   }
 

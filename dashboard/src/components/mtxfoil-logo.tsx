@@ -23,7 +23,7 @@ export function MtxfoilLogo({ className, href = '/', size = 'md' }: MtxfoilLogoP
   const resolvedClass = className ?? LOGO_SIZE_CLASSES[size]
 
   const img = (
-    <span className="relative inline-flex shrink-0 items-center">
+    <span className="relative inline-flex shrink-0 items-center" suppressHydrationWarning>
       {/* eslint-disable-next-line @next/next/no-img-element -- optimized brand assets from /public */}
       <img
         src="/foil-logo-light.webp"

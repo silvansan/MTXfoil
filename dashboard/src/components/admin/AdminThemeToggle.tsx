@@ -10,13 +10,13 @@ export function AdminThemeToggle() {
 
   useEffect(() => setMounted(true), [])
 
-  const isDark = theme === 'dark'
+  const isDark = mounted && theme === 'dark'
 
   return (
     <div style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'flex-end' }}>
       <button
         type="button"
-        aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+        aria-label={mounted ? (isDark ? 'Switch to light theme' : 'Switch to dark theme') : 'Toggle theme'}
         disabled={!mounted}
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
         style={{
@@ -33,7 +33,15 @@ export function AdminThemeToggle() {
           opacity: mounted ? 1 : 0.6,
         }}
       >
-        {isDark ? <Sun size={16} aria-hidden /> : <Moon size={16} aria-hidden />}
+        {mounted ? (
+          isDark ? (
+            <Sun size={16} aria-hidden />
+          ) : (
+            <Moon size={16} aria-hidden />
+          )
+        ) : (
+          <Sun size={16} aria-hidden style={{ opacity: 0 }} />
+        )}
       </button>
     </div>
   )
