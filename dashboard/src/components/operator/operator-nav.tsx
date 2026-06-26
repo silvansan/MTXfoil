@@ -283,7 +283,7 @@ export function OperatorNav({
   return (
     <>
       <header className="sidebar-mobile-header md:hidden">
-        <MtxfoilLogo />
+        <MtxfoilLogo size="sm" />
         <div className="flex items-center gap-1">
           <ThemeToggle />
           {!viewerOnly && (
@@ -317,7 +317,7 @@ export function OperatorNav({
         aria-label="Operator navigation"
       >
         <div className="sidebar-header hidden md:flex">
-          <MtxfoilLogo />
+          <MtxfoilLogo size="md" />
         </div>
 
         <div className="sidebar-body">{sidebarBody}</div>
