@@ -79,6 +79,7 @@ services:
       REDIS_URL: redis://redis:6379
       NODE_ENV: production
     volumes:
+      # Bind mount includes mediamtx/backups/ — dashboard (nextjs uid 1001) must be able to write here.
       - ./mediamtx:/app/mediamtx-config
       - ./mediamtx/mediamtx.yml:/app/mediamtx-baseline/mediamtx.yml:ro
     ports:

@@ -5,11 +5,26 @@
 set -e
 
 CFG="${MEDIAMTX_CONFIG_DIR:-/mediamtx-config}/mediamtx.yml"
+CONFIG_DIR="$(dirname "$CFG")"
+BACKUP_DIR="${CONFIG_DIR}/backups"
+# Dashboard image runs as nextjs (uid/gid 1001) — volume must be writable by that user.
+DASHBOARD_UID="${MTXFOIL_CONFIG_UID:-1001}"
+DASHBOARD_GID="${MTXFOIL_CONFIG_GID:-1001}"
 REF="${MTXFOIL_CONFIG_REF:-main}"
 REPO="${MTXFOIL_REPO:-silvansan/MTXfoil}"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${REF}/mediamtx/mediamtx.yml"
 
-mkdir -p "$(dirname "$CFG")"
+mkdir -p "$CONFIG_DIR"
+
+ensure_dashboard_write_access() {
+  mkdir -p "$BACKUP_DIR"
+  chown -R "${DASHBOARD_UID}:${DASHBOARD_GID}" "$CONFIG_DIR"
+  chmod 775 "$CONFIG_DIR" "$BACKUP_DIR"
+  if [ -f "$CFG" ]; then
+    chmod 664 "$CFG"
+  fi
+  echo "[mediamtx-init] Volume ownership set to ${DASHBOARD_UID}:${DASHBOARD_GID} (dashboard nextjs user)"
+}
 
 seed_from_github() {
   echo "[mediamtx-init] Seeding mediamtx.yml from GitHub (${REPO}@${REF})"
@@ -59,12 +74,14 @@ if [ "${MTXFOIL_CONFIG_FORCE_RESEED:-}" = "true" ]; then
   echo "[mediamtx-init] MTXFOIL_CONFIG_FORCE_RESEED=true — replacing config from GitHub"
   seed_from_github
   validate_config
+  ensure_dashboard_write_access
   exit 0
 fi
 
 if [ ! -f "$CFG" ]; then
   seed_from_github
   validate_config
+  ensure_dashboard_write_access
   exit 0
 fi
 
@@ -74,3 +91,4 @@ fi
 
 echo "[mediamtx-init] Config already present, skipping seed"
 validate_config
+ensure_dashboard_write_access

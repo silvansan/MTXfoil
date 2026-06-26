@@ -20,6 +20,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml config >/dev/nul
 echo "==> Seeding MediaMTX baseline into local volume (if empty)"
 CONFIG_DIR="$ROOT/mediamtx"
 mkdir -p "$CONFIG_DIR/backups"
+# Dashboard container runs as nextjs (uid 1001); keep bind mount writable in local dev.
+chmod -R a+rwX "$CONFIG_DIR" 2>/dev/null || true
 if [[ ! -f "$CONFIG_DIR/mediamtx.yml" ]]; then
   echo "!! Missing $CONFIG_DIR/mediamtx.yml — copy from repo or run docker compose up (mediamtx entrypoint seeds the volume)"
 else

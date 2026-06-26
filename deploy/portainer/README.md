@@ -238,6 +238,26 @@ Pin dashboard to a build that includes the fix: `MTXFOIL_VERSION=latest` (or a r
 
 ---
 
+## Troubleshooting: `EACCES: permission denied, mkdir '/app/mediamtx-config/backups'`
+
+The Portainer init container seeds `mediamtx.yml` as **root**, but the dashboard image runs as **`nextjs` (uid 1001)**. On a root-owned named volume the dashboard cannot create the backups directory during **Settings → Apply config**.
+
+| Fix | When to use |
+|-----|-------------|
+| **Redeploy stack** with current `main` (init script chowns volume to 1001:1001 on every run) | Preferred after pulling the fix |
+| **One-liner on existing volume** (immediate, no redeploy) | Apply config blocked right now |
+
+**Host one-liner** (fix ownership on existing volume):
+
+```sh
+docker run --rm -v mtxfoil-mediamtx-config:/cfg alpine:3.20 sh -c \
+  "mkdir -p /cfg/backups && chown -R 1001:1001 /cfg && chmod 775 /cfg /cfg/backups"
+```
+
+Then open **Settings → Apply config** again (no MediaMTX restart required).
+
+---
+
 ## Troubleshooting: port bind / unhealthy mediamtx
 
 | Symptom | Cause | Fix (Portainer only) |
