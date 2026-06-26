@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { CopyButton } from '@/components/operator/copy-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -10,9 +12,11 @@ import {
 function ConnectionBlock({
   connection,
   primary,
+  slug,
 }: {
   connection: IngestConnection
   primary: boolean
+  slug: string
 }) {
   return (
     <div
@@ -32,6 +36,15 @@ function ConnectionBlock({
         )}
       </div>
       <p className="mt-1 text-xs text-zinc-500">{connection.note}</p>
+      {connection.protocol === 'webrtc' && (
+        <p className="mt-2 text-xs text-zinc-500">
+          Or{' '}
+          <Link href={`/streams/${slug}/whip`} className="text-emerald-400 hover:underline">
+            publish from this browser (WHIP)
+          </Link>
+          .
+        </p>
+      )}
       <div className="mt-3 space-y-2">
         {connection.fields.map((field) => (
           <div
@@ -84,6 +97,7 @@ export function ConnectEncoder({
             key={protocol}
             connection={getIngestConnection(slug, protocol)}
             primary={protocol === ingestProtocol}
+            slug={slug}
           />
         ))}
       </CardContent>

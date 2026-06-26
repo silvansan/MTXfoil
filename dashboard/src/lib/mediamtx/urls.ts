@@ -267,6 +267,11 @@ export function buildEmbedSnippet(playerUrl: string, width = 640, height = 360):
   return `<iframe src="${playerUrl}" width="${width}" height="${height}" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`
 }
 
+/** MediaMTX WHIP endpoint for WebRTC publish (append to webrtcPlayback URL). */
+export function buildWhipUrl(webrtcPlayback: string): string {
+  return `${webrtcPlayback.replace(/\/$/, '')}/whip`
+}
+
 /** MediaMTX WHEP endpoint for WebRTC playback (append to webrtcPlayback URL). */
 export function buildWhepUrl(webrtcPlayback: string): string {
   return `${webrtcPlayback.replace(/\/$/, '')}/whep`

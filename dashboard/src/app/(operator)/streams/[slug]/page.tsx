@@ -134,6 +134,11 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
             <Link href={`/player/${stream.slug}`} className="block text-emerald-400 underline">
               Open player preview
             </Link>
+            {isPublisher && (
+              <Link href={`/streams/${stream.slug}/whip`} className="block text-emerald-400 underline">
+                Browser publish (WHIP)
+              </Link>
+            )}
             <div className="flex flex-wrap items-center gap-2">
               {canManage && (
                 <Button variant="outline" size="sm" asChild>
