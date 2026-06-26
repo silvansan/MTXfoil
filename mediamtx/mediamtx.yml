@@ -4,10 +4,8 @@ logDestinations:
 api: true
 apiAddress: ':9997'
 apiEncryption: false
-apiAllowOrigins: []
 metrics: true
 metricsAddress: ':9998'
-metricsAllowOrigins: []
 authMethod: internal
 authInternalUsers:
   - user: mtxfoil
@@ -36,14 +34,11 @@ srt: true
 srtAddress: ':8890'
 hls: true
 hlsAddress: ':8888'
-hlsAllowOrigins: []
 webrtc: true
 webrtcAddress: ':8889'
 webrtcICEServers2: []
-webrtcAllowOrigins: []
 playback: true
 playbackAddress: ':9996'
-playbackAllowOrigins: []
 pprof: false
 paths:
   gtch:

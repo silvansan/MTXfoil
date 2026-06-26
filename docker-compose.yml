@@ -2,10 +2,9 @@ services:
   mediamtx:
     build: ./mediamtx
     image: mtxfoil-mediamtx:latest
-    # NOTE: the dashboard CORS layer (lib/mediamtx/cors.ts) and generated OpenAPI
-    # types target modern MediaMTX (plural `*AllowOrigins` lists). 1.11.3 uses the
-    # older singular `*AllowOrigin` strings, so it is incompatible here. The custom
-    # Dockerfile builds from bluenviron/mediamtx:latest; config uses plural origin lists.
+    # NOTE: CORS YAML uses singular *AllowOrigin strings for MediaMTX 1.11.x compatibility
+    # (see lib/mediamtx/cors.ts). Dev builds from bluenviron/mediamtx:latest; prod Portainer
+    # stacks pin MEDIAMTX_IMAGE_TAG (e.g. 1.11.3).
     container_name: mtxfoil-mediamtx
     restart: unless-stopped
     volumes:

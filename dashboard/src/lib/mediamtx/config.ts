@@ -4,7 +4,7 @@ import yaml from 'js-yaml'
 
 import type { Stream } from '@/payload-types'
 import { mapStreamAuthToPath } from './auth'
-import { mapCorsToYaml, stripLegacyTrustedProxies, type CorsSettings } from './cors'
+import { mapCorsToYaml, stripLegacyCorsKeys, type CorsSettings } from './cors'
 import { mtxFetch } from './client'
 import type { PathConf } from './types'
 
@@ -301,7 +301,7 @@ export async function generateYamlDocument(
     ...(protocolPatch || {}),
     paths,
   }
-  stripLegacyTrustedProxies(doc)
+  stripLegacyCorsKeys(doc)
   return doc
 }
 

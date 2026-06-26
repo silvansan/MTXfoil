@@ -18,18 +18,52 @@ const TRUSTED_PROXY_YAML_FIELDS = [
   'rtspTrustedProxies',
 ] as const
 
-/** Remove invalid global key left by older MTXfoil builds (MediaMTX 1.11.x rejects it). */
+/**
+ * MediaMTX 1.11.x (prod pin) uses singular `*AllowOrigin` strings.
+ * Plural `*AllowOrigins` arrays were added in v1.15.4+ and crash 1.11.x at startup.
+ */
+const CORS_ORIGIN_YAML_FIELDS = {
+  apiAllowOrigins: 'apiAllowOrigin',
+  hlsAllowOrigins: 'hlsAllowOrigin',
+  webrtcAllowOrigins: 'webrtcAllowOrigin',
+  playbackAllowOrigins: 'playbackAllowOrigin',
+  metricsAllowOrigins: 'metricsAllowOrigin',
+} as const
+
+const LEGACY_CORS_YAML_KEYS = [
+  'trustedProxies',
+  ...Object.keys(CORS_ORIGIN_YAML_FIELDS),
+] as const
+
+/** Map dashboard origin arrays to a single MediaMTX 1.11.x AllowOrigin string. */
+export function originsToAllowOrigin(origins: string[] | undefined): string | undefined {
+  if (!origins?.length) return undefined
+  if (origins.includes('*')) return '*'
+  if (origins.length === 1) return origins[0]
+  // 1.11.x accepts one origin string only; newer MediaMTX adds *AllowOrigins arrays.
+  return origins[0]
+}
+
+/** Remove invalid keys left by older MTXfoil builds (MediaMTX 1.11.x rejects them). */
+export function stripLegacyCorsKeys(doc: Record<string, unknown>): void {
+  for (const key of LEGACY_CORS_YAML_KEYS) {
+    delete doc[key]
+  }
+}
+
+/** @deprecated Use stripLegacyCorsKeys */
 export function stripLegacyTrustedProxies(doc: Record<string, unknown>): void {
-  delete doc.trustedProxies
+  stripLegacyCorsKeys(doc)
 }
 
 export function mapCorsToYaml(settings: CorsSettings): Record<string, unknown> {
   const result: Record<string, unknown> = {}
-  if (settings.apiAllowOrigins) result.apiAllowOrigins = settings.apiAllowOrigins
-  if (settings.hlsAllowOrigins) result.hlsAllowOrigins = settings.hlsAllowOrigins
-  if (settings.webrtcAllowOrigins) result.webrtcAllowOrigins = settings.webrtcAllowOrigins
-  if (settings.playbackAllowOrigins) result.playbackAllowOrigins = settings.playbackAllowOrigins
-  if (settings.metricsAllowOrigins) result.metricsAllowOrigins = settings.metricsAllowOrigins
+  for (const [settingsKey, yamlKey] of Object.entries(CORS_ORIGIN_YAML_FIELDS)) {
+    const allowOrigin = originsToAllowOrigin(
+      settings[settingsKey as keyof CorsSettings] as string[] | undefined,
+    )
+    if (allowOrigin !== undefined) result[yamlKey] = allowOrigin
+  }
   if (settings.trustedProxies?.length) {
     for (const field of TRUSTED_PROXY_YAML_FIELDS) {
       result[field] = settings.trustedProxies
@@ -64,6 +98,10 @@ export function getCorsWarnings(settings: CorsSettings): string[] {
         production
           ? `${label} CORS allows wildcard (*) — lock down origins before serving production traffic`
           : `${label} CORS allows wildcard (*) — not recommended in production`,
+      )
+    } else if ((origins?.length ?? 0) > 1) {
+      warnings.push(
+        `${label} CORS has multiple origins — MediaMTX 1.11.x uses a single AllowOrigin string; only the first origin is written to mediamtx.yml (upgrade MediaMTX for per-origin matching)`,
       )
     }
   }
