@@ -77,6 +77,23 @@ export function buildPlayerCsp(mediaOrigins: string[]): string {
   ].join('; ')
 }
 
+/** Payload admin — allow Gravatar avatars on user accounts. */
+export function buildAdminCsp(): string {
+  return [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "object-src 'none'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https://www.gravatar.com",
+    "connect-src 'self'",
+    "font-src 'self' data:",
+    "worker-src 'self' blob:",
+  ].join('; ')
+}
+
 /** Scalar API docs page loads scripts from jsDelivr. */
 export function buildApiDocsCsp(): string {
   return [

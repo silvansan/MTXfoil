@@ -4,6 +4,7 @@ import type { NextConfig } from 'next'
 import {
   BASE_SECURITY_HEADERS,
   WHIP_SECURITY_HEADERS,
+  buildAdminCsp,
   buildApiDocsCsp,
   buildDashboardCsp,
   buildPlayerCsp,
@@ -35,7 +36,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/((?!player/).*)',
+        source: '/admin/:path*',
+        headers: [
+          ...BASE_SECURITY_HEADERS,
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Content-Security-Policy', value: buildAdminCsp() },
+        ],
+      },
+      {
+        source: '/((?!player/|admin/).*)',
         headers: [
           ...BASE_SECURITY_HEADERS,
           { key: 'X-Frame-Options', value: 'DENY' },

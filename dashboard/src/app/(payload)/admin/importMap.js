@@ -3,6 +3,7 @@ import { Logo as Logo_a44df17d0fc3dcd873dae43dc3bf66bd } from '@/components/admi
 import { OperatorLink as OperatorLink_fe759d977b8296da438d453002c8eb9e } from '@/components/admin/OperatorLink'
 import { AdminThemeToggle as AdminThemeToggle_e9d2c96263c126e37765894bd4e8a4bd } from '@/components/admin/AdminThemeToggle'
 import { AdminDashboardRedirect as AdminDashboardRedirect_db933b396e93e1965ebd472ceeb1ded4 } from '@/components/admin/AdminDashboardRedirect'
+import { AdminNotFound as AdminNotFound_f48055ea3066407ce82f0bef0481ae13 } from '@/components/admin/AdminNotFound'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -12,5 +13,6 @@ export const importMap = {
   "@/components/admin/OperatorLink#OperatorLink": OperatorLink_fe759d977b8296da438d453002c8eb9e,
   "@/components/admin/AdminThemeToggle#AdminThemeToggle": AdminThemeToggle_e9d2c96263c126e37765894bd4e8a4bd,
   "@/components/admin/AdminDashboardRedirect#AdminDashboardRedirect": AdminDashboardRedirect_db933b396e93e1965ebd472ceeb1ded4,
+  "@/components/admin/AdminNotFound#AdminNotFound": AdminNotFound_f48055ea3066407ce82f0bef0481ae13,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

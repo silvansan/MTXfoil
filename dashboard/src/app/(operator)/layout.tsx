@@ -4,7 +4,14 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { OperatorNav } from '@/components/operator/operator-nav'
-import { canAccessOperatorRoute, canApplyConfig, canManageForwarding, isAdmin, isViewer } from '@/lib/permissions'
+import {
+  canAccessAdmin,
+  canAccessOperatorRoute,
+  canApplyConfig,
+  canManageForwarding,
+  isAdmin,
+  isViewer,
+} from '@/lib/permissions'
 
 export const dynamic = 'force-dynamic'
 
@@ -50,6 +57,7 @@ export default async function OperatorLayout({ children }: { children: React.Rea
       </a>
       <OperatorNav
         viewerOnly={isViewer(user)}
+        showAdmin={canAccessAdmin(user)}
         showAudit={isAdmin(user)}
         showSettings={canApplyConfig(user)}
         showForwarding={canManageForwarding(user)}

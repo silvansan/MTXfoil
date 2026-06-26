@@ -43,6 +43,9 @@ export default buildConfig({
         dashboard: {
           Component: '@/components/admin/AdminDashboardRedirect#AdminDashboardRedirect',
         },
+        notFound: {
+          Component: '@/components/admin/AdminNotFound#AdminNotFound',
+        },
       },
       graphics: {
         Logo: '@/components/admin/Logo#Logo',
