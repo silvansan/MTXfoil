@@ -235,12 +235,17 @@ export function getIngestConnection(
       return {
         protocol,
         label,
-        note: 'Publish from a browser or WHIP-capable encoder to the WHIP endpoint.',
+        note: 'OBS WHIP uses the URL below. Browser publish: open the WHIP page in MTXfoil (linked on stream detail when WebRTC is primary ingest).',
         fields: [
           {
             label: 'WHIP URL',
             value: urls.webrtcWhip,
-            hint: 'WebRTC publish (WHIP) endpoint.',
+            hint: 'WebRTC publish (WHIP) — POST from OBS or compatible software.',
+          },
+          {
+            label: 'Browser publish',
+            value: `/streams/${path}/whip`,
+            hint: 'MTXfoil operator page (camera / screen share via WHIP).',
           },
         ],
       }

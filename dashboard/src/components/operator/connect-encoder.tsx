@@ -53,7 +53,13 @@ function ConnectionBlock({
           >
             <div className="min-w-0">
               <p className="text-xs uppercase tracking-wide text-zinc-500">{field.label}</p>
-              <p className="font-mono text-sm break-all text-zinc-100">{field.value}</p>
+              {field.label === 'Browser publish' ? (
+                <Link href={field.value} className="font-mono text-sm text-emerald-400 hover:underline">
+                  {field.value}
+                </Link>
+              ) : (
+                <p className="font-mono text-sm break-all text-zinc-100">{field.value}</p>
+              )}
               <p className="mt-0.5 text-xs text-zinc-600">{field.hint}</p>
             </div>
             <CopyButton value={field.value} label={`Copy ${field.label.toLowerCase()}`} />

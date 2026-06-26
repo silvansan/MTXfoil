@@ -17,6 +17,21 @@ export type WhepState = {
  * Pass `undefined` for `whepUrl` to keep the connection idle (e.g. when the
  * WebRTC tab is not active).
  */
+async function waitForIceGathering(pc: RTCPeerConnection, timeoutMs = 4000): Promise<void> {
+  if (pc.iceGatheringState === 'complete') return
+  await new Promise<void>((resolve) => {
+    const done = () => {
+      pc.removeEventListener('icegatheringstatechange', onChange)
+      resolve()
+    }
+    const onChange = () => {
+      if (pc.iceGatheringState === 'complete') done()
+    }
+    pc.addEventListener('icegatheringstatechange', onChange)
+    setTimeout(done, timeoutMs)
+  })
+}
+
 export function useWhep(whepUrl: string | undefined, authHeader?: string): WhepState {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -44,6 +59,7 @@ export function useWhep(whepUrl: string | undefined, authHeader?: string): WhepS
 
       const offer = await pc.createOffer()
       await pc.setLocalDescription(offer)
+      await waitForIceGathering(pc)
 
       const res = await fetch(whepUrl as string, {
         method: 'POST',

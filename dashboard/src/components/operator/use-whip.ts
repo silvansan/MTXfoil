@@ -1,105 +1,124 @@
 'use client'
 
-import { useCallback, useRef, useState } from 'react'
-
-export type WhipStatus = 'idle' | 'connecting' | 'live' | 'error'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export type WhipState = {
-  localStream: MediaStream | null
-  status: WhipStatus
+  publishing: boolean
   error: string | null
-  start: () => Promise<void>
-  stop: () => Promise<void>
+  localStream: MediaStream | null
+}
+
+async function waitForIceGathering(pc: RTCPeerConnection, timeoutMs = 4000): Promise<void> {
+  if (pc.iceGatheringState === 'complete') return
+  await new Promise<void>((resolve) => {
+    const done = () => {
+      pc.removeEventListener('icegatheringstatechange', onChange)
+      resolve()
+    }
+    const onChange = () => {
+      if (pc.iceGatheringState === 'complete') done()
+    }
+    pc.addEventListener('icegatheringstatechange', onChange)
+    setTimeout(done, timeoutMs)
+  })
 }
 
 /**
- * Negotiate a WebRTC (WHIP) publish session against MediaMTX. Unlike WHEP
- * playback, publishing is user-initiated (camera/mic permission + Start).
+ * Publish camera/screen to a MediaMTX WHIP endpoint (POST application/sdp).
  */
-export function useWhip(whipUrl: string, authHeader?: string): WhipState {
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null)
-  const [status, setStatus] = useState<WhipStatus>('idle')
+export function useWhip(
+  whipUrl: string | undefined,
+  authHeader?: string,
+): WhipState & {
+  start: (constraintsOrStream?: MediaStreamConstraints | MediaStream) => Promise<void>
+  stop: () => void
+} {
+  const [publishing, setPublishing] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const pcRef = useRef<RTCPeerConnection | null>(null)
   const sessionUrlRef = useRef<string | null>(null)
-  const mediaRef = useRef<MediaStream | null>(null)
+  const streamRef = useRef<MediaStream | null>(null)
 
-  const stop = useCallback(async () => {
+  const cleanup = useCallback(() => {
     const sessionUrl = sessionUrlRef.current
     sessionUrlRef.current = null
-
     if (sessionUrl) {
-      try {
-        await fetch(sessionUrl, {
-          method: 'DELETE',
-          headers: authHeader ? { Authorization: authHeader } : undefined,
-        })
-      } catch {
-        // Best-effort teardown; local tracks are stopped regardless.
-      }
+      void fetch(sessionUrl, {
+        method: 'DELETE',
+        headers: authHeader ? { Authorization: authHeader } : undefined,
+      }).catch(() => {})
     }
-
     pcRef.current?.close()
     pcRef.current = null
-
-    mediaRef.current?.getTracks().forEach((track) => track.stop())
-    mediaRef.current = null
+    streamRef.current?.getTracks().forEach((t) => t.stop())
+    streamRef.current = null
     setLocalStream(null)
-    setStatus('idle')
-    setError(null)
+    setPublishing(false)
   }, [authHeader])
 
-  const start = useCallback(async () => {
-    if (!whipUrl) return
-
+  const stop = useCallback(() => {
     setError(null)
-    setStatus('connecting')
+    cleanup()
+  }, [cleanup])
 
-    try {
-      await stop()
+  const start = useCallback(
+    async (
+      constraintsOrStream: MediaStreamConstraints | MediaStream = { video: true, audio: true },
+    ) => {
+      if (!whipUrl) return
+      stop()
+      setError(null)
 
-      const media = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      mediaRef.current = media
-      setLocalStream(media)
+      try {
+        const media =
+          constraintsOrStream instanceof MediaStream
+            ? constraintsOrStream
+            : await navigator.mediaDevices.getUserMedia(constraintsOrStream)
+        streamRef.current = media
+        setLocalStream(media)
 
-      const pc = new RTCPeerConnection()
-      pcRef.current = pc
-      media.getTracks().forEach((track) => pc.addTrack(track, media))
+        const pc = new RTCPeerConnection({
+          iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+        })
+        pcRef.current = pc
+        media.getTracks().forEach((track) => pc.addTrack(track, media))
 
-      const offer = await pc.createOffer()
-      await pc.setLocalDescription(offer)
+        const offer = await pc.createOffer()
+        await pc.setLocalDescription(offer)
+        await waitForIceGathering(pc)
 
-      const res = await fetch(whipUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/sdp',
-          ...(authHeader ? { Authorization: authHeader } : {}),
-        },
-        body: offer.sdp,
-      })
+        const res = await fetch(whipUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/sdp',
+            ...(authHeader ? { Authorization: authHeader } : {}),
+          },
+          body: pc.localDescription?.sdp ?? offer.sdp,
+        })
 
-      if (!res.ok) {
-        if (res.status === 401) {
-          throw new Error('Not authorized to publish to this path.')
+        if (!res.ok) {
+          if (res.status === 401) throw new Error('Not authorized to publish to this path.')
+          throw new Error(`WHIP publish failed (${res.status})`)
         }
-        throw new Error(`WHIP request failed (${res.status})`)
+
+        const location = res.headers.get('Location')
+        if (location) {
+          sessionUrlRef.current = new URL(location, whipUrl).toString()
+        }
+
+        const answer = await res.text()
+        await pc.setRemoteDescription({ type: 'answer', sdp: answer })
+        setPublishing(true)
+      } catch (err) {
+        cleanup()
+        setError(err instanceof Error ? err.message : 'WHIP publish failed')
       }
+    },
+    [authHeader, cleanup, stop, whipUrl],
+  )
 
-      const location = res.headers.get('Location')
-      if (location) {
-        sessionUrlRef.current = new URL(location, whipUrl).toString()
-      }
+  useEffect(() => () => cleanup(), [cleanup])
 
-      const answer = await res.text()
-      await pc.setRemoteDescription({ type: 'answer', sdp: answer })
-      setStatus('live')
-    } catch (err) {
-      await stop()
-      setStatus('error')
-      setError(err instanceof Error ? err.message : 'WebRTC publish failed')
-    }
-  }, [authHeader, stop, whipUrl])
-
-  return { localStream, status, error, start, stop }
+  return { publishing, error, localStream, start, stop }
 }
