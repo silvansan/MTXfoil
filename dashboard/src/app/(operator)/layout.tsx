@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { OperatorNav } from '@/components/operator/operator-nav'
+import { scheduleMediaMtxStartupSync } from '@/lib/mediamtx-startup-scheduler'
 import {
   canAccessAdmin,
   canAccessOperatorRoute,
@@ -17,6 +18,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function OperatorLayout({ children }: { children: React.ReactNode }) {
   const payload = await getPayload({ config })
+  scheduleMediaMtxStartupSync(payload)
   const hdrs = await headers()
   const { user } = await payload.auth({ headers: hdrs })
 

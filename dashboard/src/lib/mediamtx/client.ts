@@ -61,18 +61,24 @@ export function getMetricsBaseUrl(): string {
   return primary.metricsUrl || process.env.MEDIAMTX_METRICS_URL || 'http://mediamtx:9998'
 }
 
-export function getMtxAuthHeaders(): Record<string, string> {
-  const user = process.env.MEDIAMTX_INTERNAL_USER || 'mtxfoil'
-  const pass = process.env.MEDIAMTX_INTERNAL_PASS || 'mtxfoil'
+export function getMtxAuthHeadersFor(user: string, pass: string): Record<string, string> {
   if (!user || !pass) return {}
   const token = Buffer.from(`${user}:${pass}`).toString('base64')
   return { Authorization: `Basic ${token}` }
+}
+
+export function getMtxAuthHeaders(): Record<string, string> {
+  const user = process.env.MEDIAMTX_INTERNAL_USER || 'mtxfoil'
+  const pass = process.env.MEDIAMTX_INTERNAL_PASS || 'mtxfoil'
+  return getMtxAuthHeadersFor(user, pass)
 }
 
 export type MtxFetchOptions = RequestInit & {
   parseJson?: boolean
   /** Request timeout in ms; defaults to 8000 unless `signal` is provided. */
   timeoutMs?: number
+  /** Override Basic auth (bootstrap when env creds differ from mediamtx.yml). */
+  basicAuth?: { user: string; pass: string }
 }
 
 const DEFAULT_MTX_FETCH_TIMEOUT_MS = 8_000
@@ -101,7 +107,13 @@ export async function mtxFetch<T = unknown>(
 ): Promise<T> {
   const base = path.startsWith('/metrics') ? getMetricsBaseUrl() : getApiBaseUrl()
   const url = path.startsWith('http') ? path : `${base}${path}`
-  const { parseJson = true, timeoutMs = DEFAULT_MTX_FETCH_TIMEOUT_MS, signal, ...init } = options
+  const {
+    parseJson = true,
+    timeoutMs = DEFAULT_MTX_FETCH_TIMEOUT_MS,
+    signal,
+    basicAuth,
+    ...init
+  } = options
 
   const res = await fetch(url, {
     ...init,
@@ -109,7 +121,7 @@ export async function mtxFetch<T = unknown>(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      ...getMtxAuthHeaders(),
+      ...(basicAuth ? getMtxAuthHeadersFor(basicAuth.user, basicAuth.pass) : getMtxAuthHeaders()),
       ...init.headers,
     },
     cache: 'no-store',

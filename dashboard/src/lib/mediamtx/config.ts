@@ -74,6 +74,38 @@ export function getMediaMtxInternalCredentials(): { user: string; pass: string }
   }
 }
 
+export type InternalCredentials = { user: string; pass: string }
+
+/** First internal superuser from a parsed mediamtx.yml document (skips `any`). */
+export function getYamlInternalSuperuser(doc: Record<string, unknown>): InternalCredentials | null {
+  if (doc.authMethod && doc.authMethod !== 'internal') return null
+  const users = doc.authInternalUsers
+  if (!Array.isArray(users)) return null
+
+  for (const entry of users) {
+    if (!entry || typeof entry !== 'object') continue
+    const row = entry as Record<string, unknown>
+    const user = String(row.user ?? '').trim()
+    if (!user || user === 'any') continue
+    return { user, pass: String(row.pass ?? '') }
+  }
+
+  return null
+}
+
+export async function readYamlInternalSuperuser(): Promise<InternalCredentials | null> {
+  const doc = await readCurrentYaml()
+  return getYamlInternalSuperuser(doc)
+}
+
+export function envCredentialsMatchYaml(
+  env: InternalCredentials,
+  yaml: InternalCredentials | null,
+): boolean {
+  if (!yaml) return false
+  return env.user === yaml.user && env.pass === yaml.pass
+}
+
 /** Auth modes whose paths are readable by anonymous viewers (no MediaMTX credentials). */
 const ANONYMOUS_READ_MODES = new Set(['public', 'unlisted'])
 
@@ -366,16 +398,20 @@ export async function deletePathViaApi(slug: string): Promise<void> {
   }
 }
 
-export async function patchGlobalViaApi(patch: Record<string, unknown>): Promise<void> {
+export async function patchGlobalViaApi(
+  patch: Record<string, unknown>,
+  options?: { basicAuth?: InternalCredentials },
+): Promise<void> {
   await mtxFetch('/v3/config/global/patch', {
     method: 'PATCH',
     body: JSON.stringify(patch),
+    basicAuth: options?.basicAuth,
   })
 }
 
-export async function reloadConfig(): Promise<void> {
+export async function reloadConfig(options?: { basicAuth?: InternalCredentials }): Promise<void> {
   try {
-    await mtxFetch('/v3/config/reload', { method: 'POST' })
+    await mtxFetch('/v3/config/reload', { method: 'POST', basicAuth: options?.basicAuth })
   } catch {
     // reload endpoint may not exist in all versions
   }
