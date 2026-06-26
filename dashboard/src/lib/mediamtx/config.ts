@@ -4,7 +4,12 @@ import yaml from 'js-yaml'
 
 import type { Stream } from '@/payload-types'
 import { mapStreamAuthToPath } from './auth'
-import { mapCorsToYaml, stripLegacyCorsKeys, type CorsSettings } from './cors'
+import {
+  findLegacyCorsKeys,
+  mapCorsToYaml,
+  stripLegacyCorsKeys,
+  type CorsSettings,
+} from './cors'
 import { mtxFetch } from './client'
 import type { PathConf } from './types'
 
@@ -206,7 +211,16 @@ export async function readCurrentYaml(): Promise<Record<string, unknown>> {
   await ensureConfigExists()
   const configPath = getConfigPath()
   const content = await fs.readFile(configPath, 'utf8')
-  return (yaml.load(content) as Record<string, unknown>) || {}
+  const doc = (yaml.load(content) as Record<string, unknown>) || {}
+  const legacy = findLegacyCorsKeys(doc)
+  if (legacy.length > 0) {
+    stripLegacyCorsKeys(doc)
+    await writeYamlConfig(doc)
+    console.log(
+      `[config] Removed legacy CORS keys from ${configPath}: ${legacy.join(', ')} — restart MediaMTX if it is crash-looping`,
+    )
+  }
+  return doc
 }
 
 /** Copy bundled baseline config when the shared volume is empty (first Portainer deploy). */
@@ -392,6 +406,12 @@ export async function validateConfig(doc: Record<string, unknown>): Promise<{ va
   }
   if (doc.api !== 'yes' && doc.api !== true) {
     errors.push('api should be enabled for dashboard control')
+  }
+  const legacyCors = findLegacyCorsKeys(doc)
+  if (legacyCors.length > 0) {
+    errors.push(
+      `legacy CORS keys incompatible with MediaMTX 1.11.x: ${legacyCors.join(', ')} — apply config again or redeploy stack to auto-repair volume`,
+    )
   }
   return { valid: errors.length === 0, errors }
 }

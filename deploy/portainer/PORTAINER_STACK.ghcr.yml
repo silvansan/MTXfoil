@@ -16,14 +16,11 @@ services:
     command:
       - |
         set -e
-        if [ -f /mediamtx-config/mediamtx.yml ]; then
-          echo "[mediamtx-init] Config already present, skipping seed"
-          exit 0
-        fi
-        echo "[mediamtx-init] Seeding mediamtx.yml from GitHub ($${MTXFOIL_REPO}@$${MTXFOIL_CONFIG_REF})"
-        mkdir -p /mediamtx-config
-        wget -q -O /mediamtx-config/mediamtx.yml \
-          "https://raw.githubusercontent.com/$${MTXFOIL_REPO}/$${MTXFOIL_CONFIG_REF}/mediamtx/mediamtx.yml"
+        apk add --no-cache wget >/dev/null
+        wget -q -O /tmp/mediamtx-config-init.sh \
+          "https://raw.githubusercontent.com/$${MTXFOIL_REPO}/$${MTXFOIL_CONFIG_REF}/deploy/portainer/mediamtx-config-init.sh"
+        chmod +x /tmp/mediamtx-config-init.sh
+        exec /tmp/mediamtx-config-init.sh
     networks:
       - mtxfoil
 

@@ -199,7 +199,7 @@ The dashboard Docker **healthcheck** calls `GET /api/health/mediamtx` inside the
 
 3. **Containers** → `mtxfoil-mediamtx` → **Logs** — look for config parse errors or `listener opened on :9997` (API). If the process exits and restarts, fix the YAML on the volume.
 
-4. **Containers** → `mtxfoil-mediamtx-config-init` → **Logs** — should show `Config already present` or a successful GitHub seed. Init needs outbound HTTPS to `raw.githubusercontent.com` on first deploy.
+4. **Containers** → `mtxfoil-mediamtx-config-init` → **Logs** — should show `Config OK` or a successful GitHub seed. Init needs outbound HTTPS to `raw.githubusercontent.com`. On redeploy it **strips legacy `*AllowOrigins` keys** from an existing volume (MediaMTX 1.11.x rejects them).
 
 5. **Volumes** → `mtxfoil-mediamtx-config` — if `mediamtx.yml` has `api: false` or wrong `apiAddress`, either:
    - Open dashboard **Settings → Apply config** (regenerates YAML from Postgres + env), or
@@ -212,6 +212,29 @@ The dashboard Docker **healthcheck** calls `GET /api/health/mediamtx` inside the
    Expect `200`. `ECONNREFUSED` = network/API off; `401` = apply config.
 
 The operator UI and `/api/health/mediamtx` response now include the **redacted target URL** and underlying **cause** (e.g. `ECONNREFUSED`) to speed up debugging.
+
+---
+
+## Troubleshooting: `unknown field "apiAllowOrigins"` (MediaMTX crash loop)
+
+MediaMTX **1.11.3** rejects plural `*AllowOrigins` YAML keys (added in MediaMTX 1.15+). Older MTXfoil builds wrote them to the shared volume; **redeploying alone does not fix it** because `mediamtx-config-init` used to skip when `mediamtx.yml` already existed.
+
+| Fix | When to use |
+|-----|-------------|
+| **Pull and redeploy** with current stack + `MTXFOIL_CONFIG_REF=main` | Init auto-strips legacy keys on every deploy (current `PORTAINER_STACK*.yml`). |
+| **Dashboard** → **Settings → Apply config** | After pulling a dashboard image with the CORS fix (`935e26f+`); then **restart** `mtxfoil-mediamtx`. |
+| **Strip volume in place** (no volume delete) | Immediate fix on the host — see commands below. |
+| **`MTXFOIL_CONFIG_FORCE_RESEED=true`** + redeploy | Replace entire YAML from GitHub (loses custom paths until you **Apply config**). |
+
+**Host one-liner** (strip legacy keys, keep paths):
+
+```sh
+docker run --rm -v mtxfoil-mediamtx-config:/cfg alpine:3.20 sh -c \
+  "sed -i '/AllowOrigins:/d;/^trustedProxies:/d' /cfg/mediamtx.yml && grep -E 'AllowOrigins|trustedProxies' /cfg/mediamtx.yml && exit 1 || echo OK"
+docker restart mtxfoil-mediamtx
+```
+
+Pin dashboard to a build that includes the fix: `MTXFOIL_VERSION=latest` (or a release tag after `935e26f`). `MTXFOIL_CONFIG_REF=main` is sufficient for the baseline seed; it does **not** rewrite an existing volume unless init repair runs.
 
 ---
 
@@ -255,7 +278,7 @@ The stack mounts:
 - `mtxfoil-recordings` → recording output
 - `mtxfoil-postgres-data` → database persistence
 
-Existing volumes are **not** re-seeded; only an empty config volume triggers the init download.
+Existing volumes are **not** fully re-seeded on redeploy; init **repairs** legacy `*AllowOrigins` / `trustedProxies` keys when present. Set `MTXFOIL_CONFIG_FORCE_RESEED=true` once to replace the file entirely from GitHub.
 
 ---
 

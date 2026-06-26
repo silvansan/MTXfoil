@@ -30,10 +30,15 @@ const CORS_ORIGIN_YAML_FIELDS = {
   metricsAllowOrigins: 'metricsAllowOrigin',
 } as const
 
-const LEGACY_CORS_YAML_KEYS = [
+export const LEGACY_CORS_YAML_KEYS = [
   'trustedProxies',
   ...Object.keys(CORS_ORIGIN_YAML_FIELDS),
 ] as const
+
+/** Legacy plural/global keys still present in a parsed YAML document. */
+export function findLegacyCorsKeys(doc: Record<string, unknown>): string[] {
+  return LEGACY_CORS_YAML_KEYS.filter((key) => key in doc)
+}
 
 /** Map dashboard origin arrays to a single MediaMTX 1.11.x AllowOrigin string. */
 export function originsToAllowOrigin(origins: string[] | undefined): string | undefined {
