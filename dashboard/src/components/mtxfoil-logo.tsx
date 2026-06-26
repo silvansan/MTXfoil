@@ -4,11 +4,11 @@ import Link from 'next/link'
 
 const LOGO_SIZE_CLASSES = {
   /** Mobile nav header */
-  sm: 'h-auto w-28 max-w-full',
+  sm: 'h-9 w-auto max-w-[8.75rem]',
   /** Operator sidebar — desktop */
-  md: 'h-auto w-[140px] max-w-full',
+  md: 'h-12 w-auto max-w-[10.5rem]',
   /** Login / auth screens */
-  lg: 'h-auto w-40 max-w-full',
+  lg: 'h-14 w-auto max-w-[12rem]',
 } as const
 
 export type MtxfoilLogoSize = keyof typeof LOGO_SIZE_CLASSES

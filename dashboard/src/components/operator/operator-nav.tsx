@@ -281,8 +281,8 @@ export function OperatorNav({
   )
 
   return (
-    <>
-      <header className="sidebar-mobile-header md:hidden">
+    <div className="operator-nav-root md:contents">
+      <header className="sidebar-mobile-header flex md:hidden">
         <MtxfoilLogo size="sm" />
         <div className="flex items-center gap-1">
           <ThemeToggle />
@@ -329,7 +329,7 @@ export function OperatorNav({
         {!viewerOnly && (
           <button
             type="button"
-            className="sidebar-mobile-close md:hidden"
+            className="sidebar-mobile-close flex md:hidden"
             onClick={closeMobile}
             aria-label="Close navigation menu"
           >
@@ -337,6 +337,6 @@ export function OperatorNav({
           </button>
         )}
       </aside>
-    </>
+    </div>
   )
 }
