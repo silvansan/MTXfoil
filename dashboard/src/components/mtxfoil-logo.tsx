@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
 
 type MtxfoilLogoProps = {
   className?: string
@@ -10,25 +8,26 @@ type MtxfoilLogoProps = {
 }
 
 export function MtxfoilLogo({ className = 'h-9 w-auto', href = '/' }: MtxfoilLogoProps) {
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => setMounted(true), [])
-
-  const src =
-    mounted && resolvedTheme === 'dark'
-      ? '/mtxfoil-logo-dark.webp'
-      : '/mtxfoil-logo-light.webp'
-
   const img = (
-    // eslint-disable-next-line @next/next/no-img-element -- optimized brand assets from /public
-    <img
-      src={src}
-      alt="MTXfoil"
-      className={className}
-      width={144}
-      height={144}
-    />
+    <span className="relative inline-flex shrink-0 items-center">
+      {/* eslint-disable-next-line @next/next/no-img-element -- optimized brand assets from /public */}
+      <img
+        src="/mtxfoil-logo-light.webp"
+        alt="MTXfoil"
+        className={`${className} dark:opacity-0`}
+        width={144}
+        height={144}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element -- optimized brand assets from /public */}
+      <img
+        src="/mtxfoil-logo-dark.webp"
+        alt=""
+        aria-hidden
+        className={`${className} pointer-events-none absolute inset-0 opacity-0 dark:opacity-100`}
+        width={144}
+        height={144}
+      />
+    </span>
   )
 
   if (href) {
@@ -39,5 +38,5 @@ export function MtxfoilLogo({ className = 'h-9 w-auto', href = '/' }: MtxfoilLog
     )
   }
 
-  return <span className="flex shrink-0 items-center">{img}</span>
+  return img
 }

@@ -19,9 +19,11 @@ export function ThemeToggle() {
         size="icon"
         className="shrink-0"
         aria-label="Toggle theme"
+        aria-hidden
+        tabIndex={-1}
         disabled
       >
-        <Sun className="h-4 w-4" aria-hidden />
+        <Sun className="h-4 w-4 opacity-0" aria-hidden />
       </Button>
     )
   }
