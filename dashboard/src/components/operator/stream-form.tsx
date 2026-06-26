@@ -5,6 +5,14 @@ import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  checkboxLabelClass,
+  errorBannerClass,
+  inputClass,
+  labelClass,
+  protocolToggleActive,
+  protocolToggleInactive,
+} from '@/lib/operator-ui'
 
 // Playback (read) endpoints viewers can use. HLS is read-only; WebRTC is WHEP.
 const PROTOCOLS = [
@@ -59,10 +67,6 @@ export type StreamInitial = {
   readPassword?: string
   notes?: string
 }
-
-const inputClass =
-  'w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none'
-const labelClass = 'text-sm font-medium text-zinc-300'
 
 function slugify(value: string): string {
   return value
@@ -298,12 +302,7 @@ export function StreamForm({
                     key={p.value}
                     type="button"
                     onClick={() => toggleProtocol(p.value)}
-                    className={
-                      'rounded-md border px-3 py-1.5 text-sm transition-colors ' +
-                      (active
-                        ? 'border-emerald-500 bg-emerald-500/20 text-emerald-200'
-                        : 'border-zinc-700 text-zinc-400 hover:bg-zinc-800')
-                    }
+                    className={active ? protocolToggleActive : protocolToggleInactive}
                     aria-pressed={active}
                   >
                     {p.label}
@@ -374,7 +373,7 @@ export function StreamForm({
           </div>
 
           <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 text-sm text-zinc-300">
+            <label className={checkboxLabelClass}>
               <input
                 type="checkbox"
                 className="h-4 w-4 accent-emerald-500"
@@ -383,7 +382,7 @@ export function StreamForm({
               />
               Playback enabled
             </label>
-            <label className="flex items-center gap-2 text-sm text-zinc-300">
+            <label className={checkboxLabelClass}>
               <input
                 type="checkbox"
                 className="h-4 w-4 accent-emerald-500"
@@ -395,7 +394,7 @@ export function StreamForm({
           </div>
 
           {error && (
-            <p className="rounded-md border border-red-900 bg-red-950/50 px-3 py-2 text-sm text-red-300">
+            <p className={errorBannerClass}>
               {error}
             </p>
           )}

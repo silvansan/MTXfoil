@@ -123,7 +123,7 @@ export default async function CorsPage() {
 
         <h1 className="text-3xl font-bold">CORS Origins</h1>
 
-        <p className="mt-2 text-zinc-400">
+        <p className="mt-2 text-muted">
 
           Allowed origins per MediaMTX service. Changes are saved to the database and applied to MediaMTX
 

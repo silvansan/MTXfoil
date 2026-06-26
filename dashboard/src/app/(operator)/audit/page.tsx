@@ -24,7 +24,7 @@ export default async function AuditPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Audit Log</h1>
-        <p className="mt-2 text-zinc-400">
+        <p className="mt-2 text-muted">
           Recent admin actions — config apply, stream changes, user role changes, and CORS updates.
         </p>
       </div>
@@ -53,7 +53,7 @@ export default async function AuditPage() {
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="muted">{entry.action}</Badge>
-                      <span className="text-sm text-zinc-300">{entry.summary}</span>
+                      <span className="text-sm text-zinc-700 dark:text-zinc-300">{entry.summary}</span>
                     </div>
                     <p className="mt-1 text-xs text-zinc-500">
                       {actor}

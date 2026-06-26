@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getStreamStatus } from '@/lib/mediamtx/paths'
 import { canManageStreams, isAdmin } from '@/lib/permissions'
 import { loadUrlTemplates } from '@/lib/url-templates'
+import { urlRowClass, urlRowPrimaryClass, urlRowValueClass } from '@/lib/operator-ui'
 import {
   buildStreamUrls,
   getAvailablePlaybackProtocols,
@@ -40,17 +41,14 @@ function UrlList({ rows }: { rows: UrlRow[] }) {
       {rows.map((row) => (
         <div
           key={row.label}
-          className={
-            'flex flex-col gap-2 rounded-md p-3 sm:flex-row sm:items-center sm:justify-between ' +
-            (row.primary ? 'border border-emerald-500/40 bg-emerald-500/5' : 'bg-zinc-950')
-          }
+          className={row.primary ? urlRowPrimaryClass : urlRowClass}
         >
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-wide text-zinc-500">
               {row.label}
               {row.primary ? ' · primary' : ''}
             </p>
-            <p className="font-mono text-sm break-all text-zinc-100">{row.value}</p>
+            <p className={urlRowValueClass}>{row.value}</p>
           </div>
           <CopyButton value={row.value} label={`Copy ${row.label.toLowerCase()}`} />
         </div>
@@ -120,7 +118,7 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
           <CardHeader>
             <CardTitle>Live Status</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-zinc-400">
+          <CardContent className="space-y-2 text-sm text-muted">
             <p>Ready: {status?.ready ? 'Yes' : 'No'}</p>
             <p>Source: {status?.sourceType ?? '—'}</p>
             <p>Readers: {status?.readerCount ?? 0}</p>
@@ -169,7 +167,7 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
             <CardTitle>Ingest</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="space-y-1 text-sm text-zinc-400">
+            <div className="space-y-1 text-sm text-muted">
               <p>
                 Source type: <span className="text-zinc-200">{sourceType}</span>
               </p>

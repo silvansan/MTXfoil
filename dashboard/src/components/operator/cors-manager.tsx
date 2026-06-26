@@ -17,6 +17,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 import { hasWildcardOrigin } from '@/lib/mediamtx/cors'
+import {
+  errorBannerClass,
+  formSectionBorderClass,
+  inlineCodeClass,
+  inputMonoClass,
+  labelClass,
+} from '@/lib/operator-ui'
 
 
 
@@ -129,11 +136,11 @@ function CorsPresetForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 rounded-md border border-zinc-700 p-4">
+    <form onSubmit={onSubmit} className={formSectionBorderClass}>
       <div className="space-y-1">
-        <label className="text-sm text-zinc-400">Name</label>
+        <label className={labelClass}>Name</label>
         <input
-          className={inputClass}
+          className={inputMonoClass}
           value={form.name}
           onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
           required
@@ -141,20 +148,20 @@ function CorsPresetForm({
         />
       </div>
       <div className="space-y-1">
-        <label className="text-sm text-zinc-400">Description</label>
+        <label className={labelClass}>Description</label>
         <textarea
-          className={`${inputClass} min-h-[72px]`}
+          className={`${inputMonoClass} min-h-[72px]`}
           value={form.description}
           onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
           disabled={disabled || submitting}
         />
       </div>
       <div className="space-y-2">
-        <p className="text-sm text-zinc-400">Origins</p>
+        <p className={labelClass}>Origins</p>
         {form.origins.map((origin, index) => (
           <div key={`preset-origin-${index}`} className="flex gap-2">
             <input
-              className={inputClass}
+              className={inputMonoClass}
               value={origin}
               onChange={(e) => {
                 const next = [...form.origins]
@@ -188,7 +195,7 @@ function CorsPresetForm({
         </Button>
       </div>
       <div className="space-y-2">
-        <p className="text-sm text-zinc-400">Services</p>
+        <p className={labelClass}>Services</p>
         <div className="flex flex-wrap gap-2">
           {PRESET_SERVICES.map(({ value, label }) => (
             <label key={value} className="flex items-center gap-2 text-sm">
@@ -204,7 +211,7 @@ function CorsPresetForm({
         </div>
       </div>
       {error && (
-        <p className="rounded-md border border-red-900 bg-red-950/50 px-3 py-2 text-sm text-red-300">
+        <p className={errorBannerClass}>
           {error}
         </p>
       )}
@@ -228,12 +235,6 @@ const SERVICE_SECTIONS = [
   { key: 'playbackAllowOrigins' as const, label: 'Playback' },
   { key: 'metricsAllowOrigins' as const, label: 'Metrics' },
 ]
-
-
-
-const inputClass =
-
-  'w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 font-mono text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none'
 
 
 
@@ -313,7 +314,7 @@ function OriginListEditor({
 
               <input
 
-                className={inputClass}
+                className={inputMonoClass}
 
                 value={origin}
 
@@ -509,7 +510,7 @@ export function CorsManager({
 
         <p className="text-sm text-zinc-500">
 
-          Dashboard URL: <code className="text-zinc-300">{dashboardUrl}</code> — merged into CORS on apply when set
+          Dashboard URL: <code className={inlineCodeClass}>{dashboardUrl}</code> — merged into CORS on apply when set
 
           via <code>DASHBOARD_PUBLIC_URL</code>.
 
@@ -611,7 +612,7 @@ export function CorsManager({
 
                 <input
 
-                  className={inputClass}
+                  className={inputMonoClass}
 
                   value={proxy}
 
@@ -689,7 +690,7 @@ export function CorsManager({
 
         {error && (
 
-          <p className="rounded-md border border-red-900 bg-red-950/50 px-3 py-2 text-sm text-red-300">{error}</p>
+          <p className={errorBannerClass}>{error}</p>
 
         )}
 
@@ -765,7 +766,7 @@ export function CorsManager({
                   }
                 }}
                 ariaLabel={canManage ? `Edit preset ${preset.name}` : preset.name}
-                className="flex flex-col gap-3 rounded-md border border-zinc-800 p-3 sm:flex-row sm:items-start sm:justify-between"
+                className="flex flex-col gap-3 rounded-md border border-zinc-200 p-3 sm:flex-row sm:items-start sm:justify-between dark:border-zinc-800"
               >
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{preset.name}</p>

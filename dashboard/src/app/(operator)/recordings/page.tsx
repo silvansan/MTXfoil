@@ -6,6 +6,7 @@ import { CopyButton } from '@/components/operator/copy-button'
 import { ClickableRow } from '@/components/operator/clickable-row'
 import { listRecordings, formatRecordingPlaybackUrl } from '@/lib/mediamtx/recordings'
 import { loadUrlTemplates } from '@/lib/url-templates'
+import { codeRowClass } from '@/lib/operator-ui'
 import { isAdmin } from '@/lib/permissions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { headers } from 'next/headers'
@@ -35,7 +36,7 @@ export default async function RecordingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Recordings</h1>
-        <p className="mt-2 text-zinc-400">Segments from MediaMTX recording API.</p>
+        <p className="mt-2 text-muted">Segments from MediaMTX recording API.</p>
       </div>
 
       <div className="grid gap-4">
@@ -57,7 +58,7 @@ export default async function RecordingsPage() {
               <CardContent className="space-y-2 text-sm text-muted">
                 <p>Start: {item.start}</p>
                 <p>Duration: {item.duration}s</p>
-                <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-100 p-2 font-mono text-xs dark:bg-zinc-950">
+                <div className={codeRowClass}>
                   <span className="truncate">{item.playbackUrl}</span>
                   <div data-no-row-nav>
                     <CopyButton value={item.playbackUrl} />

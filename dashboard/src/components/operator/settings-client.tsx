@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { listItemCodeClass } from '@/lib/operator-ui'
 
 export function SettingsClient() {
   const [preview, setPreview] = useState<{ ok: boolean; diffs: Array<{ key: string }>; errors: string[] } | null>(null)
@@ -49,11 +50,11 @@ export function SettingsClient() {
               </ul>
             )}
             {preview.diffs?.length === 0 && preview.ok && (
-              <p className="text-zinc-400">No differences — config is in sync.</p>
+              <p className="text-muted">No differences — config is in sync.</p>
             )}
             <ul className="space-y-2 font-mono text-xs">
               {preview.diffs?.map((d) => (
-                <li key={d.key} className="rounded bg-zinc-950 p-2">
+                <li key={d.key} className={listItemCodeClass}>
                   {d.key}
                 </li>
               ))}

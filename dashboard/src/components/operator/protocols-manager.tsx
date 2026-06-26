@@ -7,6 +7,12 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { rtmpsIngestAvailable } from '@/lib/mediamtx/protocol'
+import {
+  inputClass,
+  inputMonoClass,
+  labelClass,
+  sectionDividerClass,
+} from '@/lib/operator-ui'
 
 export type ProtocolAuthView = {
   method: 'internal' | 'http' | 'jwt'
@@ -43,12 +49,6 @@ export type ProtocolSettingsView = {
   auth: ProtocolAuthView
 }
 
-const inputClass =
-  'w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 font-mono text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none'
-
-const selectClass =
-  'w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 focus:border-zinc-500 focus:outline-none'
-
 function CheckboxRow({
   label,
   checked,
@@ -72,7 +72,7 @@ function CheckboxRow({
         className="mt-1"
       />
       <span>
-        <span className="text-zinc-200">{label}</span>
+        <span className="text-zinc-900 dark:text-zinc-200">{label}</span>
         {hint ? <p className="mt-0.5 text-xs text-zinc-500">{hint}</p> : null}
       </span>
     </label>
@@ -98,9 +98,9 @@ function TextField({
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-sm text-zinc-400">{label}</label>
+      <label className={labelClass}>{label}</label>
       <input
-        className={inputClass}
+        className={inputMonoClass}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -240,9 +240,9 @@ export function ProtocolsManager({
           disabled={disabled}
           placeholder=":1935"
         />
-        <div className="border-t border-zinc-800 pt-4">
+        <div className={sectionDividerClass}>
           <div className="mb-3 flex items-center gap-2">
-            <span className="text-sm font-medium text-zinc-300">RTMPS</span>
+            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">RTMPS</span>
             {settings.rtmpsEnabled && (
               <Badge variant={rtmpsCertsReady ? 'success' : 'warning'}>
                 {rtmpsCertsReady ? 'Certs configured' : 'Certs missing'}
@@ -297,9 +297,9 @@ export function ProtocolsManager({
           placeholder=":8888"
         />
         <div className="space-y-1">
-          <label className="text-sm text-zinc-400">HLS variant</label>
+          <label className={labelClass}>HLS variant</label>
           <select
-            className={selectClass}
+            className={inputClass}
             value={settings.hlsVariant}
             onChange={(e) => patch('hlsVariant', e.target.value as ProtocolSettingsView['hlsVariant'])}
             disabled={disabled || settings.hlsLowLatency}
@@ -393,9 +393,9 @@ export function ProtocolsManager({
           delegate authorization globally.
         </p>
         <div className="space-y-1">
-          <label className="text-sm text-zinc-400">Auth method</label>
+          <label className={labelClass}>Auth method</label>
           <select
-            className={selectClass}
+            className={inputClass}
             value={settings.auth.method}
             onChange={(e) => patchAuth('method', e.target.value as ProtocolAuthView['method'])}
             disabled={disabled}

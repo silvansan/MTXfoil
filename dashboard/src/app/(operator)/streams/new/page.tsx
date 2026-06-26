@@ -20,7 +20,7 @@ export default async function NewStreamPage() {
           <h1 className="text-3xl font-bold">Create Stream</h1>
         </div>
         <Card>
-          <CardContent className="py-8 text-center text-zinc-400">
+          <CardContent className="py-8 text-center text-muted">
             You do not have permission to create streams. This action requires an operator role or
             higher.
           </CardContent>
@@ -47,7 +47,7 @@ export default async function NewStreamPage() {
           / New
         </p>
         <h1 className="text-3xl font-bold">Create Stream</h1>
-        <p className="mt-2 text-zinc-400">
+        <p className="mt-2 text-muted">
           Saved through Payload so MediaMTX config (mediamtx.yml + API) stays in sync.
         </p>
       </div>

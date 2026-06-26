@@ -52,7 +52,7 @@ export default async function ForwardingPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Forwarding Jobs</h1>
-        <p className="mt-2 text-zinc-400">
+        <p className="mt-2 text-muted">
           Restream paths to external destinations. FFmpeg push jobs run in the worker (Bull + Redis).
         </p>
       </div>

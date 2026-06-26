@@ -6,7 +6,7 @@ export function MediaMtxServerBadge() {
   const multi = servers.length > 1
 
   return (
-    <div className="flex flex-wrap items-center gap-2 text-sm text-zinc-400">
+    <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
       <span>MediaMTX server:</span>
       <Badge variant="muted">{primary.name}</Badge>
       <code className="text-xs text-zinc-500">{primary.apiUrl}</code>

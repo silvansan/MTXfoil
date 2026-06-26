@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { inputClass, labelClass } from '@/lib/operator-ui'
 
 type Props = {
   slug: string
@@ -36,7 +37,7 @@ export function PlaybackPasswordGate({ slug }: Props) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-1.5">
-            <label htmlFor="playback-password" className="text-sm text-zinc-300">
+            <label htmlFor="playback-password" className={labelClass}>
               Playback password
             </label>
             <input
@@ -48,7 +49,7 @@ export function PlaybackPasswordGate({ slug }: Props) {
                 setError('')
               }}
               placeholder="Enter playback password"
-              className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none"
+              className={inputClass}
               autoComplete="current-password"
               required
             />

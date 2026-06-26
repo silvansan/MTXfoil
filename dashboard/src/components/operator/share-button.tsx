@@ -4,6 +4,7 @@ import { Check, Copy, Share2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { codeRowClass, panelClass } from '@/lib/operator-ui'
 
 function buildEmbed(playerUrl: string): string {
   return `<iframe src="${playerUrl}" width="640" height="360" frameborder="0" allowfullscreen allow="autoplay; encrypted-media"></iframe>`
@@ -19,8 +20,8 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="space-y-1">
       <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
-      <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
-        <span className="truncate text-zinc-100">{value}</span>
+      <div className={codeRowClass}>
+        <span className="truncate text-zinc-900 dark:text-zinc-100">{value}</span>
         <Button variant="outline" size="sm" type="button" onClick={copy}>
           {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? 'Copied' : 'Copy'}
@@ -105,13 +106,13 @@ export function ShareButton({
           id={panelId}
           role="dialog"
           aria-label="Share stream"
-          className="absolute right-0 z-20 mt-2 w-80 space-y-3 rounded-md border border-zinc-700 bg-zinc-900 p-3 shadow-xl"
+          className={`absolute right-0 z-20 mt-2 w-80 space-y-3 ${panelClass}`}
           onClick={(e) => e.stopPropagation()}
         >
           <CopyRow label="Player link" value={playerUrl} />
           <CopyRow label="Embed (iframe)" value={buildEmbed(playerUrl)} />
           {isToken && (
-            <div className="space-y-2 border-t border-zinc-800 pt-2">
+            <div className="space-y-2 border-t border-zinc-200 pt-2 dark:border-zinc-800">
               <p className="text-xs text-zinc-500">
                 This stream requires a playback token. Generate a time-limited shareable link.
               </p>

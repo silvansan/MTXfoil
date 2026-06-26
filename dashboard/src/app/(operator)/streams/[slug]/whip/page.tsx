@@ -11,6 +11,7 @@ import { buildStreamUrls, buildWhipUrl } from '@/lib/mediamtx/urls'
 import { getWhipAuthHeader } from '@/lib/publish-auth'
 import { canManageStreams, isOperator } from '@/lib/permissions'
 import { loadUrlTemplates } from '@/lib/url-templates'
+import { inlineCodeClass } from '@/lib/operator-ui'
 import type { Stream } from '@/payload-types'
 
 type Props = {
@@ -39,7 +40,7 @@ export default async function WhipPublishPage({ params }: Props) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">WHIP publish unavailable</h1>
-        <p className="text-zinc-400">
+        <p className="text-muted">
           This stream pulls from an external source ({sourceType}). WHIP browser publish only applies to
           publisher paths.
         </p>
@@ -70,7 +71,7 @@ export default async function WhipPublishPage({ params }: Props) {
           / WHIP
         </p>
         <h1 className="text-3xl font-bold">Browser publish (WHIP)</h1>
-        <p className="mt-2 text-zinc-400">
+        <p className="mt-2 text-muted">
           Publish camera and microphone to <span className="font-mono text-zinc-200">{stream.slug}</span>{' '}
           via WebRTC WHIP. For external encoders, copy the WHIP URL below.
         </p>
@@ -82,11 +83,11 @@ export default async function WhipPublishPage({ params }: Props) {
         <CardHeader>
           <CardTitle>CORS &amp; reachability</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-zinc-400">
+        <CardContent className="space-y-2 text-sm text-muted">
           <p>
             Browser publish calls MediaMTX directly at the WHIP URL. Ensure{' '}
-            <code className="text-zinc-300">webrtcAllowOrigins</code> includes this dashboard origin (
-            <code className="text-zinc-300">{dashboardOrigin}</code>) and that clients can reach WebRTC TCP{' '}
+            <code className={inlineCodeClass}>webrtcAllowOrigins</code> includes this dashboard origin (
+            <code className={inlineCodeClass}>{dashboardOrigin}</code>) and that clients can reach WebRTC TCP{' '}
             8889 and UDP ICE 8189 on your media host.
           </p>
           <p>

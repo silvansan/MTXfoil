@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ClickableRow } from '@/components/operator/clickable-row'
+import { checkboxLabelClass, inputClass, labelClass } from '@/lib/operator-ui'
 
 export type StreamOption = { id: string; name: string }
 
@@ -29,10 +30,6 @@ const JOB_TYPES = [
   { value: 'rtmp-push', label: 'RTMP Push' },
   { value: 'hls-pull', label: 'HLS Pull' },
 ] as const
-
-const inputClass =
-  'w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none'
-const labelClass = 'text-sm font-medium text-zinc-300'
 
 type FormState = {
   name: string
@@ -156,15 +153,15 @@ function ForwardingForm({
       </div>
 
       <div className="flex flex-wrap gap-6">
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label className={checkboxLabelClass}>
           <input type="checkbox" className="h-4 w-4 accent-emerald-500" checked={form.enabled} onChange={(e) => set('enabled', e.target.checked)} />
           Enabled
         </label>
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label className={checkboxLabelClass}>
           <input type="checkbox" className="h-4 w-4 accent-emerald-500" checked={form.autoStart} onChange={(e) => set('autoStart', e.target.checked)} />
           Auto-start
         </label>
-        <label className="flex items-center gap-2 text-sm text-zinc-300">
+        <label className={checkboxLabelClass}>
           <input type="checkbox" className="h-4 w-4 accent-emerald-500" checked={form.restartOnFailure} onChange={(e) => set('restartOnFailure', e.target.checked)} />
           Restart on failure
         </label>

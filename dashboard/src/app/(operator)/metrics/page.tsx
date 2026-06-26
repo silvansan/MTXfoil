@@ -74,7 +74,7 @@ export default async function MetricsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Metrics & Sessions</h1>
-        <p className="mt-2 text-zinc-400">Prometheus metrics and connection tables (internal scrape).</p>
+        <p className="mt-2 text-muted">Prometheus metrics and connection tables (internal scrape).</p>
         <div className="mt-3">
           <MediaMtxServerBadge />
         </div>

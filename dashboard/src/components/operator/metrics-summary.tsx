@@ -1,6 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { chipClass, statBoxClass, statValueClass } from '@/lib/operator-ui'
 
 export type MetricsData = {
   paths: Array<{ name: string; bytesReceived: number; bytesSent: number }>
@@ -72,9 +73,9 @@ export function MetricsSummary({
               {connEntries.map(([name, count]) => (
                 <span
                   key={name}
-                  className="rounded-md border border-zinc-700 bg-zinc-950 px-2.5 py-1 text-xs text-zinc-300"
+                  className={chipClass}
                 >
-                  {labelFor(name)}: <span className="font-semibold text-emerald-300">{count}</span>
+                  {labelFor(name)}: <span className="font-semibold text-emerald-600 dark:text-emerald-300">{count}</span>
                 </span>
               ))}
             </div>
@@ -87,9 +88,9 @@ export function MetricsSummary({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md bg-zinc-950 p-3">
+    <div className={statBoxClass}>
       <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
-      <p className="mt-1 font-mono text-base text-zinc-100">{value}</p>
+      <p className={statValueClass}>{value}</p>
     </div>
   )
 }

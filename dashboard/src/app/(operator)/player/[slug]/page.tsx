@@ -47,7 +47,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Playback disabled</h1>
-        <p className="text-zinc-400">Playback is disabled for this stream.</p>
+        <p className="text-muted">Playback is disabled for this stream.</p>
       </div>
     )
   }
@@ -57,7 +57,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Operator access required</h1>
-        <p className="text-zinc-400">
+        <p className="text-muted">
           This stream uses internal authentication. Sign in with an operator account to preview playback.
         </p>
       </div>
@@ -70,7 +70,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
       return (
         <div className="space-y-4">
           <h1 className="text-2xl font-bold">Password required</h1>
-          <p className="text-zinc-400">Enter the playback password to watch this stream.</p>
+          <p className="text-muted">Enter the playback password to watch this stream.</p>
           <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
             <PlaybackPasswordGate slug={stream.slug} />
           </Suspense>
@@ -81,7 +81,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Playback token required</h1>
-        <p className="text-zinc-400">
+        <p className="text-muted">
           This stream requires a valid playback token. Operators can issue one from{' '}
           <code>/api/playback/token?slug={stream.slug}</code>.
         </p>

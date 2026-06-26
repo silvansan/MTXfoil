@@ -48,7 +48,7 @@ export default async function EventsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Events</h1>
-        <p className="mt-2 text-zinc-400">Group streams by event.</p>
+        <p className="mt-2 text-muted">Group streams by event.</p>
       </div>
       <EventsManager events={eventViews} canManage={canManage} canDelete={canDelete} />
     </div>

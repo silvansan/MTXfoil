@@ -35,7 +35,7 @@ export default async function StreamsPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Streams</h1>
-          <p className="mt-2 text-zinc-400">Configured paths and live status.</p>
+          <p className="mt-2 text-muted">Configured paths and live status.</p>
         </div>
         {canManage && (
           <Button asChild>
@@ -65,7 +65,7 @@ export default async function StreamsPage() {
         })}
         {streams.docs.length === 0 && (
           <Card>
-            <CardContent className="py-8 text-center text-zinc-400">
+            <CardContent className="py-8 text-center text-muted">
               No streams configured yet.{' '}
               {canManage ? (
                 <Link href="/streams/new" className="text-emerald-400 underline">

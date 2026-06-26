@@ -31,7 +31,7 @@ export default async function EditStreamPage({ params }: Props) {
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">Edit Stream</h1>
         <Card>
-          <CardContent className="py-8 text-center text-zinc-400">
+          <CardContent className="py-8 text-center text-muted">
             You do not have permission to edit streams. This action requires an operator role or
             higher.
           </CardContent>
