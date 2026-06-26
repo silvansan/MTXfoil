@@ -31,12 +31,8 @@ services:
     image: bluenviron/mediamtx:${MEDIAMTX_IMAGE_TAG:-latest}
     container_name: mtxfoil-mediamtx
     restart: unless-stopped
-    healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://127.0.0.1:9997/v3/paths/list || exit 1']
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+    # Official image is scratch-based (no shell, wget, or curl). Dashboard healthcheck
+    # probes MediaMTX via /api/health/mediamtx; worker uses service_started.
     volumes:
       - mtxfoil-mediamtx-config:/mediamtx-config
       - mtxfoil-recordings:/recordings
@@ -122,7 +118,7 @@ services:
       postgres:
         condition: service_healthy
       mediamtx:
-        condition: service_healthy
+        condition: service_started
       redis:
         condition: service_healthy
     healthcheck:

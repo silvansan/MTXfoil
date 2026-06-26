@@ -108,6 +108,25 @@ Same image-only stack as the Repository method, but you paste the YAML manually 
 
 ---
 
+## Troubleshooting: port bind / unhealthy mediamtx
+
+| Symptom | Cause | Fix (Portainer only) |
+|---------|-------|----------------------|
+| `Bind for 0.0.0.0:1935 failed: port already allocated` | Host port still bound by a previous stack, another service, or `RTMP_PORT` not set in env | **Stacks** → remove the failed stack (or stop/delete `mtxfoil-*` containers). Set `RTMP_PORT` / `RTMPS_PORT` (and any other `*_PORT` vars) in **Environment variables**, then redeploy. |
+| `dependency failed to start: container mtxfoil-mediamtx is unhealthy` | Older stack YAML used `wget` in a MediaMTX healthcheck; official `bluenviron/mediamtx` has no shell or `wget` | Pull/redeploy with current `PORTAINER_STACK*.yml` (no MediaMTX healthcheck; dashboard waits on `service_started` and probes API itself). |
+| Dashboard stuck starting | MediaMTX not reachable on Docker network | Check **mediamtx** container logs. Confirm `mediamtx-config-init` completed (Alpine + `wget` seeds config once; existing volume skips re-download). |
+
+**Remap RTMP example** (host 1940/1941 when 1935/1936 are taken):
+
+```env
+RTMP_PORT=1940
+RTMPS_PORT=1941
+```
+
+Publishers still use `rtmp://<host>:1940/...` — only the host side of the mapping changes.
+
+---
+
 ## Steps
 
 1. **Stacks** → **Add stack** → **Web editor**
