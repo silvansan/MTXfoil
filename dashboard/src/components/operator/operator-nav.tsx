@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import { MtxfoilLogo } from '@/components/mtxfoil-logo'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { cn } from '@/lib/utils'
 
 const allLinks = [
@@ -40,41 +42,41 @@ export function OperatorNav({
       })
 
   return (
-    <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
+    <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4">
-        <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-emerald-500/20 px-2 py-1 text-sm font-bold text-emerald-300">MTXfoil</div>
-          <span className="text-sm text-zinc-400">MediaMTX Control Panel</span>
-        </div>
-        <nav aria-label="Operator" className="flex flex-wrap items-center gap-1">
-          {links.map((link) => {
-            const isActive =
-              pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
-            return (
+        <MtxfoilLogo />
+        <div className="flex flex-wrap items-center gap-1">
+          <nav aria-label="Operator" className="flex flex-wrap items-center gap-1">
+            {links.map((link) => {
+              const isActive =
+                pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={cn(
+                    'rounded-md px-3 py-1.5 text-sm transition-colors',
+                    isActive
+                      ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
+                      : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200',
+                  )}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
+            {!viewerOnly && (
               <Link
-                key={link.href}
-                href={link.href}
-                aria-current={isActive ? 'page' : undefined}
-                className={cn(
-                  'rounded-md px-3 py-1.5 text-sm transition-colors',
-                  isActive
-                    ? 'bg-zinc-800 text-zinc-100'
-                    : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200',
-                )}
+                href="/admin"
+                className="ml-2 rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
               >
-                {link.label}
+                Admin / CMS →
               </Link>
-            )
-          })}
-          {!viewerOnly && (
-            <Link
-              href="/admin"
-              className="ml-2 rounded-md border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-900"
-            >
-              Admin / CMS →
-            </Link>
-          )}
-        </nav>
+            )}
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   )

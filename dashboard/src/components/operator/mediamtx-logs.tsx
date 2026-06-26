@@ -26,16 +26,16 @@ export function MediaMtxLogs() {
         <CardTitle>MediaMTX logs</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
-        {logs?.message && <p className="text-zinc-400">{logs.message}</p>}
+        {logs?.message && <p className="text-muted">{logs.message}</p>}
         {logs?.lines.length ? (
           <pre
             aria-label="MediaMTX log output"
-            className="max-h-64 overflow-auto rounded-md bg-zinc-950 p-3 font-mono text-xs text-zinc-300"
+            className="bg-code text-code max-h-64 overflow-auto rounded-md p-3 font-mono text-xs"
           >
             {logs.lines.join('\n')}
           </pre>
         ) : (
-          <p className="text-zinc-500">No log lines available.</p>
+          <p className="text-muted">No log lines available.</p>
         )}
       </CardContent>
     </Card>

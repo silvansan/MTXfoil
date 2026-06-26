@@ -41,10 +41,10 @@ export default async function OperatorLayout({ children }: { children: React.Rea
   if (pathname.startsWith('/audit') && !isAdmin(user)) redirect('/')
 
   return (
-    <div className="flex min-h-screen flex-col bg-zinc-950">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-zinc-100 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-zinc-900"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-zinc-900 focus:px-4 focus:py-2 text-sm font-medium text-zinc-50 dark:focus:bg-zinc-100 dark:focus:text-zinc-900"
       >
         Skip to content
       </a>

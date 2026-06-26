@@ -36,7 +36,7 @@ export function StreamCard({ stream, status, urls }: StreamCardProps) {
         <StatusBadge ready={Boolean(status?.ready)} recording={stream.recordingEnabled || status?.recording} />
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
-        <div className="grid grid-cols-2 gap-2 text-zinc-400">
+        <div className="grid grid-cols-2 gap-2 text-muted">
           <div>Readers: {status?.readerCount ?? 0}</div>
           <div>Source: {status?.sourceType ?? '—'}</div>
           <div>Received: {formatBytes(status?.bytesReceived)}</div>
@@ -44,11 +44,11 @@ export function StreamCard({ stream, status, urls }: StreamCardProps) {
         </div>
         {urls && (
           <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
+            <div className="bg-code flex items-center justify-between gap-2 rounded-md p-2 font-mono text-xs">
               <span className="truncate">{urls.srtPublish}</span>
               <CopyButton value={urls.srtPublish} label="Copy SRT publish URL" />
             </div>
-            <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
+            <div className="bg-code flex items-center justify-between gap-2 rounded-md p-2 font-mono text-xs">
               <span className="truncate">{urls.hlsPlayback}</span>
               <CopyButton value={urls.hlsPlayback} label="Copy HLS playback URL" />
             </div>

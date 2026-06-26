@@ -27,7 +27,7 @@ export function CodeSnippet({ value, copyLabel }: { value: string; copyLabel: st
         </Button>
       </div>
       {shown && (
-        <pre className="overflow-x-auto rounded-md bg-zinc-950 p-3 text-xs text-zinc-300" tabIndex={0}>
+        <pre className="bg-code text-code overflow-x-auto rounded-md p-3 text-xs" tabIndex={0}>
           {value}
         </pre>
       )}

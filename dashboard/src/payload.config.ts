@@ -35,7 +35,10 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
-      beforeNavLinks: ['@/components/admin/OperatorLink#OperatorLink'],
+      beforeNavLinks: [
+        '@/components/admin/OperatorLink#OperatorLink',
+        '@/components/admin/AdminThemeToggle#AdminThemeToggle',
+      ],
       graphics: {
         Logo: '@/components/admin/Logo#Logo',
         Icon: '@/components/admin/Icon#Icon',
