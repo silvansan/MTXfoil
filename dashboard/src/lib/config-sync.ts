@@ -128,10 +128,10 @@ export async function syncStreamToMediaMtx(
     const streams = await fetchAllStreams(payload)
     const jobsBySlug = await fetchForwardingJobsBySlug(payload)
     const corsGlobal = await payload.findGlobal({ slug: 'cors-origins' })
-    const cors = corsFromGlobal(corsGlobal as Record<string, unknown>)
+    const cors = corsFromGlobal(corsGlobal as unknown as Record<string, unknown>)
     const protocolGlobal = await payload.findGlobal({ slug: 'protocol-settings' })
-    const authSettings = authFromGlobal(protocolGlobal as Record<string, unknown>)
-    const protocolPatch = buildProtocolPatch(protocolGlobal as Record<string, unknown>)
+    const authSettings = authFromGlobal(protocolGlobal as unknown as Record<string, unknown>)
+    const protocolPatch = buildProtocolPatch(protocolGlobal as unknown as Record<string, unknown>)
 
     const before = await readCurrentYaml()
     const afterDoc = await generateYamlDocument(
@@ -173,10 +173,10 @@ export async function removeStreamFromMediaMtx(payload: Payload, slug: string): 
     const streams = await fetchAllStreams(payload)
     const jobsBySlug = await fetchForwardingJobsBySlug(payload)
     const corsGlobal = await payload.findGlobal({ slug: 'cors-origins' })
-    const cors = corsFromGlobal(corsGlobal as Record<string, unknown>)
+    const cors = corsFromGlobal(corsGlobal as unknown as Record<string, unknown>)
     const protocolGlobal = await payload.findGlobal({ slug: 'protocol-settings' })
-    const authSettings = authFromGlobal(protocolGlobal as Record<string, unknown>)
-    const protocolPatch = buildProtocolPatch(protocolGlobal as Record<string, unknown>)
+    const authSettings = authFromGlobal(protocolGlobal as unknown as Record<string, unknown>)
+    const protocolPatch = buildProtocolPatch(protocolGlobal as unknown as Record<string, unknown>)
 
     const afterDoc = await generateYamlDocument(
       streams,
@@ -200,15 +200,15 @@ export async function applyFullConfig(payload: Payload): Promise<SyncResult> {
     const streams = await fetchAllStreams(payload)
     const jobsBySlug = await fetchForwardingJobsBySlug(payload)
     const corsGlobal = await payload.findGlobal({ slug: 'cors-origins' })
-    const cors = corsFromGlobal(corsGlobal as Record<string, unknown>)
+    const cors = corsFromGlobal(corsGlobal as unknown as Record<string, unknown>)
     const corsErrors = validateCorsForProduction(cors)
     if (corsErrors.length > 0) {
       return { ok: false, diffs: [], errors: corsErrors }
     }
 
     const protocolGlobal = await payload.findGlobal({ slug: 'protocol-settings' })
-    const authSettings = authFromGlobal(protocolGlobal as Record<string, unknown>)
-    const protocolPatch = buildProtocolPatch(protocolGlobal as Record<string, unknown>)
+    const authSettings = authFromGlobal(protocolGlobal as unknown as Record<string, unknown>)
+    const protocolPatch = buildProtocolPatch(protocolGlobal as unknown as Record<string, unknown>)
 
     const before = await readCurrentYaml()
     const afterDoc = await generateYamlDocument(
@@ -252,10 +252,10 @@ export async function previewConfigDiff(payload: Payload): Promise<SyncResult> {
     const streams = await fetchAllStreams(payload)
     const jobsBySlug = await fetchForwardingJobsBySlug(payload)
     const corsGlobal = await payload.findGlobal({ slug: 'cors-origins' })
-    const cors = corsFromGlobal(corsGlobal as Record<string, unknown>)
+    const cors = corsFromGlobal(corsGlobal as unknown as Record<string, unknown>)
     const protocolGlobal = await payload.findGlobal({ slug: 'protocol-settings' })
-    const authSettings = authFromGlobal(protocolGlobal as Record<string, unknown>)
-    const protocolPatch = buildProtocolPatch(protocolGlobal as Record<string, unknown>)
+    const authSettings = authFromGlobal(protocolGlobal as unknown as Record<string, unknown>)
+    const protocolPatch = buildProtocolPatch(protocolGlobal as unknown as Record<string, unknown>)
 
     const before = await readCurrentYaml()
     const afterDoc = await generateYamlDocument(

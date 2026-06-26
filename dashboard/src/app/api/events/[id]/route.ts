@@ -4,6 +4,7 @@ import config from '@payload-config'
 
 import { forbiddenResponse, getApiUser, unauthorizedResponse } from '@/lib/api-auth'
 import { isAdmin, isOperator } from '@/lib/permissions'
+import type { Event } from '@/payload-types'
 
 const STATUSES = ['draft', 'active', 'archived'] as const
 
@@ -32,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const data: Record<string, unknown> = {}
+  const data: Partial<Event> = {}
   if ('title' in body) {
     const title = asString(body.title)
     if (!title) return NextResponse.json({ error: 'Title cannot be empty' }, { status: 400 })
@@ -64,7 +65,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const updated = await payload.update({
       collection: 'events',
       id,
-      data: data as Parameters<typeof payload.update>[0]['data'],
+      data,
       user: user as Parameters<typeof payload.update>[0]['user'],
       overrideAccess: false,
     })

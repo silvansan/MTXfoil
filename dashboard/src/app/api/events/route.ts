@@ -4,6 +4,9 @@ import config from '@payload-config'
 
 import { forbiddenResponse, getApiUser, unauthorizedResponse } from '@/lib/api-auth'
 import { isOperator } from '@/lib/permissions'
+import type { Event } from '@/payload-types'
+
+type EventCreate = Omit<Event, 'id' | 'updatedAt' | 'createdAt'>
 
 const STATUSES = ['draft', 'active', 'archived'] as const
 
@@ -33,7 +36,7 @@ export async function POST(req: NextRequest) {
   if (!title) return NextResponse.json({ error: 'Title is required' }, { status: 400 })
   if (!slug) return NextResponse.json({ error: 'Slug is required' }, { status: 400 })
 
-  const data: Record<string, unknown> = {
+  const data: EventCreate = {
     title,
     slug,
     status: oneOf(body.status, STATUSES, 'draft'),
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest) {
     const payload = await getPayload({ config })
     const created = await payload.create({
       collection: 'events',
-      data: data as Parameters<typeof payload.create>[0]['data'],
+      data,
       user: user as Parameters<typeof payload.create>[0]['user'],
       overrideAccess: false,
     })

@@ -5,6 +5,7 @@ import config from '@payload-config'
 import { forbiddenResponse, getApiUser, unauthorizedResponse } from '@/lib/api-auth'
 import { enqueueForwardingJob } from '@/lib/queue'
 import { canManageForwarding, isAdmin } from '@/lib/permissions'
+import type { ForwardingJob } from '@/payload-types'
 
 const JOB_TYPES = ['srt-push', 'rtmp-push', 'hls-pull'] as const
 
@@ -33,7 +34,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const data: Record<string, unknown> = {}
+  const data: Partial<ForwardingJob> = {}
   if ('name' in body) {
     const name = asString(body.name)
     if (!name) return NextResponse.json({ error: 'Name cannot be empty' }, { status: 400 })
@@ -41,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   }
   if ('stream' in body) {
     const stream = asString(body.stream)
-    if (stream) data.stream = stream
+    if (stream) data.stream = Number(stream)
   }
   if ('type' in body) {
     const v = oneOf(body.type, JOB_TYPES)
@@ -66,7 +67,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const updated = await payload.update({
       collection: 'forwarding-jobs',
       id,
-      data: data as Parameters<typeof payload.update>[0]['data'],
+      data,
       user: user as Parameters<typeof payload.update>[0]['user'],
       overrideAccess: false,
     })

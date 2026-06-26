@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     for (const service of services) {
       const field = SERVICE_FIELDS[service]
       if (!field) continue
-      const existing = mapOrigins((current as Record<string, unknown>)[field])
+      const existing = mapOrigins((current as unknown as Record<string, unknown>)[field])
       const merged = [...new Set([...existing, ...origins])]
       patch[field] = toOriginRows(merged)
     }

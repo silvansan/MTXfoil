@@ -4,11 +4,12 @@ import config from '@payload-config'
 
 import { forbiddenResponse, getApiUser, unauthorizedResponse } from '@/lib/api-auth'
 import { canManageStreams, isAdmin } from '@/lib/permissions'
+import type { Stream } from '@/payload-types'
 
 const SOURCE_TYPES = ['publisher', 'proxy', 'redirect', 'test'] as const
 const PROTOCOLS = ['srt', 'rtmp', 'rtsp', 'hls', 'webrtc'] as const
 const INGEST_PROTOCOLS = ['srt', 'rtmp', 'rtmps', 'rtsp', 'webrtc'] as const
-const AUTH_MODES = ['public', 'unlisted', 'password', 'token', 'internal', 'external', 'jwt'] as const
+const AUTH_MODES = ['public', 'unlisted', 'password', 'token', 'internal'] as const
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -37,14 +38,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   // Build a partial update from only the provided, validated fields. Slug is
   // intentionally not updatable here: it is the MediaMTX path identity.
-  const data: Record<string, unknown> = {}
+  const data: Partial<Stream> = {}
 
   if ('name' in body) {
     const name = asString(body.name)
     if (!name) return NextResponse.json({ error: 'Name cannot be empty' }, { status: 400 })
     data.name = name
   }
-  if ('event' in body) data.event = asString(body.event) || null
+  if ('event' in body) data.event = asString(body.event) ? Number(asString(body.event)) : null
   if ('sourceType' in body) {
     const v = oneOf(body.sourceType, SOURCE_TYPES)
     if (v) data.sourceType = v
@@ -79,7 +80,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     const updated = await payload.update({
       collection: 'streams',
       id,
-      data: data as Parameters<typeof payload.update>[0]['data'],
+      data,
       user: user as Parameters<typeof payload.update>[0]['user'],
       overrideAccess: false,
     })

@@ -71,7 +71,7 @@ export default async function ProtocolsPage() {
   const { user } = await payload.auth({ headers: await headers() })
   const canManage = isAdmin(user)
   const settings = await payload.findGlobal({ slug: 'protocol-settings' })
-  const view = mapSettings(settings as Record<string, unknown>)
+  const view = mapSettings(settings as unknown as Record<string, unknown>)
 
   return (
     <div className="space-y-6">

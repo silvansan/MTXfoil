@@ -4,6 +4,9 @@ import config from '@payload-config'
 
 import { forbiddenResponse, getApiUser, unauthorizedResponse } from '@/lib/api-auth'
 import { canManageForwarding } from '@/lib/permissions'
+import type { ForwardingJob } from '@/payload-types'
+
+type ForwardingJobCreate = Omit<ForwardingJob, 'id' | 'updatedAt' | 'createdAt' | 'workerStatus'>
 
 const JOB_TYPES = ['srt-push', 'rtmp-push', 'hls-pull'] as const
 
@@ -35,9 +38,9 @@ export async function POST(req: NextRequest) {
   if (!stream) return NextResponse.json({ error: 'Stream is required' }, { status: 400 })
   if (!destinationUrl) return NextResponse.json({ error: 'Destination URL is required' }, { status: 400 })
 
-  const data: Record<string, unknown> = {
+  const data: ForwardingJobCreate = {
     name,
-    stream,
+    stream: Number(stream),
     type: oneOf(body.type, JOB_TYPES, 'srt-push'),
     destinationUrl,
     enabled: body.enabled === true,
@@ -51,7 +54,7 @@ export async function POST(req: NextRequest) {
     const payload = await getPayload({ config })
     const created = await payload.create({
       collection: 'forwarding-jobs',
-      data: data as Parameters<typeof payload.create>[0]['data'],
+      data,
       user: user as Parameters<typeof payload.create>[0]['user'],
       overrideAccess: false,
     })

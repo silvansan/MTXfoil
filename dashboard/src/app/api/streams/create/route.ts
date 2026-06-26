@@ -4,11 +4,14 @@ import config from '@payload-config'
 
 import { getApiUser, forbiddenResponse, unauthorizedResponse } from '@/lib/api-auth'
 import { canManageStreams } from '@/lib/permissions'
+import type { Stream } from '@/payload-types'
+
+type StreamCreate = Omit<Stream, 'id' | 'updatedAt' | 'createdAt' | 'status'>
 
 const SOURCE_TYPES = ['publisher', 'proxy', 'redirect', 'test'] as const
 const PROTOCOLS = ['srt', 'rtmp', 'rtsp', 'hls', 'webrtc'] as const
 const INGEST_PROTOCOLS = ['srt', 'rtmp', 'rtmps', 'rtsp', 'webrtc'] as const
-const AUTH_MODES = ['public', 'unlisted', 'password', 'token', 'internal', 'external', 'jwt'] as const
+const AUTH_MODES = ['public', 'unlisted', 'password', 'token', 'internal'] as const
 
 type Body = {
   name?: unknown
@@ -62,7 +65,7 @@ export async function POST(req: NextRequest) {
   const protocolsRaw = Array.isArray(body.enabledProtocols) ? body.enabledProtocols : []
   const enabledProtocols = PROTOCOLS.filter((p) => protocolsRaw.map(asString).includes(p))
 
-  const data: Record<string, unknown> = {
+  const data: StreamCreate = {
     name,
     slug,
     sourceType: oneOf(body.sourceType, SOURCE_TYPES, 'publisher'),
@@ -78,7 +81,7 @@ export async function POST(req: NextRequest) {
   if (sourceUrl) data.sourceUrl = sourceUrl
 
   const eventId = asString(body.event)
-  if (eventId) data.event = eventId
+  if (eventId) data.event = Number(eventId)
 
   if (data.authMode === 'password') {
     const publishPassword = asString(body.publishPassword)
@@ -97,7 +100,7 @@ export async function POST(req: NextRequest) {
     // mediamtx.yml + the MediaMTX API in sync (AGENTS.md: dual config always).
     const created = await payload.create({
       collection: 'streams',
-      data: data as Parameters<typeof payload.create>[0]['data'],
+      data,
       user: user as Parameters<typeof payload.create>[0]['user'],
       overrideAccess: false,
     })
