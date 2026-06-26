@@ -1,10 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import React from 'react'
 
 export function OperatorLink() {
   return (
-    <a
+    <Link
       href="/"
       className="nav__link"
       style={{
@@ -22,6 +23,6 @@ export function OperatorLink() {
     >
       <span aria-hidden>↗</span>
       Operator Dashboard
-    </a>
+    </Link>
   )
 }

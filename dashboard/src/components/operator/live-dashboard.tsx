@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import { MetricsSummary, type MetricsData } from '@/components/operator/metrics-summary'
@@ -101,7 +102,7 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
       {data?.streams.length === 0 && (
         <Card>
           <CardContent className="py-8 text-center text-zinc-400">
-            No streams configured yet. <a href="/streams/new" className="text-emerald-400 underline">Create a stream</a> or use <a href="/admin" className="text-emerald-400 underline">Admin</a>.
+            No streams configured yet. <Link href="/streams/new" className="text-emerald-400 underline">Create a stream</Link> or use <Link href="/admin" className="text-emerald-400 underline">Admin</Link>.
           </CardContent>
         </Card>
       )}
