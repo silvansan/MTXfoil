@@ -1,7 +1,8 @@
 import { config as loadEnv } from 'dotenv'
 import Queue from 'bull'
 
-import { processStartJob, processStopJob } from './forwarding.js'
+import { processStartJob, processStopJob, reconcileJobsOnStartup, startLiveReconcileLoop } from './forwarding.js'
+import { startHealthServer } from './health.js'
 
 loadEnv()
 
@@ -16,5 +17,14 @@ queue.process('stop', concurrency, processStopJob)
 queue.on('failed', (job, err) => {
   console.error(`[worker] job ${job?.id} failed:`, err.message)
 })
+
+queue.on('error', (err) => {
+  console.error('[worker] queue error:', err.message)
+})
+
+startHealthServer(queue)
+
+void reconcileJobsOnStartup(queue)
+startLiveReconcileLoop(queue)
 
 console.log(`[mtxfoil-worker] listening on ${redisUrl} (concurrency=${concurrency})`)

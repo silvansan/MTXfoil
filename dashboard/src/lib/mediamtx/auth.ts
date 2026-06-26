@@ -25,8 +25,6 @@ export function mapStreamAuthToPath(stream: Stream): AuthPathConfig {
         readPass: stream.readPassword || undefined,
       }
     case 'token':
-    case 'jwt':
-    case 'external':
       return { readIPs: [] }
     case 'internal':
     default:

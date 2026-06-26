@@ -78,6 +78,8 @@ find /path/to/mediamtx/backups -name 'mediamtx-*.yml' -mtime +14 -delete
 
 Recorded segments live in the `./recordings` volume (or your host mount). They are not included in Postgres or YAML backups. Plan separate file-level backup or lifecycle rules for that directory.
 
+Optional S3-compatible upload scaffold: see [RECORDINGS_S3.md](./RECORDINGS_S3.md).
+
 ## Disaster recovery order
 
 1. Restore Postgres (source of truth for streams and settings)

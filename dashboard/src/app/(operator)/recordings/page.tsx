@@ -1,9 +1,21 @@
-import { listRecordings, formatRecordingPlaybackUrl } from '@/lib/mediamtx/recordings'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+
+import { DeleteRecordingButton } from '@/components/operator/delete-recording-button'
 import { CopyButton } from '@/components/operator/copy-button'
+import { listRecordings, formatRecordingPlaybackUrl } from '@/lib/mediamtx/recordings'
+import { loadUrlTemplates } from '@/lib/url-templates'
+import { isAdmin } from '@/lib/permissions'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { headers } from 'next/headers'
 
 export default async function RecordingsPage() {
-  const hlsBase = process.env.HLS_BASE_URL || 'http://localhost:8888'
+  const payload = await getPayload({ config })
+  const { user } = await payload.auth({ headers: await headers() })
+  const canDelete = isAdmin(user)
+  const urlTemplates = await loadUrlTemplates(payload)
+  const hlsBase = urlTemplates.hlsBaseUrl
+
   let items: Array<{ path: string; start: string; duration: number; playbackUrl: string }> = []
 
   try {
@@ -28,8 +40,9 @@ export default async function RecordingsPage() {
       <div className="grid gap-4">
         {items.map((item) => (
           <Card key={`${item.path}-${item.start}`}>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{item.path}</CardTitle>
+              {canDelete && <DeleteRecordingButton path={item.path} start={item.start} />}
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-zinc-400">
               <p>Start: {item.start}</p>

@@ -1,7 +1,8 @@
 # Production overrides — pin images and tighten defaults
 services:
   mediamtx:
-    image: bluenviron/mediamtx:1.11.3
+    build: ./mediamtx
+    image: mtxfoil-mediamtx:${MTXFOIL_VERSION:-latest}
     restart: always
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://127.0.0.1:9997/v3/paths/list || exit 1']
@@ -28,10 +29,12 @@ services:
 
   dashboard:
     restart: always
+    image: mtxfoil-dashboard:${MTXFOIL_VERSION:-latest}
     environment:
       NODE_ENV: production
       PAYLOAD_DB_PUSH: 'false'
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      DASHBOARD_PUBLIC_URL: ${DASHBOARD_PUBLIC_URL:-}
       MEDIAMTX_INTERNAL_USER: ${MEDIAMTX_INTERNAL_USER}
       MEDIAMTX_INTERNAL_PASS: ${MEDIAMTX_INTERNAL_PASS}
     depends_on:
@@ -54,8 +57,21 @@ services:
 
   worker:
     restart: always
+    image: mtxfoil-worker:${MTXFOIL_VERSION:-latest}
     environment:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://localhost:'+(process.env.WORKER_HEALTH_PORT||9999)+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     depends_on:
       postgres:
         condition: service_healthy

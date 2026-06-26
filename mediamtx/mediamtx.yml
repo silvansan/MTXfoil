@@ -1,23 +1,13 @@
-###############################################
-# MTXfoil baseline MediaMTX config
-# Dashboard regenerates paths section on stream save
-###############################################
-
 logLevel: info
-logDestinations: [stdout]
-
-# Control API — internal Docker network only (not published to host)
-api: yes
-apiAddress: :9997
-apiEncryption: no
-apiAllowOrigins: ['http://localhost:3000']
-
-# Metrics — internal only
-metrics: yes
-metricsAddress: :9998
-metricsAllowOrigins: ['http://localhost:3000']
-
-# Security defaults — dashboard regenerates authInternalUsers from MEDIAMTX_INTERNAL_USER/PASS on config apply
+logDestinations:
+  - stdout
+api: true
+apiAddress: ':9997'
+apiEncryption: false
+apiAllowOrigins: []
+metrics: true
+metricsAddress: ':9998'
+metricsAllowOrigins: []
 authMethod: internal
 authInternalUsers:
   - user: mtxfoil
@@ -34,37 +24,30 @@ authInternalUsers:
         path: ''
       - action: metrics
         path: ''
-      - action: pprof
-        path: ''
-
-# Disable anonymous publish globally
 pathDefaults:
   source: publisher
-  overridePublisher: yes
-  record: no
-
-# Protocol listeners
-rtmp: yes
-rtmpAddress: :1935
-rtmps: yes
-rtmpsAddress: :1936
-rtsp: yes
-rtspAddress: :8554
-srt: yes
-srtAddress: :8890
-hls: yes
-hlsAddress: :8888
-hlsAllowOrigins: ['http://localhost:3000']
-webrtc: yes
-webrtcAddress: :8889
+  overridePublisher: true
+  record: false
+rtmp: true
+rtmpAddress: ':1935'
+rtsp: true
+rtspAddress: ':8554'
+srt: true
+srtAddress: ':8890'
+hls: true
+hlsAddress: ':8888'
+hlsAllowOrigins: []
+webrtc: true
+webrtcAddress: ':8889'
 webrtcICEServers2: []
-webrtcAllowOrigins: ['http://localhost:3000']
-
-playback: yes
-playbackAddress: :9996
-playbackAllowOrigins: ['http://localhost:3000']
-
-pprof: no
-
-# Paths managed by MTXfoil dashboard
-paths: {}
+webrtcAllowOrigins: []
+playback: true
+playbackAddress: ':9996'
+playbackAllowOrigins: []
+pprof: false
+paths:
+  gtch:
+    source: publisher
+    record: false
+    overridePublisher: true
+trustedProxies: []

@@ -10,4 +10,6 @@ COPY src ./src
 RUN npm run build
 
 ENV NODE_ENV=production
+# Worker health endpoint (GET /health)
+EXPOSE 9999
 CMD ["node", "dist/index.js"]

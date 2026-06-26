@@ -49,6 +49,20 @@ export function validateProductionEnv(): void {
     throw new Error('PLAYBACK_TOKEN_SECRET must not use the development fallback in production')
   }
   rejectDevPlaceholder(playbackSecret, 'PLAYBACK_TOKEN_SECRET')
+
+  const hlsBase = process.env.HLS_BASE_URL?.trim()
+  const webrtcBase = process.env.WEBRTC_BASE_URL?.trim()
+  if (hlsBase?.startsWith('http://') && !hlsBase.includes('localhost')) {
+    throw new Error('HLS_BASE_URL must use https:// in production (set after TLS deploy)')
+  }
+  if (webrtcBase?.startsWith('http://') && !webrtcBase.includes('localhost')) {
+    throw new Error('WEBRTC_BASE_URL must use https:// in production (set after TLS deploy)')
+  }
+
+  const dashboardUrl = process.env.DASHBOARD_PUBLIC_URL?.trim()
+  if (dashboardUrl && !dashboardUrl.startsWith('https://') && !dashboardUrl.includes('localhost')) {
+    throw new Error('DASHBOARD_PUBLIC_URL must use https:// in production')
+  }
 }
 
 export function requirePayloadSecret(): string {

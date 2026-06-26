@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
+import { recordAudit } from '@/lib/audit-log'
 import { canAccessAdmin, canManageUsers, isAdmin, isOperator, isSuperAdmin } from '@/lib/permissions'
 
 export const Users: CollectionConfig = {
@@ -23,6 +24,54 @@ export const Users: CollectionConfig = {
       return false
     },
     delete: ({ req }) => isSuperAdmin(req.user),
+  },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, req, operation }) => {
+        if (!req.payload) return
+
+        if (operation === 'create') {
+          await recordAudit(req.payload, req, {
+            action: 'user.create',
+            resource: 'users',
+            resourceId: doc.id,
+            summary: `User created: ${doc.email}`,
+            metadata: { role: doc.role },
+          })
+          return
+        }
+
+        if (previousDoc?.role !== doc.role) {
+          await recordAudit(req.payload, req, {
+            action: 'user.role_change',
+            resource: 'users',
+            resourceId: doc.id,
+            summary: `User role changed: ${doc.email} (${previousDoc?.role} → ${doc.role})`,
+            metadata: { from: previousDoc?.role, to: doc.role },
+          })
+          return
+        }
+
+        await recordAudit(req.payload, req, {
+          action: 'user.update',
+          resource: 'users',
+          resourceId: doc.id,
+          summary: `User updated: ${doc.email}`,
+        })
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        if (req.payload) {
+          await recordAudit(req.payload, req, {
+            action: 'user.delete',
+            resource: 'users',
+            resourceId: doc.id,
+            summary: `User deleted: ${doc.email}`,
+          })
+        }
+      },
+    ],
   },
   fields: [
     {

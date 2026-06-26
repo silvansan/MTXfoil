@@ -14,12 +14,30 @@ const allLinks = [
   { href: '/recordings', label: 'Recordings' },
   { href: '/forwarding', label: 'Forwarding' },
   { href: '/metrics', label: 'Metrics' },
+  { href: '/audit', label: 'Audit' },
   { href: '/settings', label: 'Settings' },
 ]
 
-export function OperatorNav({ viewerOnly = false }: { viewerOnly?: boolean }) {
+export function OperatorNav({
+  viewerOnly = false,
+  showAudit = false,
+  showSettings = false,
+  showForwarding = false,
+}: {
+  viewerOnly?: boolean
+  showAudit?: boolean
+  showSettings?: boolean
+  showForwarding?: boolean
+}) {
   const pathname = usePathname()
-  const links = viewerOnly ? [] : allLinks
+  const links = viewerOnly
+    ? []
+    : allLinks.filter((link) => {
+        if (link.href === '/audit' && !showAudit) return false
+        if (link.href === '/settings' && !showSettings) return false
+        if (link.href === '/forwarding' && !showForwarding) return false
+        return true
+      })
 
   return (
     <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur">
@@ -48,7 +66,7 @@ export function OperatorNav({ viewerOnly = false }: { viewerOnly?: boolean }) {
               href="/admin"
               className="ml-2 rounded-md border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-900"
             >
-              Admin →
+              Admin / CMS →
             </Link>
           )}
         </nav>

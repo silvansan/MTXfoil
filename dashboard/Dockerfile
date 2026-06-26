@@ -7,10 +7,11 @@ COPY package.json package-lock.json* ./
 RUN npm ci || npm install
 
 FROM base AS builder
+ARG PAYLOAD_DB_PUSH=false
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PAYLOAD_DB_PUSH=false
+ENV PAYLOAD_DB_PUSH=$PAYLOAD_DB_PUSH
 ENV DATABASE_URL=postgres://build:build@localhost:5432/build
 ENV PAYLOAD_SECRET=build-time-secret-minimum-32-characters-long
 RUN npm run build

@@ -9,12 +9,64 @@ export class MediaMtxError extends Error {
   }
 }
 
+export type MediaMtxServer = {
+  name: string
+  apiUrl: string
+  metricsUrl?: string
+}
+
+function defaultPrimaryServer(): MediaMtxServer {
+  return {
+    name: 'primary',
+    apiUrl: process.env.MEDIAMTX_API_URL || 'http://mediamtx:9997',
+    metricsUrl: process.env.MEDIAMTX_METRICS_URL || 'http://mediamtx:9998',
+  }
+}
+
+/** Primary + optional multi-server registry from MEDIAMTX_SERVERS JSON env. */
+export function getMediaMtxServers(): { primary: MediaMtxServer; servers: MediaMtxServer[] } {
+  const fallback = defaultPrimaryServer()
+  const raw = process.env.MEDIAMTX_SERVERS?.trim()
+  if (!raw) {
+    return { primary: fallback, servers: [fallback] }
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as unknown
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return { primary: fallback, servers: [fallback] }
+    }
+
+    const servers = parsed.map((entry, index) => {
+      const item = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {}
+      return {
+        name: String(item.name || `server-${index + 1}`),
+        apiUrl: String(item.apiUrl || fallback.apiUrl),
+        metricsUrl: item.metricsUrl ? String(item.metricsUrl) : fallback.metricsUrl,
+      }
+    })
+
+    return { primary: servers[0], servers }
+  } catch {
+    return { primary: fallback, servers: [fallback] }
+  }
+}
+
 export function getApiBaseUrl(): string {
-  return process.env.MEDIAMTX_API_URL || 'http://mediamtx:9997'
+  return getMediaMtxServers().primary.apiUrl
 }
 
 export function getMetricsBaseUrl(): string {
-  return process.env.MEDIAMTX_METRICS_URL || 'http://mediamtx:9998'
+  const { primary } = getMediaMtxServers()
+  return primary.metricsUrl || process.env.MEDIAMTX_METRICS_URL || 'http://mediamtx:9998'
+}
+
+export function getMtxAuthHeaders(): Record<string, string> {
+  const user = process.env.MEDIAMTX_INTERNAL_USER || 'mtxfoil'
+  const pass = process.env.MEDIAMTX_INTERNAL_PASS || 'mtxfoil'
+  if (!user || !pass) return {}
+  const token = Buffer.from(`${user}:${pass}`).toString('base64')
+  return { Authorization: `Basic ${token}` }
 }
 
 export type MtxFetchOptions = RequestInit & {
@@ -34,6 +86,7 @@ export async function mtxFetch<T = unknown>(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      ...getMtxAuthHeaders(),
       ...init.headers,
     },
     cache: 'no-store',

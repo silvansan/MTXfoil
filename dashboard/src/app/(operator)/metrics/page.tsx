@@ -1,5 +1,6 @@
 import { getDashboardMetrics, listRtmpConnections, listSrtConnections, listWebRtcSessions } from '@/lib/mediamtx/metrics'
 import { MediaMtxLogs } from '@/components/operator/mediamtx-logs'
+import { MediaMtxServerBadge } from '@/components/operator/mediamtx-server-badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default async function MetricsPage() {
@@ -24,6 +25,9 @@ export default async function MetricsPage() {
       <div>
         <h1 className="text-3xl font-bold">Metrics & Sessions</h1>
         <p className="mt-2 text-zinc-400">Prometheus metrics and connection tables (internal scrape).</p>
+        <div className="mt-3">
+          <MediaMtxServerBadge />
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

@@ -1,14 +1,19 @@
+import { headers } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-import { CopyButton } from '@/components/operator/copy-button'
+import { CodeSnippet } from '@/components/operator/code-snippet'
 import { PlaybackPasswordGate } from '@/components/operator/playback-password-gate'
 import { PlayerPreview } from '@/components/operator/player-preview'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { buildPlayerPublicUrl } from '@/lib/dashboard-url'
+import { loadUrlTemplates } from '@/lib/url-templates'
+import { getMediaMtxInternalCredentials } from '@/lib/mediamtx/config'
 import { checkStreamPlaybackAccess } from '@/lib/playback-access'
+import { isOperator } from '@/lib/permissions'
 import type { Stream } from '@/payload-types'
 import {
   buildEmbedSnippet,
@@ -16,6 +21,9 @@ import {
   buildWhepUrl,
   buildWordPressShortcode,
 } from '@/lib/mediamtx/urls'
+
+/** Auth modes MediaMTX serves to anonymous viewers (no credentials required). */
+const ANONYMOUS_READ_MODES = new Set(['public', 'unlisted'])
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -26,6 +34,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
   const { slug } = await params
   const { token, password } = await searchParams
   const payload = await getPayload({ config })
+  const { user: viewer } = await payload.auth({ headers: await headers() })
   const result = await payload.find({
     collection: 'streams',
     where: { slug: { equals: slug } },
@@ -68,11 +77,22 @@ export default async function PlayerPage({ params, searchParams }: Props) {
     )
   }
 
-  const urls = buildStreamUrls(stream.slug)
-  const playerUrl = `/player/${stream.slug}${token ? `?token=${encodeURIComponent(token)}` : ''}`
-  const absolutePlayerUrl = `${
-    process.env.PUBLIC_STREAM_DOMAIN ? `https://${process.env.PUBLIC_STREAM_DOMAIN}` : 'http://localhost:3000'
-  }${playerUrl}`
+  const urlTemplates = await loadUrlTemplates(payload)
+  const urls = buildStreamUrls(stream.slug, urlTemplates)
+
+  // For non-public streams, the browser would otherwise be challenged by MediaMTX
+  // with a native Basic Auth dialog. Since this page is already behind the
+  // dashboard session, hand operators the internal read credentials so the player
+  // can authenticate via an Authorization header (no popup). Viewers and public
+  // streams never receive credentials.
+  const anonymousReadable = ANONYMOUS_READ_MODES.has(stream.authMode || 'internal')
+  let playerAuthHeader: string | undefined
+  if (!anonymousReadable && isOperator(viewer)) {
+    const { user: mtxUser, pass: mtxPass } = getMediaMtxInternalCredentials()
+    playerAuthHeader = `Basic ${Buffer.from(`${mtxUser}:${mtxPass}`).toString('base64')}`
+  }
+
+  const absolutePlayerUrl = buildPlayerPublicUrl(stream.slug, token)
   const embed = buildEmbedSnippet(absolutePlayerUrl)
   const wpShortcode = buildWordPressShortcode(absolutePlayerUrl)
   const whepUrl = buildWhepUrl(urls.webrtcPlayback)
@@ -86,15 +106,14 @@ export default async function PlayerPage({ params, searchParams }: Props) {
         <h1 className="text-3xl font-bold">Player</h1>
       </div>
 
-      <PlayerPreview hlsSrc={urls.hlsPlayback} whepUrl={whepUrl} />
+      <PlayerPreview hlsSrc={urls.hlsPlayback} whepUrl={whepUrl} authHeader={playerAuthHeader} />
 
       <Card>
         <CardHeader>
           <CardTitle>Embed snippet</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <pre className="overflow-x-auto rounded-md bg-zinc-950 p-3 text-xs">{embed}</pre>
-          <CopyButton value={embed} label="Copy embed" />
+          <CodeSnippet value={embed} copyLabel="Copy embed" />
           {stream.authMode === 'token' && (
             <p className="text-sm text-zinc-500">
               For token-gated playback, append <code>?token=...</code> from an operator-issued token.
@@ -109,10 +128,19 @@ export default async function PlayerPage({ params, searchParams }: Props) {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-zinc-500">
-            Paste into a post or page. Requires an <code>mtxfoil_player</code> shortcode handler (plugin stub).
+            Paste into a post or page after installing the{' '}
+            <a
+              href="https://github.com/silvansan/MTXfoil/tree/main/deploy/wordpress/mtxfoil-player"
+              className="text-emerald-400 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              MTXfoil Player plugin
+            </a>{' '}
+            (<code>deploy/wordpress/mtxfoil-player/</code> — upload to <code>wp-content/plugins</code> or install
+            the zip). For token-gated streams, add <code>token=&quot;...&quot;</code> to the shortcode.
           </p>
-          <pre className="overflow-x-auto rounded-md bg-zinc-950 p-3 text-xs">{wpShortcode}</pre>
-          <CopyButton value={wpShortcode} label="Copy shortcode" />
+          <CodeSnippet value={wpShortcode} copyLabel="Copy shortcode" />
         </CardContent>
       </Card>
     </div>

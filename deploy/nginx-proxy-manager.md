@@ -17,6 +17,46 @@ Use NPM to terminate HTTPS for the **dashboard only**. Media ingest/playback por
 ```nginx
 # Increase body size for admin uploads
 client_max_body_size 50m;
+
+# Pass client IP to dashboard (for audit logs)
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Real-IP $remote_addr;
+```
+
+## Environment after HTTPS
+
+Set these in `.env` or Portainer stack variables:
+
+```env
+# Dashboard (embeds, share links, CORS auto-merge)
+DASHBOARD_PUBLIC_URL=https://mtxfoil.example.com
+
+# Media hostname (may differ from dashboard)
+PUBLIC_STREAM_DOMAIN=stream.example.com
+HLS_BASE_URL=https://stream.example.com/hls
+WEBRTC_BASE_URL=https://stream.example.com/webrtc
+```
+
+`DASHBOARD_PUBLIC_URL` is used for player embed URLs and WordPress shortcodes.  
+`PUBLIC_STREAM_DOMAIN` is used for SRT/RTMP/HLS/WebRTC ingest and playback URLs shown to encoders.
+
+## Split-domain example
+
+| Host | Purpose |
+|------|---------|
+| `mtxfoil.example.com` | Operator UI + Payload admin (via NPM → :3000) |
+| `stream.example.com` | Media ingest/playback (direct to host ports) |
+
+Player embed snippet:
+
+```html
+<iframe src="https://mtxfoil.example.com/player/my-stream"></iframe>
+```
+
+HLS playback URL:
+
+```text
+https://stream.example.com/hls/my-stream/index.m3u8
 ```
 
 ## What NOT to proxy
@@ -29,26 +69,32 @@ client_max_body_size 50m;
 
 ## Public stream domain
 
-Set `PUBLIC_STREAM_DOMAIN` in `.env` to your **media** hostname (may differ from dashboard):
-
-```env
-PUBLIC_STREAM_DOMAIN=stream.example.com
-HLS_BASE_URL=https://stream.example.com/hls
-WEBRTC_BASE_URL=https://stream.example.com/webrtc
-```
-
-If HLS/WebRTC are served from the same host as MediaMTX (ports 8888/8889), forward those ports on your firewall and use NPM stream hosts or direct port forwarding — not the dashboard proxy.
+If HLS/WebRTC are served from the same host as MediaMTX (ports 8888/8889), forward those ports on your firewall. Use NPM stream hosts or direct port forwarding — not the dashboard proxy.
 
 ## WebRTC note
 
 WebRTC requires **UDP 8189** (ICE) and **TCP 8889** reachable from clients. Document these in your firewall/Portainer port mappings.
 
+If the dashboard and media hostnames differ, set `WEBRTC_BASE_URL` to the media hostname clients reach for WHEP.
+
 ## CORS after HTTPS
 
-Update **CORS Origins** global in Payload admin to include your HTTPS dashboard origin:
+1. Set `DASHBOARD_PUBLIC_URL` — its origin is auto-merged into CORS on config apply.
+2. In **CORS Origins** (Admin globals or `/cors`), add your dashboard HTTPS origin if not auto-merged:
 
 ```text
 https://mtxfoil.example.com
 ```
 
-Avoid `*` in production for API/metrics origins.
+3. Add **trusted proxies** when behind NPM (Docker bridge range is typical):
+
+```text
+172.16.0.0/12
+10.0.0.0/8
+```
+
+4. Avoid `*` in production — wildcard CORS blocks config apply when `NODE_ENV=production`.
+
+## RTMPS
+
+Port 1936 is published but RTMPS requires TLS certificates mounted into MediaMTX. Until certs are configured, use RTMP (1935) or SRT for ingest.

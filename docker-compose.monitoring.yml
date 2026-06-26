@@ -1,0 +1,31 @@
+# Optional Prometheus + Grafana overlay for MediaMTX metrics.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: mtxfoil-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - mtxfoil
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: mtxfoil-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    networks:
+      - mtxfoil
+
+networks:
+  mtxfoil:
+    external: true
+    name: mtxfoil

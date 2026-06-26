@@ -17,10 +17,6 @@ export async function enqueueForwardingJob(
   action: 'start' | 'stop',
   jobId: string,
 ): Promise<void> {
-  try {
-    const queue = getForwardingQueue()
-    await queue.add(action, { jobId }, { removeOnComplete: true, removeOnFail: 50 })
-  } catch {
-    // Redis may be unavailable in dev without worker
-  }
+  const queue = getForwardingQueue()
+  await queue.add(action, { jobId }, { removeOnComplete: true, removeOnFail: 50 })
 }

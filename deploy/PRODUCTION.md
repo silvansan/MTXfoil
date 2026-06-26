@@ -44,12 +44,14 @@ Do **not** expose MediaMTX control API (9997) or metrics (9998) to the public in
 
 ## 4. CORS lockdown
 
-1. Open `/cors` in the operator UI.
-2. Replace wildcard (`*`) origins for HLS, WebRTC, and playback before go-live.
-3. Edit origins in Payload admin → Globals → CORS Origins.
-4. Apply config from `/settings`.
+1. Set `DASHBOARD_PUBLIC_URL=https://your-dashboard-domain` after NPM TLS deploy.
+2. Open `/cors` in the operator UI — review warnings and trusted proxies.
+3. Replace wildcard (`*`) origins for API, HLS, WebRTC, playback, and metrics before go-live.
+4. Add trusted proxy CIDRs (e.g. `172.16.0.0/12`) when behind NPM.
+5. Apply presets from `/cors` or edit in Payload admin → Globals → CORS Origins.
+6. Apply config from `/settings` — **wildcard CORS blocks apply in production**.
 
-Baseline `mediamtx.yml` uses localhost-only playback origins; production globals should list your real domains.
+`DASHBOARD_PUBLIC_URL` is auto-merged into CORS on apply. Playback/WebRTC URLs use `HLS_BASE_URL` and `WEBRTC_BASE_URL` on the media hostname.
 
 ## 5. Auth and RBAC
 
@@ -60,6 +62,7 @@ Baseline `mediamtx.yml` uses localhost-only playback origins; production globals
   - Status, metrics, logs: operator+
   - Playback token issuance: operator+
 - Token- and password-gated streams enforce access on `/player/[slug]`.
+- Admin actions are recorded in `/audit` (config apply, stream CRUD, user role changes, CORS/protocol edits).
 
 ## 6. Healthchecks and dependencies
 
@@ -81,7 +84,7 @@ node scripts/smoke-test.mjs
 ## 8. Schema and upgrades
 
 - Production sets `PAYLOAD_DB_PUSH=false`. Use Payload migrations for schema changes.
-- Pin image tags in Portainer or compose overrides (MediaMTX, Postgres, Redis).
+- Pin image tags via `MTXFOIL_VERSION` for dashboard/worker; third-party images pinned in `docker-compose.prod.yml`.
 - After upgrading MediaMTX, regenerate OpenAPI types: `npm run generate:openapi` in `dashboard/`.
 
 ## 9. Post-deploy smoke test

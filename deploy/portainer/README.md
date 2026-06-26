@@ -34,9 +34,11 @@
 
 The stack mounts:
 
-- `./mediamtx` → shared MediaMTX config + backups (dashboard writes, MediaMTX reads)
-- `./recordings` → recording output
-- `postgres-data` → database persistence
+- `mtxfoil-mediamtx-config` → shared MediaMTX config + backups (dashboard writes, MediaMTX reads). **Seeded automatically** on first start from the image baseline (`mediamtx/entrypoint.sh`).
+- `mtxfoil-recordings` → recording output
+- `mtxfoil-postgres-data` → database persistence
+
+Build context must include the repo root so `./mediamtx` and `./dashboard` Dockerfiles resolve.
 
 ---
 
@@ -62,4 +64,17 @@ Do **not** expose `9997` (API) or `9998` (metrics) publicly.
 
 Put Nginx Proxy Manager in front of port **3000** only. See `../nginx-proxy-manager.md`.
 
-Media ports typically go direct to the host (not through NPM).
+Set `DASHBOARD_PUBLIC_URL`, `HLS_BASE_URL`, and `WEBRTC_BASE_URL` to `https://` URLs after TLS deploy.
+
+## Image pinning
+
+After building images locally or in CI, tag and push with a version:
+
+```bash
+export MTXFOIL_VERSION=2026.06.26
+docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+docker tag mtxfoil-dashboard:latest mtxfoil-dashboard:$MTXFOIL_VERSION
+docker tag mtxfoil-worker:latest mtxfoil-worker:$MTXFOIL_VERSION
+```
+
+Set `MTXFOIL_VERSION` in Portainer stack env to match. Default is `latest` for first deploy.

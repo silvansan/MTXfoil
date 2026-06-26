@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-import { syncStreamToMediaMtx } from '@/lib/config-sync'
+import { removeStreamFromMediaMtx, syncStreamToMediaMtx } from '@/lib/config-sync'
+import { recordAudit } from '@/lib/audit-log'
 import { canReadStreamCatalog, isAdmin, isOperator } from '@/lib/permissions'
 
 export const Streams: CollectionConfig = {
@@ -17,9 +18,33 @@ export const Streams: CollectionConfig = {
   },
   hooks: {
     afterChange: [
-      async ({ doc, req }) => {
+      async ({ doc, req, operation }) => {
         if (req.payload) {
+          await recordAudit(req.payload, req, {
+            action:
+              operation === 'create'
+                ? 'stream.create'
+                : 'stream.update',
+            resource: 'streams',
+            resourceId: doc.id,
+            summary: `Stream ${operation === 'create' ? 'created' : 'updated'}: ${doc.name} (${doc.slug})`,
+            metadata: { slug: doc.slug, enabled: doc.enabled },
+          })
           await syncStreamToMediaMtx(req.payload, doc)
+        }
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        if (req.payload && doc?.slug) {
+          await recordAudit(req.payload, req, {
+            action: 'stream.delete',
+            resource: 'streams',
+            resourceId: doc.id,
+            summary: `Stream deleted: ${doc.name ?? doc.slug}`,
+            metadata: { slug: doc.slug },
+          })
+          await removeStreamFromMediaMtx(req.payload, doc.slug)
         }
       },
     ],
@@ -56,18 +81,48 @@ export const Streams: CollectionConfig = {
         { label: 'Test', value: 'test' },
       ],
     },
-    { name: 'sourceUrl', type: 'text' },
+    {
+      name: 'sourceUrl',
+      type: 'text',
+      admin: {
+        description:
+          'Pull source URL for Proxy/Redirect sources (e.g. rtsp://, rtmp://, srt://, or an HLS index.m3u8).',
+        condition: (_, s) => s.sourceType === 'proxy' || s.sourceType === 'redirect',
+      },
+    },
+    {
+      name: 'ingestProtocol',
+      type: 'select',
+      defaultValue: 'srt',
+      admin: {
+        description:
+          'Primary protocol your source uses to publish into MediaMTX. Drives the highlighted ingest URL and connection-mode hints. MediaMTX still accepts any enabled publish protocol on this path.',
+        condition: (_, s) => !s.sourceType || s.sourceType === 'publisher',
+      },
+      options: [
+        { label: 'SRT (caller → MediaMTX listener)', value: 'srt' },
+        { label: 'RTMP', value: 'rtmp' },
+        { label: 'RTMPS', value: 'rtmps' },
+        { label: 'RTSP (announce)', value: 'rtsp' },
+        { label: 'WebRTC (WHIP)', value: 'webrtc' },
+      ],
+    },
     {
       name: 'enabledProtocols',
+      label: 'Playback protocols',
       type: 'select',
       hasMany: true,
       defaultValue: ['srt', 'rtmp', 'hls', 'webrtc', 'rtsp'],
+      admin: {
+        description:
+          'Read endpoints advertised to viewers. HLS and WebRTC (WHEP) are browser-friendly; RTSP/RTMP/SRT are for external players.',
+      },
       options: [
-        { label: 'SRT', value: 'srt' },
-        { label: 'RTMP', value: 'rtmp' },
-        { label: 'RTSP', value: 'rtsp' },
         { label: 'HLS', value: 'hls' },
-        { label: 'WebRTC', value: 'webrtc' },
+        { label: 'WebRTC (WHEP)', value: 'webrtc' },
+        { label: 'RTSP', value: 'rtsp' },
+        { label: 'RTMP', value: 'rtmp' },
+        { label: 'SRT (read)', value: 'srt' },
       ],
     },
     { name: 'recordingEnabled', type: 'checkbox', defaultValue: false },
@@ -76,14 +131,16 @@ export const Streams: CollectionConfig = {
       name: 'authMode',
       type: 'select',
       defaultValue: 'internal',
+      admin: {
+        description:
+          'Per-stream access policy. The server-wide auth method (Internal / External HTTP / JWT) is set in Protocol Settings → Authentication; under External HTTP the dashboard\'s built-in endpoint enforces this policy.',
+      },
       options: [
         { label: 'Public', value: 'public' },
         { label: 'Unlisted', value: 'unlisted' },
         { label: 'Password', value: 'password' },
         { label: 'Token', value: 'token' },
         { label: 'Internal', value: 'internal' },
-        { label: 'External HTTP', value: 'external' },
-        { label: 'JWT', value: 'jwt' },
       ],
     },
     { name: 'publishPassword', type: 'text', admin: { condition: (_, s) => s.authMode === 'password' } },

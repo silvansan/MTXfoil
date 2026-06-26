@@ -70,3 +70,4 @@ jobs:
         run: |
           docker compose -f docker-compose.yml config > /dev/null
           docker compose -f docker-compose.yml -f docker-compose.prod.yml config > /dev/null
+          docker compose -f docker-compose.yml -f docker-compose.monitoring.yml config > /dev/null
