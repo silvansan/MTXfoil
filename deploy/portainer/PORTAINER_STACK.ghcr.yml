@@ -1,6 +1,6 @@
-# Portainer Repository stack — builds dashboard/worker on the host (no GHCR required).
-# MediaMTX uses the official image + one-shot config seed from GitHub.
-# pull_policy: build stops Portainer from pre-pulling mtxfoil-* names from Docker Hub (denied).
+# Portainer stack — pre-built images only (no build contexts).
+# Requires ghcr.io/silvansan/mtxfoil-dashboard and mtxfoil-worker (see publish-images.yml).
+# Use after GitHub Actions has published images and packages are public (or GHCR registry added in Portainer).
 
 services:
   mediamtx-config-init:
@@ -89,12 +89,7 @@ services:
       - mtxfoil
 
   dashboard:
-    build:
-      context: ./dashboard
-      args:
-        PAYLOAD_DB_PUSH: "false"
-    image: mtxfoil-dashboard:${MTXFOIL_VERSION:-latest}
-    pull_policy: build
+    image: ${MTXFOIL_IMAGE_REGISTRY:-ghcr.io/silvansan}/mtxfoil-dashboard:${MTXFOIL_VERSION:-latest}
     container_name: mtxfoil-dashboard
     restart: unless-stopped
     environment:
@@ -139,9 +134,7 @@ services:
       - mtxfoil
 
   worker:
-    build: ./worker
-    image: mtxfoil-worker:${MTXFOIL_VERSION:-latest}
-    pull_policy: build
+    image: ${MTXFOIL_IMAGE_REGISTRY:-ghcr.io/silvansan}/mtxfoil-worker:${MTXFOIL_VERSION:-latest}
     container_name: mtxfoil-worker
     restart: unless-stopped
     environment:

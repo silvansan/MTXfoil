@@ -24,6 +24,8 @@ docker compose up --build
 
 See `deploy/portainer/README.md` and `deploy/nginx-proxy-manager.md` for production behind a reverse proxy.
 
+**Portainer deploy failed with `registry: denied`?** Use compose path `deploy/portainer/PORTAINER_STACK.yml` (builds on server). See the troubleshooting table in `deploy/portainer/README.md`.
+
 ## License
 
 MIT — Copyright (c) 2026 [silvansan](https://github.com/silvansan). See [LICENSE](LICENSE).

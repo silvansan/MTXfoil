@@ -3,6 +3,7 @@ services:
   mediamtx:
     build: ./mediamtx
     image: mtxfoil-mediamtx:${MTXFOIL_VERSION:-latest}
+    pull_policy: build
     restart: always
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://127.0.0.1:9997/v3/paths/list || exit 1']
@@ -30,6 +31,7 @@ services:
   dashboard:
     restart: always
     image: mtxfoil-dashboard:${MTXFOIL_VERSION:-latest}
+    pull_policy: build
     environment:
       NODE_ENV: production
       PAYLOAD_DB_PUSH: 'false'
@@ -58,6 +60,7 @@ services:
   worker:
     restart: always
     image: mtxfoil-worker:${MTXFOIL_VERSION:-latest}
+    pull_policy: build
     environment:
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     healthcheck:
