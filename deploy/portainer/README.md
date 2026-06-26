@@ -49,11 +49,7 @@ Do **not** use `docker-compose.yml` here unless you intend to build images on th
 
 ### 2. Environment variables → Advanced mode
 
-Paste contents of **`stack.env.example`** and replace every `CHANGE_ME` value:
-
-- `PAYLOAD_SECRET` — 32+ random characters
-- `POSTGRES_PASSWORD`, `REDIS_PASSWORD`, `PLAYBACK_TOKEN_SECRET`, `MEDIAMTX_INTERNAL_PASS`
-- `PUBLIC_STREAM_DOMAIN`, `DASHBOARD_PUBLIC_URL`, `HLS_BASE_URL`, `WEBRTC_BASE_URL`
+Paste contents of **`stack.env.example`** and complete [Required before first prod deploy](#required-before-first-prod-deploy) (all secrets + domains).
 
 Optional pinning (recommended for production):
 
@@ -90,15 +86,52 @@ Same image-only stack as the Repository method, but you paste the YAML manually 
 
 ---
 
+## Required before first prod deploy
+
+The dashboard runs `NODE_ENV=production` and **refuses to start** with default or weak credentials. Set these in Portainer **Environment variables → Advanced mode** before deploy (copy `stack.env.example`, then replace every `CHANGE_ME` / `REPLACE_` value).
+
+Generate secrets locally:
+
+```bash
+openssl rand -hex 16   # POSTGRES_PASSWORD, REDIS_PASSWORD, MEDIAMTX_INTERNAL_PASS
+openssl rand -hex 32   # PAYLOAD_SECRET, PLAYBACK_TOKEN_SECRET (64 hex chars)
+```
+
+| Variable | Required | Notes |
+|----------|----------|-------|
+| `PAYLOAD_SECRET` | Yes | 32+ random characters; not the dev fallback |
+| `PLAYBACK_TOKEN_SECRET` | Yes | 32+ chars, **different** from `PAYLOAD_SECRET` |
+| `POSTGRES_PASSWORD` | Yes | Strong password; not `mtxfoil` or other common defaults |
+| `REDIS_PASSWORD` | Yes | Required — prod stack enables Redis auth |
+| `MEDIAMTX_INTERNAL_USER` | Yes | **Unique username** — `mtxfoil`, `admin`, `mediamtx`, etc. are rejected |
+| `MEDIAMTX_INTERNAL_PASS` | Yes | Strong password; must differ from `MEDIAMTX_INTERNAL_USER` |
+| `PUBLIC_STREAM_DOMAIN` | Yes | Media hostname (e.g. `stream.example.com`) |
+| `DASHBOARD_PUBLIC_URL` | Yes | `https://` dashboard URL after TLS |
+| `HLS_BASE_URL` | Yes | `https://` HLS base (e.g. `https://stream.example.com/hls`) |
+| `WEBRTC_BASE_URL` | Yes | `https://` WebRTC base (e.g. `https://stream.example.com/webrtc`) |
+
+Example (generate your own values — do not copy these):
+
+```env
+MEDIAMTX_INTERNAL_USER=mtxctl_a1b2c3d4
+MEDIAMTX_INTERNAL_PASS=<output of openssl rand -hex 16>
+PAYLOAD_SECRET=<output of openssl rand -hex 32>
+PLAYBACK_TOKEN_SECRET=<different output of openssl rand -hex 32>
+POSTGRES_PASSWORD=<output of openssl rand -hex 16>
+REDIS_PASSWORD=<output of openssl rand -hex 16>
+```
+
+After updating env vars: **Stacks** → your stack → **Update the stack** (or Pull and redeploy). Then open **Settings** → apply config so MediaMTX receives the new internal credentials.
+
+### Symptom: HTTP 500 with weak-credential message
+
+If the site returns 500 and logs mention `MEDIAMTX_INTERNAL_USER must not use the default or a common weak value`, your stack still has `MEDIAMTX_INTERNAL_USER=mtxfoil` (from an older `stack.env.example`). Set a unique username and redeploy — validation is intentional and cannot be bypassed.
+
+---
+
 ## Before first deploy
 
-1. Copy `stack.env.example` values into Portainer **Environment variables → Advanced mode** and replace every `CHANGE_ME` placeholder:
-   - `PAYLOAD_SECRET` (32+ random characters)
-   - `POSTGRES_PASSWORD`
-   - `REDIS_PASSWORD`
-   - `PLAYBACK_TOKEN_SECRET`
-   - `MEDIAMTX_INTERNAL_PASS`
-   - `PUBLIC_STREAM_DOMAIN`, `DASHBOARD_PUBLIC_URL`, `HLS_BASE_URL`, `WEBRTC_BASE_URL`
+1. Complete [Required before first prod deploy](#required-before-first-prod-deploy) above.
 
 2. **Default stack builds on server** — `PORTAINER_STACK.yml` builds `dashboard` and `worker` from the cloned repo (`pull_policy: build` avoids Docker Hub pull errors). No GHCR setup required.
 
