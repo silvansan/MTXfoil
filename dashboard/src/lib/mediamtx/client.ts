@@ -111,16 +111,34 @@ export async function mtxFetch<T = unknown>(
   return JSON.parse(text) as T
 }
 
+function formatMtxHealthError(err: unknown): string {
+  if (err instanceof MediaMtxError) {
+    if (err.status === 401 || err.status === 403) {
+      return `API auth failed (${err.status}) — MEDIAMTX_INTERNAL_USER/PASS may not match mediamtx.yml; apply config from /settings`
+    }
+    return err.message
+  }
+
+  const message = err instanceof Error ? err.message : 'Unknown error'
+  if (message.includes('fetch failed') || message.includes('ECONNREFUSED')) {
+    return 'fetch failed — MediaMTX unreachable at MEDIAMTX_API_URL (is mtxfoil-mediamtx running?)'
+  }
+  if (message.includes('timeout') || message.includes('ETIMEDOUT')) {
+    return `${message} — MediaMTX not responding (check container logs)`
+  }
+  return message
+}
+
 export async function mtxHealthCheck(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
   const start = Date.now()
   try {
-    await mtxFetch('/v3/paths/list')
+    await mtxFetch('/v3/paths/list', { signal: AbortSignal.timeout(8_000) })
     return { ok: true, latencyMs: Date.now() - start }
   } catch (err) {
     return {
       ok: false,
       latencyMs: Date.now() - start,
-      error: err instanceof Error ? err.message : 'Unknown error',
+      error: formatMtxHealthError(err),
     }
   }
 }

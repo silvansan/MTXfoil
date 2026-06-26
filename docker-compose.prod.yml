@@ -35,6 +35,7 @@ services:
     environment:
       NODE_ENV: production
       PAYLOAD_DB_PUSH: 'false'
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       DASHBOARD_PUBLIC_URL: ${DASHBOARD_PUBLIC_URL:-}
       MEDIAMTX_INTERNAL_USER: ${MEDIAMTX_INTERNAL_USER}
@@ -62,6 +63,7 @@ services:
     image: mtxfoil-worker:${MTXFOIL_VERSION:-latest}
     pull_policy: build
     environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
     healthcheck:
       test:

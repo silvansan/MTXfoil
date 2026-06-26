@@ -3,6 +3,8 @@ import { spawn, type ChildProcess } from 'node:child_process'
 import type { Job } from 'bull'
 import type Queue from 'bull'
 
+import { mtxFetchJson } from './mediamtx-client.js'
+
 export type ForwardingJobData = {
   jobId: string
   streamSlug: string
@@ -29,7 +31,6 @@ const RESTART_MAX_MS = 30000
 // A process that survives this long is considered healthy; reset its backoff.
 const STABLE_RUN_MS = 60000
 
-const MEDIAMTX_API_URL = process.env.MEDIAMTX_API_URL || 'http://mediamtx:9997'
 const MEDIAMTX_HOST = process.env.MEDIAMTX_HOST || 'mediamtx'
 const LIVE_RECONCILE_MS = Number(process.env.FORWARDING_LIVE_RECONCILE_MS || 30000)
 
@@ -312,19 +313,23 @@ async function fetchJobFromDb(jobId: string): Promise<DbJob | null> {
 
 async function fetchLiveStreamSlugs(): Promise<Set<string>> {
   try {
-    const res = await fetch(`${MEDIAMTX_API_URL}/v3/paths/list`)
-    if (!res.ok) return new Set()
-    const data = (await res.json()) as { items?: Array<{ name?: string; ready?: boolean }> }
+    const data = await mtxFetchJson<{ items?: Array<{ name?: string; ready?: boolean }> }>(
+      '/v3/paths/list',
+    )
     const live = new Set<string>()
     for (const item of data.items || []) {
       if (item.ready && item.name) live.add(item.name)
     }
     return live
   } catch (err) {
-    console.error(
-      '[worker] failed to list MediaMTX paths:',
-      err instanceof Error ? err.message : String(err),
-    )
+    const message = err instanceof Error ? err.message : String(err)
+    const hint =
+      message.includes('401') || message.includes('403')
+        ? ' — check MEDIAMTX_INTERNAL_USER/PASS and apply config from /settings'
+        : message.includes('fetch failed') || message.includes('timeout')
+          ? ' — is mtxfoil-mediamtx running on the Docker network?'
+          : ''
+    console.error(`[worker] failed to list MediaMTX paths: ${message}${hint}`)
     return new Set()
   }
 }

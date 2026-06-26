@@ -107,6 +107,7 @@ services:
       HLS_BASE_URL: ${HLS_BASE_URL:?Set HLS_BASE_URL (https://) in Portainer stack env}
       WEBRTC_BASE_URL: ${WEBRTC_BASE_URL:?Set WEBRTC_BASE_URL (https://) in Portainer stack env}
       PLAYBACK_TOKEN_SECRET: ${PLAYBACK_TOKEN_SECRET:?Set PLAYBACK_TOKEN_SECRET (32+ chars) in Portainer stack env}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}
       REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}@redis:6379
       NODE_ENV: production
       PAYLOAD_DB_PUSH: "false"
@@ -142,6 +143,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-mtxfoil}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Portainer stack env}@postgres:5432/${POSTGRES_DB:-mtxfoil}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}
       REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in Portainer stack env}@redis:6379
       MEDIAMTX_API_URL: http://mediamtx:9997
       MEDIAMTX_HOST: mediamtx

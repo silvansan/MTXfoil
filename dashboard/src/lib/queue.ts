@@ -1,14 +1,14 @@
 import Queue from 'bull'
 
-let forwardingQueue: Queue.Queue | null = null
+import { buildRedisUrl, IOREDIS_CLIENT_OPTIONS } from '@/lib/redis-url'
 
-function getRedisUrl(): string {
-  return process.env.REDIS_URL || 'redis://localhost:6379'
-}
+let forwardingQueue: Queue.Queue | null = null
 
 export function getForwardingQueue(): Queue.Queue {
   if (!forwardingQueue) {
-    forwardingQueue = new Queue('mtxfoil-forwarding', getRedisUrl())
+    forwardingQueue = new Queue('mtxfoil-forwarding', buildRedisUrl(), {
+      redis: IOREDIS_CLIENT_OPTIONS,
+    })
   }
   return forwardingQueue
 }

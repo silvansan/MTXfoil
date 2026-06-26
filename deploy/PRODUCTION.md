@@ -97,6 +97,25 @@ node scripts/smoke-test.mjs
 6. Review `/cors` for wildcard warnings
 7. Run config preview/apply from `/settings` as admin
 
+## 10. Portainer troubleshooting (mtx.silvans.ch pattern)
+
+Symptoms: dashboard **MediaMTX Disconnected** (`fetch failed`), worker `health check redis error: max retries`, worker `failed to list MediaMTX paths`.
+
+| Check | Action |
+|-------|--------|
+| **MediaMTX container** | Portainer → `mtxfoil-mediamtx` logs. Crash-loop = bad `mediamtx.yml` on volume or port conflict. API is internal-only (`http://mediamtx:9997`) — never expose 9997 on the host. |
+| **Config / creds drift** | Seeded `mediamtx.yml` uses `mtxfoil:mtxfoil`. Production `MEDIAMTX_INTERNAL_USER/PASS` must be written via **/settings → Apply config** after deploy or credential rotation. Auth mismatch shows `API auth failed (401)` not `fetch failed`. |
+| **Redis password** | `REDIS_PASSWORD` in stack env must match redis `--requirepass`. Prefer `openssl rand -hex 16`. Set `REDIS_PASSWORD` on dashboard **and** worker (not only inside `REDIS_URL`). Redeploy stack after env changes. |
+| **Stack network** | All services on network `mtxfoil`. `docker exec mtxfoil-dashboard wget -qO- http://mediamtx:9997/v3/paths/list` should respond (401 without auth is OK). |
+| **GHCR image age** | Pull latest `mtxfoil-dashboard` / `mtxfoil-worker` after fixes; set `MTXFOIL_VERSION` if you pin tags. |
+
+Quick recovery sequence:
+
+1. Confirm `mtxfoil-redis` healthy (`redis-cli -a "$REDIS_PASSWORD" ping` → PONG).
+2. Confirm `mtxfoil-mediamtx` running (not restarting).
+3. Log in at `https://mtx.silvans.ch/admin` → **Settings** (`/settings`) → preview + **Apply config** (syncs creds + YAML).
+4. Restart worker + dashboard containers after env/stack updates.
+
 ## Related docs
 
 - [Portainer stack](portainer/README.md)
