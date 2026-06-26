@@ -87,7 +87,11 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
           ) : (
             <p>Checking connection…</p>
           )}
-          {error && <p className="text-red-400">{error}</p>}
+          {error && (
+            <p className="text-red-400" role="alert">
+              {error}
+            </p>
+          )}
         </CardContent>
       </Card>
 

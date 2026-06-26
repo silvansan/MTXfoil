@@ -60,7 +60,7 @@ function ConnectionBlock({
               ) : (
                 <p className="font-mono text-sm break-all text-zinc-100">{field.value}</p>
               )}
-              <p className="mt-0.5 text-xs text-zinc-600">{field.hint}</p>
+              <p className="mt-0.5 text-xs text-zinc-500">{field.hint}</p>
             </div>
             <CopyButton value={field.value} label={`Copy ${field.label.toLowerCase()}`} />
           </div>

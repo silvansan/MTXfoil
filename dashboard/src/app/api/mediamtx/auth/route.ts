@@ -4,7 +4,12 @@ import config from '@payload-config'
 
 import type { Stream } from '@/payload-types'
 import { getMediaMtxInternalCredentials } from '@/lib/mediamtx/config'
-import { checkRateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import {
+  MEDIAMTX_AUTH_RATE_LIMIT,
+  getClientIp,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
+import { checkRateLimitAsync } from '@/lib/rate-limit-redis'
 import { checkStreamPlaybackAccess } from '@/lib/playback-access'
 
 export const dynamic = 'force-dynamic'
@@ -58,8 +63,14 @@ function tokenFromQuery(query?: string, fallback?: string): string | undefined {
 }
 
 export async function POST(req: NextRequest) {
-  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown'
-  if (!checkRateLimit(`mediamtx-auth:${clientIp}`, 120, 60_000)) {
+  const clientIp = getClientIp(req)
+  if (
+    !(await checkRateLimitAsync(
+      `mediamtx-auth:${clientIp}`,
+      MEDIAMTX_AUTH_RATE_LIMIT.limit,
+      MEDIAMTX_AUTH_RATE_LIMIT.windowMs,
+    ))
+  ) {
     return rateLimitResponse()
   }
 

@@ -49,9 +49,9 @@ function UrlList({ rows }: { rows: UrlRow[] }) {
               {row.label}
               {row.primary ? ' · primary' : ''}
             </p>
-            <p className="font-mono text-sm break-all">{row.value}</p>
+            <p className="font-mono text-sm break-all text-zinc-100">{row.value}</p>
           </div>
-          <CopyButton value={row.value} />
+          <CopyButton value={row.value} label={`Copy ${row.label.toLowerCase()}`} />
         </div>
       ))}
     </div>

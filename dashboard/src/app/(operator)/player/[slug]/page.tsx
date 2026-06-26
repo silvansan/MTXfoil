@@ -52,6 +52,18 @@ export default async function PlayerPage({ params, searchParams }: Props) {
     )
   }
 
+  const authMode = stream.authMode || 'internal'
+  if (authMode === 'internal' && !isOperator(viewer)) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold">Operator access required</h1>
+        <p className="text-zinc-400">
+          This stream uses internal authentication. Sign in with an operator account to preview playback.
+        </p>
+      </div>
+    )
+  }
+
   const access = checkStreamPlaybackAccess(stream, { token, password })
   if (!access.allowed) {
     if (access.reason === 'password') {

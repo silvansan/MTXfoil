@@ -1,14 +1,32 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
+import {
+  LOGIN_RATE_LIMIT,
+  checkRateLimit,
+  getClientIp,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
+
+const LOGIN_PATH = '/api/users/login'
+
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  if (request.method === 'POST' && pathname === LOGIN_PATH) {
+    const ip = getClientIp(request)
+    if (!checkRateLimit(`login:${ip}`, LOGIN_RATE_LIMIT.limit, LOGIN_RATE_LIMIT.windowMs)) {
+      return rateLimitResponse()
+    }
+  }
+
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+  requestHeaders.set('x-pathname', pathname)
   return NextResponse.next({ request: { headers: requestHeaders } })
 }
 
 export const config = {
   matcher: [
-    '/((?!api|admin|_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }

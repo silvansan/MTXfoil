@@ -46,21 +46,26 @@ export function OperatorNav({
           <div className="rounded-lg bg-emerald-500/20 px-2 py-1 text-sm font-bold text-emerald-300">MTXfoil</div>
           <span className="text-sm text-zinc-400">MediaMTX Control Panel</span>
         </div>
-        <nav className="flex flex-wrap items-center gap-1">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                'rounded-md px-3 py-1.5 text-sm transition-colors',
-                pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
-                  ? 'bg-zinc-800 text-zinc-100'
-                  : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200',
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav aria-label="Operator" className="flex flex-wrap items-center gap-1">
+          {links.map((link) => {
+            const isActive =
+              pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={isActive ? 'page' : undefined}
+                className={cn(
+                  'rounded-md px-3 py-1.5 text-sm transition-colors',
+                  isActive
+                    ? 'bg-zinc-800 text-zinc-100'
+                    : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200',
+                )}
+              >
+                {link.label}
+              </Link>
+            )
+          })}
           {!viewerOnly && (
             <Link
               href="/admin"

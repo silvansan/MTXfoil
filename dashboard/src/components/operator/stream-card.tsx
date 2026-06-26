@@ -46,11 +46,11 @@ export function StreamCard({ stream, status, urls }: StreamCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
               <span className="truncate">{urls.srtPublish}</span>
-              <CopyButton value={urls.srtPublish} />
+              <CopyButton value={urls.srtPublish} label="Copy SRT publish URL" />
             </div>
             <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
               <span className="truncate">{urls.hlsPlayback}</span>
-              <CopyButton value={urls.hlsPlayback} />
+              <CopyButton value={urls.hlsPlayback} label="Copy HLS playback URL" />
             </div>
           </div>
         )}

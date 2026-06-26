@@ -9,7 +9,7 @@ export const CorsPresets: CollectionConfig = {
     defaultColumns: ['name', 'updatedAt'],
   },
   access: {
-    read: () => true,
+    read: ({ req }) => isOperator(req.user),
     create: ({ req }) => isOperator(req.user),
     update: ({ req }) => isOperator(req.user),
     delete: ({ req }) => isAdmin(req.user),

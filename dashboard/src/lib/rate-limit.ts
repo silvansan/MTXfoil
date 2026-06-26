@@ -1,8 +1,11 @@
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
+
 const buckets = new Map<string, { count: number; resetAt: number }>()
 
 /**
- * Simple in-memory sliding-window rate limiter.
- * Returns true when the request is allowed, false when limited.
+ * In-memory sliding-window rate limiter (sync).
+ * Safe for Edge middleware — no Node-only dependencies.
  */
 export function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now()
@@ -18,9 +21,23 @@ export function checkRateLimit(key: string, limit: number, windowMs: number): bo
   return true
 }
 
-export function rateLimitResponse(): Response {
-  return new Response(JSON.stringify({ error: 'Too many requests' }), {
-    status: 429,
-    headers: { 'content-type': 'application/json' },
-  })
+export function getClientIp(req: NextRequest | Request): string {
+  const forwarded =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    'unknown'
+  return forwarded
 }
+
+export function rateLimitResponse(): NextResponse {
+  return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+}
+
+/**
+ * Payload CMS login is handled by generated routes under `/api/users/*`.
+ * Edge middleware can only apply in-memory limits (not shared across replicas).
+ * For multi-instance production, also configure rate limiting at the reverse proxy.
+ */
+export const LOGIN_RATE_LIMIT = { limit: 10, windowMs: 60_000 } as const
+export const PLAYBACK_TOKEN_RATE_LIMIT = { limit: 30, windowMs: 60_000 } as const
+export const MEDIAMTX_AUTH_RATE_LIMIT = { limit: 120, windowMs: 60_000 } as const

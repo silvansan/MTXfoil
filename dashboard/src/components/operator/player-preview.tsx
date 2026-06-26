@@ -32,10 +32,12 @@ export function PlayerPreview({
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      <div role="tablist" aria-label="Playback mode" className="flex gap-2">
         <Button
           type="button"
           size="sm"
+          role="tab"
+          aria-selected={mode === 'hls'}
           variant={mode === 'hls' ? 'default' : 'secondary'}
           onClick={() => {
             setHlsOffline(false)
@@ -47,6 +49,8 @@ export function PlayerPreview({
         <Button
           type="button"
           size="sm"
+          role="tab"
+          aria-selected={mode === 'webrtc'}
           variant={mode === 'webrtc' ? 'default' : 'secondary'}
           onClick={() => setMode('webrtc')}
         >
@@ -54,7 +58,11 @@ export function PlayerPreview({
         </Button>
       </div>
 
-      <div className="relative">
+      <div
+        role="tabpanel"
+        aria-label={mode === 'hls' ? 'HLS playback' : 'WebRTC playback'}
+        className="relative"
+      >
         <VideoJsPlayer
           key={mode}
           src={mode === 'hls' ? hlsSrc : undefined}
@@ -64,7 +72,11 @@ export function PlayerPreview({
           onPlaying={() => mode === 'hls' && setHlsOffline(false)}
         />
         {offlineMessage && (
-          <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/70 text-center">
+          <div
+            role="status"
+            aria-live="polite"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/70 text-center"
+          >
             <p className="text-sm font-medium text-white">Stream is offline</p>
             <p className="mt-1 px-4 text-xs text-zinc-300">{offlineMessage}</p>
           </div>

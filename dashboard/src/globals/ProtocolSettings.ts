@@ -2,13 +2,13 @@ import type { GlobalConfig } from 'payload'
 
 import { applyFullConfig } from '@/lib/config-sync'
 import { recordAudit } from '@/lib/audit-log'
-import { isAdmin } from '@/lib/permissions'
+import { isAdmin, isOperator } from '@/lib/permissions'
 
 export const ProtocolSettings: GlobalConfig = {
   slug: 'protocol-settings',
   label: 'Protocol Settings',
   access: {
-    read: () => true,
+    read: ({ req }) => isOperator(req.user),
     update: ({ req }) => isAdmin(req.user),
   },
   hooks: {

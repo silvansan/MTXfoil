@@ -16,12 +16,20 @@ export function CodeSnippet({ value, copyLabel }: { value: string; copyLabel: st
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <CopyButton value={value} label={copyLabel} />
-        <Button variant="ghost" size="sm" type="button" onClick={() => setShown((s) => !s)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          type="button"
+          aria-expanded={shown}
+          onClick={() => setShown((s) => !s)}
+        >
           {shown ? 'Hide code' : 'Show code'}
         </Button>
       </div>
       {shown && (
-        <pre className="overflow-x-auto rounded-md bg-zinc-950 p-3 text-xs">{value}</pre>
+        <pre className="overflow-x-auto rounded-md bg-zinc-950 p-3 text-xs text-zinc-300" tabIndex={0}>
+          {value}
+        </pre>
       )}
     </div>
   )

@@ -5,6 +5,12 @@ import config from '@payload-config'
 import { requireApiPermission } from '@/lib/api-auth'
 import { getPlaybackTokenSecret, issuePlaybackToken } from '@/lib/playback-token'
 import { canIssuePlaybackToken } from '@/lib/permissions'
+import {
+  PLAYBACK_TOKEN_RATE_LIMIT,
+  getClientIp,
+  rateLimitResponse,
+} from '@/lib/rate-limit'
+import { checkRateLimitAsync } from '@/lib/rate-limit-redis'
 
 async function issueTokenForSlug(slug: string) {
   const payload = await getPayload({ config })
@@ -35,7 +41,21 @@ async function issueTokenForSlug(slug: string) {
   })
 }
 
+async function enforcePlaybackTokenRateLimit(req: NextRequest): Promise<NextResponse | null> {
+  const ip = getClientIp(req)
+  const allowed = await checkRateLimitAsync(
+    `playback-token:${ip}`,
+    PLAYBACK_TOKEN_RATE_LIMIT.limit,
+    PLAYBACK_TOKEN_RATE_LIMIT.windowMs,
+  )
+  if (!allowed) return rateLimitResponse()
+  return null
+}
+
 export async function GET(req: NextRequest) {
+  const limited = await enforcePlaybackTokenRateLimit(req)
+  if (limited) return limited
+
   const auth = await requireApiPermission(canIssuePlaybackToken)
   if (auth instanceof NextResponse) return auth
 
@@ -48,6 +68,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const limited = await enforcePlaybackTokenRateLimit(req)
+  if (limited) return limited
+
   const auth = await requireApiPermission(canIssuePlaybackToken)
   if (auth instanceof NextResponse) return auth
 

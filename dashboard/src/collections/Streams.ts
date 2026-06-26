@@ -143,8 +143,18 @@ export const Streams: CollectionConfig = {
         { label: 'Internal', value: 'internal' },
       ],
     },
-    { name: 'publishPassword', type: 'text', admin: { condition: (_, s) => s.authMode === 'password' } },
-    { name: 'readPassword', type: 'text', admin: { condition: (_, s) => s.authMode === 'password' } },
+    {
+      name: 'publishPassword',
+      type: 'text',
+      access: { read: ({ req }) => isOperator(req.user) },
+      admin: { condition: (_, s) => s.authMode === 'password' },
+    },
+    {
+      name: 'readPassword',
+      type: 'text',
+      access: { read: ({ req }) => isOperator(req.user) },
+      admin: { condition: (_, s) => s.authMode === 'password' },
+    },
     { name: 'notes', type: 'textarea' },
   ],
 }

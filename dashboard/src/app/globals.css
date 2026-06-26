@@ -19,3 +19,41 @@ body {
 a {
   @apply text-inherit;
 }
+
+/* Video.js — align default light skin with operator zinc palette */
+.video-js {
+  color: #fafafa;
+  font-family: inherit;
+}
+
+.video-js .vjs-big-play-button {
+  background-color: rgb(24 24 27 / 0.85);
+  border-color: #52525b;
+}
+
+.video-js:hover .vjs-big-play-button,
+.video-js .vjs-big-play-button:focus {
+  background-color: rgb(39 39 42 / 0.95);
+  border-color: #71717a;
+}
+
+.video-js .vjs-control-bar {
+  background-color: rgb(9 9 11 / 0.9);
+}
+
+.video-js .vjs-slider {
+  background-color: #3f3f46;
+}
+
+.video-js .vjs-play-progress,
+.video-js .vjs-volume-level {
+  background-color: #34d399;
+}
+
+.video-js .vjs-load-progress {
+  background-color: #27272a;
+}
+
+.video-js .vjs-load-progress div {
+  background-color: #3f3f46;
+}

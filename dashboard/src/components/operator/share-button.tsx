@@ -20,7 +20,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
     <div className="space-y-1">
       <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
       <div className="flex items-center justify-between gap-2 rounded-md bg-zinc-950 p-2 font-mono text-xs">
-        <span className="truncate">{value}</span>
+        <span className="truncate text-zinc-100">{value}</span>
         <Button variant="outline" size="sm" type="button" onClick={copy}>
           {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? 'Copied' : 'Copy'}
@@ -51,6 +51,17 @@ export function ShareButton({
     if (typeof window !== 'undefined') setOrigin(window.location.origin)
   }, [])
 
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [open])
+
+  const panelId = `share-panel-${slug}`
+
   const playerUrl = origin ? `${origin}/player/${slug}` : `/player/${slug}`
   const isToken = authMode === 'token'
 
@@ -77,6 +88,9 @@ export function ShareButton({
         variant={variant}
         size={size}
         type="button"
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        aria-controls={panelId}
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()
@@ -88,6 +102,9 @@ export function ShareButton({
       </Button>
       {open && (
         <div
+          id={panelId}
+          role="dialog"
+          aria-label="Share stream"
           className="absolute right-0 z-20 mt-2 w-80 space-y-3 rounded-md border border-zinc-700 bg-zinc-900 p-3 shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >

@@ -35,18 +35,29 @@ export function PlaybackPasswordGate({ slug }: Props) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => {
-              setPassword(event.target.value)
-              setError('')
-            }}
-            placeholder="Enter playback password"
-            className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm"
-            autoComplete="current-password"
-          />
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          <div className="space-y-1.5">
+            <label htmlFor="playback-password" className="text-sm text-zinc-300">
+              Playback password
+            </label>
+            <input
+              id="playback-password"
+              type="password"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value)
+                setError('')
+              }}
+              placeholder="Enter playback password"
+              className="w-full rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+          {error && (
+            <p className="text-sm text-red-400" role="alert">
+              {error}
+            </p>
+          )}
           <Button type="submit">Unlock playback</Button>
         </form>
       </CardContent>

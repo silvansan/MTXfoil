@@ -72,7 +72,10 @@ export default async function MetricsPage() {
               <CardTitle>{title as string}</CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="max-h-64 overflow-auto text-xs text-zinc-400">
+              <pre
+                aria-label={`${title as string} data`}
+                className="max-h-64 overflow-auto rounded-md bg-zinc-950 p-3 text-xs text-zinc-300"
+              >
                 {JSON.stringify(data, null, 2)}
               </pre>
             </CardContent>

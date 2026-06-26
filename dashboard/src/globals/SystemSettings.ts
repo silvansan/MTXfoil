@@ -1,12 +1,12 @@
 import type { GlobalConfig } from 'payload'
 
-import { isAdmin } from '@/lib/permissions'
+import { isAdmin, isOperator } from '@/lib/permissions'
 
 export const SystemSettings: GlobalConfig = {
   slug: 'system-settings',
   label: 'System Settings',
   access: {
-    read: () => true,
+    read: ({ req }) => isOperator(req.user),
     update: ({ req }) => isAdmin(req.user),
   },
   fields: [

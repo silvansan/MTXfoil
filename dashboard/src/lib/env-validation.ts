@@ -1,6 +1,23 @@
 const DEV_PAYLOAD_SECRET = 'dev-only-secret-minimum-32-characters-long'
 const DEV_PLAYBACK_SECRET = 'dev-playback-secret'
 
+/** Known weak defaults from compose examples and common dev stacks. */
+const WEAK_CREDENTIALS = new Set([
+  'mtxfoil',
+  'postgres',
+  'password',
+  'admin',
+  'changeme',
+  'change-me',
+  'change_me',
+  'secret',
+  'root',
+  'test',
+  '123456',
+  'default',
+  'mediamtx',
+])
+
 function isProduction(): boolean {
   return process.env.NODE_ENV === 'production'
 }
@@ -16,11 +33,31 @@ function rejectDevPlaceholder(value: string, name: string): void {
   const lowered = value.toLowerCase()
   if (
     lowered.includes('change-me') ||
+    lowered.includes('change_me') ||
     lowered.includes('dev-only') ||
     lowered === 'dev-secret' ||
     lowered === 'dev-playback-secret'
   ) {
     throw new Error(`${name} must not use a development placeholder in production`)
+  }
+}
+
+function rejectWeakCredential(value: string | undefined, name: string): void {
+  if (!value?.trim()) return
+  const trimmed = value.trim()
+  const lowered = trimmed.toLowerCase()
+  if (WEAK_CREDENTIALS.has(lowered) || lowered.includes('change-me') || lowered.includes('change_me')) {
+    throw new Error(
+      `${name} must not use the default or a common weak value in production — set a strong unique credential in your Portainer/stack environment`,
+    )
+  }
+}
+
+function passwordFromDatabaseUrl(databaseUrl: string): string | undefined {
+  try {
+    return new URL(databaseUrl).password || undefined
+  } catch {
+    return undefined
   }
 }
 
@@ -39,6 +76,20 @@ export function validateProductionEnv(): void {
   const databaseUrl = process.env.DATABASE_URL?.trim()
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required in production')
+  }
+
+  const postgresPassword =
+    process.env.POSTGRES_PASSWORD?.trim() || passwordFromDatabaseUrl(databaseUrl)
+  rejectWeakCredential(postgresPassword, 'POSTGRES_PASSWORD')
+
+  const mtxUser = process.env.MEDIAMTX_INTERNAL_USER?.trim()
+  const mtxPass = process.env.MEDIAMTX_INTERNAL_PASS?.trim()
+  rejectWeakCredential(mtxUser, 'MEDIAMTX_INTERNAL_USER')
+  rejectWeakCredential(mtxPass, 'MEDIAMTX_INTERNAL_PASS')
+  if (mtxUser && mtxPass && mtxUser === mtxPass) {
+    throw new Error(
+      'MEDIAMTX_INTERNAL_USER and MEDIAMTX_INTERNAL_PASS must not be identical in production',
+    )
   }
 
   const playbackSecret = process.env.PLAYBACK_TOKEN_SECRET?.trim()

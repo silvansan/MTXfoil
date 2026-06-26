@@ -28,7 +28,10 @@ export function MediaMtxLogs() {
       <CardContent className="space-y-3 text-sm">
         {logs?.message && <p className="text-zinc-400">{logs.message}</p>}
         {logs?.lines.length ? (
-          <pre className="max-h-64 overflow-auto rounded-md bg-zinc-950 p-3 font-mono text-xs text-zinc-300">
+          <pre
+            aria-label="MediaMTX log output"
+            className="max-h-64 overflow-auto rounded-md bg-zinc-950 p-3 font-mono text-xs text-zinc-300"
+          >
             {logs.lines.join('\n')}
           </pre>
         ) : (

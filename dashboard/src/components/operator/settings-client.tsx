@@ -36,7 +36,7 @@ export function SettingsClient() {
       </div>
 
       {preview && (
-        <Card>
+        <Card aria-live="polite">
           <CardHeader>
             <CardTitle>{preview.ok ? 'Diff preview' : 'Validation errors'}</CardTitle>
           </CardHeader>

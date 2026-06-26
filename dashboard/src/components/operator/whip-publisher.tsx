@@ -26,12 +26,16 @@ export function WhipPublisher({
             autoPlay
             muted
             playsInline
+            aria-label="Local camera preview"
             ref={(el) => {
               if (el) el.srcObject = localStream
             }}
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-zinc-500">
+          <div
+            className="flex h-full items-center justify-center text-sm text-zinc-500"
+            aria-hidden="true"
+          >
             Camera preview appears here when publishing starts.
           </div>
         )}
@@ -55,9 +59,15 @@ export function WhipPublisher({
       </div>
 
       {publishing && (
-        <p className="text-sm text-emerald-400">Publishing to MediaMTX via WHIP.</p>
+        <p className="text-sm text-emerald-400" role="status" aria-live="polite">
+          Publishing to MediaMTX via WHIP.
+        </p>
       )}
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && (
+        <p className="text-sm text-red-400" role="alert">
+          {error}
+        </p>
+      )}
       <p className="text-xs text-zinc-500">
         Endpoint: <span className="font-mono break-all">{whipUrl}</span>
       </p>

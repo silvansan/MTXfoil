@@ -51,7 +51,11 @@ export function DeleteStreamButton({
         <Trash2 className="h-3.5 w-3.5" />
         {busy ? 'Deleting…' : 'Delete'}
       </Button>
-      {error && <span className="text-xs text-red-400">{error}</span>}
+      {error && (
+        <span className="text-xs text-red-400" role="alert">
+          {error}
+        </span>
+      )}
     </>
   )
 }
