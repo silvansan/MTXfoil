@@ -14,7 +14,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PAYLOAD_DB_PUSH=$PAYLOAD_DB_PUSH
 ENV DATABASE_URL=postgres://build:build@localhost:5432/build
 ENV PAYLOAD_SECRET=build-time-secret-minimum-32-characters-long
-RUN npm run build
+RUN npm run generate:types && npm run build
 
 FROM base AS runner
 WORKDIR /app

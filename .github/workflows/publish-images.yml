@@ -56,9 +56,10 @@ jobs:
           build-args: ${{ matrix.payload_db_push != '' && format('PAYLOAD_DB_PUSH={0}', matrix.payload_db_push) || '' }}
 
       - name: Set GHCR package visibility to public
+        continue-on-error: true
         run: |
           gh api --method PATCH \
-            "/users/${GITHUB_REPOSITORY_OWNER,,}/packages/container/mtxfoil-${{ matrix.name }}/visibility" \
+            "/user/packages/container/mtxfoil-${{ matrix.name }}/visibility" \
             -f visibility=public
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

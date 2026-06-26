@@ -33,7 +33,7 @@ jobs:
           PAYLOAD_SECRET: ci-build-secret-minimum-32-characters-long
           PLAYBACK_TOKEN_SECRET: ci-playback-secret-minimum-32-characters
           PAYLOAD_DB_PUSH: 'false'
-        run: npm run build
+        run: npm run generate:types && npm run build
 
   worker:
     runs-on: ubuntu-latest
