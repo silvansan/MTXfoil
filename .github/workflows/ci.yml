@@ -64,9 +64,14 @@ jobs:
         env:
           PAYLOAD_SECRET: ci-compose-secret-minimum-32-characters
           PLAYBACK_TOKEN_SECRET: ci-playback-secret-minimum-32-characters
+          POSTGRES_PASSWORD: ci-postgres-password
           REDIS_PASSWORD: ci-redis-password
-          MEDIAMTX_INTERNAL_USER: mtxfoil
-          MEDIAMTX_INTERNAL_PASS: mtxfoil
+          MEDIAMTX_INTERNAL_USER: mtxctl_ci_user
+          MEDIAMTX_INTERNAL_PASS: ci-mediamtx-internal-password
+          PUBLIC_STREAM_DOMAIN: stream.example.com
+          DASHBOARD_PUBLIC_URL: https://mtxfoil.example.com
+          HLS_BASE_URL: https://stream.example.com/hls
+          WEBRTC_BASE_URL: https://stream.example.com/webrtc
         run: |
           docker compose -f docker-compose.yml config > /dev/null
           docker compose -f docker-compose.yml -f docker-compose.prod.yml config > /dev/null
