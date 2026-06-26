@@ -38,7 +38,7 @@ export default async function AuditPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           {logs.docs.length === 0 ? (
-            <p className="text-sm text-zinc-500">No audit events recorded yet.</p>
+            <p className="text-sm text-subtle">No audit events recorded yet.</p>
           ) : (
             logs.docs.map((entry) => {
               const actor =
@@ -53,15 +53,15 @@ export default async function AuditPage() {
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <Badge variant="muted">{entry.action}</Badge>
-                      <span className="text-sm text-zinc-700 dark:text-zinc-300">{entry.summary}</span>
+                      <span className="text-sm text-label">{entry.summary}</span>
                     </div>
-                    <p className="mt-1 text-xs text-zinc-500">
+                    <p className="mt-1 text-xs text-subtle">
                       {actor}
                       {entry.ip ? ` · ${entry.ip}` : ''}
                       {entry.resourceId ? ` · ${entry.resource}/${entry.resourceId}` : ` · ${entry.resource}`}
                     </p>
                   </div>
-                  <time className="text-xs text-zinc-500">
+                  <time className="text-xs text-subtle">
                     {entry.createdAt ? new Date(entry.createdAt).toLocaleString() : ''}
                   </time>
                 </div>

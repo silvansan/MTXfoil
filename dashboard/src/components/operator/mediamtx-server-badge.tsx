@@ -9,9 +9,9 @@ export function MediaMtxServerBadge() {
     <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
       <span>MediaMTX server:</span>
       <Badge variant="muted">{primary.name}</Badge>
-      <code className="text-xs text-zinc-500">{primary.apiUrl}</code>
+      <code className="text-xs text-subtle">{primary.apiUrl}</code>
       {multi && (
-        <span className="text-xs text-zinc-500">(+{servers.length - 1} more in MEDIAMTX_SERVERS)</span>
+        <span className="text-xs text-subtle">(+{servers.length - 1} more in MEDIAMTX_SERVERS)</span>
       )}
     </div>
   )

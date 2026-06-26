@@ -33,7 +33,7 @@ export function WhipPublisher({
           />
         ) : (
           <div
-            className="flex h-full items-center justify-center text-sm text-zinc-500"
+            className="flex h-full items-center justify-center text-sm text-subtle"
             aria-hidden="true"
           >
             Camera preview appears here when publishing starts.
@@ -68,7 +68,7 @@ export function WhipPublisher({
           {error}
         </p>
       )}
-      <p className="text-xs text-zinc-500">
+      <p className="text-xs text-subtle">
         Endpoint: <span className="font-mono break-all">{whipUrl}</span>
       </p>
     </div>

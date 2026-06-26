@@ -304,7 +304,7 @@ function OriginListEditor({
 
         {origins.length === 0 ? (
 
-          <p className="text-sm text-zinc-500">No origins configured</p>
+          <p className="text-sm text-subtle">No origins configured</p>
 
         ) : (
 
@@ -508,7 +508,7 @@ export function CorsManager({
 
       {dashboardUrl && (
 
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-subtle">
 
           Dashboard URL: <code className={inlineCodeClass}>{dashboardUrl}</code> — merged into CORS on apply when set
 
@@ -596,7 +596,7 @@ export function CorsManager({
 
             {settings.trustedProxies.length === 0 ? (
 
-              <p className="text-sm text-zinc-500">
+              <p className="text-sm text-subtle">
 
                 No trusted proxies configured. After TLS deploy, add NPM or Docker network IPs (e.g.{' '}
 
@@ -753,7 +753,7 @@ export function CorsManager({
           )}
 
           {presets.length === 0 && presetMode === 'none' ? (
-            <p className="text-sm text-zinc-500">No presets yet — create one above.</p>
+            <p className="text-sm text-subtle">No presets yet — create one above.</p>
           ) : (
             presets.map((preset) => (
               <ClickableRow
@@ -771,15 +771,15 @@ export function CorsManager({
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{preset.name}</p>
                   {preset.description ? (
-                    <p className="text-sm text-zinc-500">{preset.description}</p>
+                    <p className="text-sm text-subtle">{preset.description}</p>
                   ) : null}
                   {preset.origins.length > 0 ? (
-                    <p className="mt-1 font-mono text-xs text-zinc-500">
+                    <p className="mt-1 font-mono text-xs text-subtle">
                       {preset.origins.join(', ')}
                     </p>
                   ) : null}
                   {preset.services.length > 0 ? (
-                    <p className="mt-1 text-xs text-zinc-500">Services: {preset.services.join(', ')}</p>
+                    <p className="mt-1 text-xs text-subtle">Services: {preset.services.join(', ')}</p>
                   ) : null}
                 </div>
                 <div className="flex flex-wrap gap-2" data-no-row-nav>

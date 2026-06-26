@@ -71,7 +71,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
         <div className="space-y-4">
           <h1 className="text-2xl font-bold">Password required</h1>
           <p className="text-muted">Enter the playback password to watch this stream.</p>
-          <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
+          <Suspense fallback={<p className="text-sm text-subtle">Loading…</p>}>
             <PlaybackPasswordGate slug={stream.slug} />
           </Suspense>
         </div>
@@ -112,7 +112,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-subtle">
           <Link href={`/streams/${stream.slug}`} className="hover:underline">{stream.name}</Link>
         </p>
         <h1 className="text-3xl font-bold">Player</h1>
@@ -127,7 +127,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
         <CardContent className="space-y-3">
           <CodeSnippet value={embed} copyLabel="Copy embed" />
           {stream.authMode === 'token' && (
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-subtle">
               For token-gated playback, append <code>?token=...</code> from an operator-issued token.
             </p>
           )}
@@ -139,7 +139,7 @@ export default async function PlayerPage({ params, searchParams }: Props) {
           <CardTitle>WordPress shortcode</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-subtle">
             Paste into a post or page after installing the{' '}
             <a
               href="https://github.com/silvansan/MTXfoil/tree/main/deploy/wordpress/mtxfoil-player"

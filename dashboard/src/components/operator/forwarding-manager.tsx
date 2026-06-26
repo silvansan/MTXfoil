@@ -345,7 +345,7 @@ export function ForwardingManager({
         )}
         {jobs.length === 0 && !creating && (
           <Card>
-            <CardContent className="py-8 text-center text-zinc-500">
+            <CardContent className="py-8 text-center text-subtle">
               No forwarding jobs yet.
               {canManage ? ' Create one to restream a path to an external destination.' : ''}
             </CardContent>

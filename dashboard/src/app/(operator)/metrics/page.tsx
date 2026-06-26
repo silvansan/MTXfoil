@@ -99,10 +99,10 @@ export default async function MetricsPage() {
                 <Link
                   key={p.name}
                   href={`/streams/${p.name}`}
-                  className="flex justify-between gap-4 rounded-md px-1 py-0.5 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                  className="flex justify-between gap-4 rounded-md px-1 py-0.5 transition-colors hover:bg-surface-muted"
                 >
                   <span>{p.name}</span>
-                  <span className="text-zinc-500">
+                  <span className="text-subtle">
                     ↓{p.bytesReceived} ↑{p.bytesSent}
                   </span>
                 </Link>

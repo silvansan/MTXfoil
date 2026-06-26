@@ -44,7 +44,7 @@ export function OperatorNav({
       })
 
   return (
-    <header className="border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
+    <header className="nav-bar">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4">
         <MtxfoilLogo />
         <div className="flex flex-wrap items-center gap-1">
@@ -58,10 +58,8 @@ export function OperatorNav({
                   href={link.href}
                   aria-current={isActive ? 'page' : undefined}
                   className={cn(
-                    'rounded-md px-3 py-1.5 text-sm transition-colors',
-                    isActive
-                      ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100'
-                      : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-200',
+                    'nav-link',
+                    isActive ? 'nav-link-active' : 'nav-link-inactive',
                   )}
                 >
                   {link.label}
@@ -71,7 +69,7 @@ export function OperatorNav({
             {showAdmin && (
               <Link
                 href="/admin/collections/streams"
-                className="ml-2 rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                className="nav-link-admin"
               >
                 Payload CMS
               </Link>

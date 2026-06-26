@@ -70,7 +70,7 @@ export default async function RecordingsPage() {
         ))}
         {items.length === 0 && (
           <Card>
-            <CardContent className="py-8 text-center text-zinc-500">No recordings found.</CardContent>
+            <CardContent className="py-8 text-center text-subtle">No recordings found.</CardContent>
           </Card>
         )}
       </div>

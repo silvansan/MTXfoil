@@ -6,77 +6,432 @@
   --font-sans: ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ── MTXfoil design tokens (operator UI) ───────────────────────────── */
 :root {
   color-scheme: light;
+
+  --mtx-bg: #ffffff;
+  --mtx-bg-subtle: #fafafa;
+  --mtx-bg-muted: #f4f4f5;
+  --mtx-bg-code: #f4f4f5;
+  --mtx-bg-elevated: #ffffff;
+  --mtx-bg-hover: #f4f4f5;
+
+  --mtx-text: #18181b;
+  --mtx-text-muted: #52525b;
+  --mtx-text-subtle: #71717a;
+  --mtx-text-label: #3f3f46;
+  --mtx-text-value: #27272a;
+  --mtx-text-code: #3f3f46;
+
+  --mtx-border: #e4e4e7;
+  --mtx-border-subtle: #f4f4f5;
+  --mtx-border-input: #d4d4d8;
+  --mtx-border-input-focus: #71717a;
+
+  --mtx-input-bg: #ffffff;
+  --mtx-input-text: #18181b;
+  --mtx-input-placeholder: #71717a;
+
+  --mtx-ring: #a1a1aa;
+  --mtx-ring-offset: #ffffff;
+
+  --mtx-error-bg: #fef2f2;
+  --mtx-error-border: #fca5a5;
+  --mtx-error-text: #b91c1c;
+
+  --mtx-accent-border: rgb(16 185 129 / 0.4);
+  --mtx-accent-bg: rgb(16 185 129 / 0.05);
+  --mtx-accent-text: #047857;
 }
 
 .dark {
   color-scheme: dark;
+
+  --mtx-bg: #09090b;
+  --mtx-bg-subtle: #18181b;
+  --mtx-bg-muted: #27272a;
+  --mtx-bg-code: #09090b;
+  --mtx-bg-elevated: rgb(24 24 27 / 0.5);
+  --mtx-bg-hover: #27272a;
+
+  --mtx-text: #fafafa;
+  --mtx-text-muted: #a1a1aa;
+  --mtx-text-subtle: #71717a;
+  --mtx-text-label: #d4d4d8;
+  --mtx-text-value: #e4e4e7;
+  --mtx-text-code: #d4d4d8;
+
+  --mtx-border: #27272a;
+  --mtx-border-subtle: #27272a;
+  --mtx-border-input: #3f3f46;
+  --mtx-border-input-focus: #71717a;
+
+  --mtx-input-bg: #09090b;
+  --mtx-input-text: #f4f4f5;
+  --mtx-input-placeholder: #52525b;
+
+  --mtx-ring: #71717a;
+  --mtx-ring-offset: #09090b;
+
+  --mtx-error-bg: rgb(69 10 10 / 0.5);
+  --mtx-error-border: #7f1d1d;
+  --mtx-error-text: #fca5a5;
+
+  --mtx-accent-border: rgb(16 185 129 / 0.4);
+  --mtx-accent-bg: rgb(16 185 129 / 0.1);
+  --mtx-accent-text: #a7f3d0;
 }
 
-html {
-  @apply bg-white dark:bg-zinc-950;
+/* Operator UI only — Payload admin uses html[data-theme] instead of .dark */
+html:not([data-theme]) {
+  background-color: var(--mtx-bg);
 }
 
-body {
-  @apply min-h-screen bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-50;
+html:not([data-theme]) body {
+  min-height: 100vh;
+  background-color: var(--mtx-bg);
+  color: var(--mtx-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-  @apply text-inherit;
+  color: inherit;
 }
 
-/* Shared muted text for operator UI */
+/* ── Semantic text utilities ───────────────────────────────────────── */
 .text-muted {
-  @apply text-zinc-600 dark:text-zinc-400;
+  color: var(--mtx-text-muted);
 }
 
-.bg-code {
-  @apply bg-zinc-100 dark:bg-zinc-950;
+.text-subtle {
+  color: var(--mtx-text-subtle);
+}
+
+.text-label {
+  color: var(--mtx-text-label);
+}
+
+.text-value {
+  color: var(--mtx-text-value);
 }
 
 .text-code {
-  @apply text-zinc-700 dark:text-zinc-300;
+  color: var(--mtx-text-code);
 }
 
+.text-hint {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--mtx-text-subtle);
+}
+
+/* ── Surface & layout utilities ────────────────────────────────────── */
+.bg-surface {
+  background-color: var(--mtx-bg);
+}
+
+.bg-surface-subtle {
+  background-color: var(--mtx-bg-subtle);
+}
+
+.bg-surface-muted {
+  background-color: var(--mtx-bg-muted);
+}
+
+.bg-code {
+  background-color: var(--mtx-bg-code);
+}
+
+.bg-elevated {
+  background-color: var(--mtx-bg-elevated);
+}
+
+.border-default {
+  border-color: var(--mtx-border);
+}
+
+.border-subtle {
+  border-color: var(--mtx-border-subtle);
+}
+
+/* ── Form controls ─────────────────────────────────────────────────── */
 .input-field {
-  @apply w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-600;
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border-input);
+  background-color: var(--mtx-input-bg);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-input-text);
 }
 
-/* Video.js — align with operator zinc palette in both themes */
+.input-field::placeholder {
+  color: var(--mtx-input-placeholder);
+}
+
+.input-field:focus {
+  border-color: var(--mtx-border-input-focus);
+  outline: none;
+}
+
+.input-field-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-text-label);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border);
+  padding: 1rem;
+}
+
+.error-banner {
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-error-border);
+  background-color: var(--mtx-error-bg);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-error-text);
+}
+
+.panel {
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border);
+  background-color: var(--mtx-bg-elevated);
+  padding: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.chip {
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border-input);
+  background-color: var(--mtx-bg-subtle);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--mtx-text-label);
+}
+
+.stat-box {
+  border-radius: 0.375rem;
+  background-color: var(--mtx-bg-code);
+  padding: 0.75rem;
+}
+
+.stat-value {
+  margin-top: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--mtx-text-value);
+}
+
+.url-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background-color: var(--mtx-bg-code);
+  padding: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .url-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.url-row-primary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-accent-border);
+  background-color: var(--mtx-accent-bg);
+  padding: 0.75rem;
+  color: var(--mtx-accent-text);
+}
+
+@media (min-width: 640px) {
+  .url-row-primary {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.url-row-value {
+  overflow-wrap: anywhere;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-text-value);
+}
+
+.code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  background-color: var(--mtx-bg-code);
+  padding: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.inline-code {
+  color: var(--mtx-text-code);
+}
+
+.section-divider {
+  border-top: 1px solid var(--mtx-border);
+  padding-top: 1rem;
+}
+
+.list-item-code {
+  border-radius: 0.25rem;
+  background-color: var(--mtx-bg-code);
+  padding: 0.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.protocol-toggle-active {
+  border-radius: 0.375rem;
+  border: 1px solid rgb(16 185 129);
+  background-color: rgb(16 185 129 / 0.2);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-accent-text);
+  transition: color 150ms, background-color 150ms, border-color 150ms;
+}
+
+.protocol-toggle-inactive {
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border-input);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-text-muted);
+  transition: color 150ms, background-color 150ms, border-color 150ms;
+}
+
+.protocol-toggle-inactive:hover {
+  background-color: var(--mtx-bg-hover);
+}
+
+.nav-bar {
+  border-bottom: 1px solid var(--mtx-border);
+  background-color: color-mix(in srgb, var(--mtx-bg) 80%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.nav-link {
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition: color 150ms, background-color 150ms;
+}
+
+.nav-link-active {
+  background-color: var(--mtx-bg-muted);
+  color: var(--mtx-text);
+}
+
+.nav-link-inactive {
+  color: var(--mtx-text-muted);
+}
+
+.nav-link-inactive:hover {
+  background-color: var(--mtx-bg-hover);
+  color: var(--mtx-text);
+}
+
+.nav-link-admin {
+  margin-left: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border-input);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--mtx-text-label);
+  transition: background-color 150ms;
+}
+
+.interactive-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mtx-border-input);
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--mtx-text-label);
+  transition: background-color 150ms;
+}
+
+.interactive-chip:hover {
+  background-color: var(--mtx-bg-hover);
+}
+
 .video-js {
-  @apply text-zinc-900 dark:text-zinc-50;
+  color: var(--mtx-text);
   font-family: inherit;
 }
 
 .video-js .vjs-big-play-button {
-  @apply border-zinc-300 bg-zinc-100/85 dark:border-zinc-600 dark:bg-zinc-900/85;
+  border-color: var(--mtx-border-input);
+  background-color: color-mix(in srgb, var(--mtx-bg-muted) 85%, transparent);
 }
 
 .video-js:hover .vjs-big-play-button,
 .video-js .vjs-big-play-button:focus {
-  @apply border-zinc-400 bg-zinc-200/95 dark:border-zinc-500 dark:bg-zinc-800/95;
+  border-color: var(--mtx-border-input-focus);
+  background-color: color-mix(in srgb, var(--mtx-bg-hover) 95%, transparent);
 }
 
 .video-js .vjs-control-bar {
-  @apply bg-white/90 dark:bg-zinc-950/90;
+  background-color: color-mix(in srgb, var(--mtx-bg) 90%, transparent);
 }
 
 .video-js .vjs-slider {
-  @apply bg-zinc-300 dark:bg-zinc-700;
+  background-color: var(--mtx-border-input);
 }
 
 .video-js .vjs-play-progress,
 .video-js .vjs-volume-level {
-  @apply bg-emerald-500;
+  background-color: #10b981;
 }
 
 .video-js .vjs-load-progress {
-  @apply bg-zinc-200 dark:bg-zinc-800;
+  background-color: var(--mtx-bg-muted);
 }
 
 .video-js .vjs-load-progress div {
-  @apply bg-zinc-300 dark:bg-zinc-700;
+  background-color: var(--mtx-border-input);
 }
 
 @keyframes accordion-down {

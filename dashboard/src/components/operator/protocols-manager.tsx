@@ -72,8 +72,8 @@ function CheckboxRow({
         className="mt-1"
       />
       <span>
-        <span className="text-zinc-900 dark:text-zinc-200">{label}</span>
-        {hint ? <p className="mt-0.5 text-xs text-zinc-500">{hint}</p> : null}
+        <span className="text-value">{label}</span>
+        {hint ? <p className="mt-0.5 text-xs text-subtle">{hint}</p> : null}
       </span>
     </label>
   )
@@ -107,7 +107,7 @@ function TextField({
         placeholder={placeholder}
         disabled={disabled}
       />
-      {hint ? <p className="text-xs text-zinc-500">{hint}</p> : null}
+      {hint ? <p className="text-xs text-subtle">{hint}</p> : null}
     </div>
   )
 }
@@ -242,7 +242,7 @@ export function ProtocolsManager({
         />
         <div className={sectionDividerClass}>
           <div className="mb-3 flex items-center gap-2">
-            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">RTMPS</span>
+            <span className="text-sm font-medium text-label">RTMPS</span>
             {settings.rtmpsEnabled && (
               <Badge variant={rtmpsCertsReady ? 'success' : 'warning'}>
                 {rtmpsCertsReady ? 'Certs configured' : 'Certs missing'}
@@ -388,7 +388,7 @@ export function ProtocolsManager({
       </SectionCard>
 
       <SectionCard id="auth" title="Authentication">
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-subtle">
           MediaMTX auth method is server-wide. Internal mode keeps per-stream authMode; HTTP and JWT
           delegate authorization globally.
         </p>
@@ -459,7 +459,7 @@ export function ProtocolsManager({
           {submitting ? 'Saving…' : 'Save protocol settings'}
         </Button>
       ) : (
-        <p className="text-sm text-zinc-500">Admin role required to edit protocol settings.</p>
+        <p className="text-sm text-subtle">Admin role required to edit protocol settings.</p>
       )}
     </form>
   )

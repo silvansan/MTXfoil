@@ -38,7 +38,7 @@ export function ConnectionSessionsCard({
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-800">
+                <tr className="border-b border-default text-subtle">
                   <th className="pb-2 pr-3 font-medium">Path</th>
                   <th className="pb-2 pr-3 font-medium">Remote</th>
                   <th className="pb-2 font-medium">State</th>
@@ -51,7 +51,7 @@ export function ConnectionSessionsCard({
                     className="border-b border-zinc-100 last:border-0 dark:border-zinc-900"
                   >
                     <td className="py-1.5 pr-3">{row.path || '—'}</td>
-                    <td className="py-1.5 pr-3 text-zinc-500">{row.remoteAddr || '—'}</td>
+                    <td className="py-1.5 pr-3 text-subtle">{row.remoteAddr || '—'}</td>
                     <td className="py-1.5">{row.state || '—'}</td>
                   </tr>
                 ))}

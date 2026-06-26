@@ -54,7 +54,7 @@ export function MediaMtxLogs() {
         )}
 
         {!loading && !loadError && logs?.source === 'instructions' && logs.message && (
-          <p className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-muted dark:border-zinc-800 dark:bg-zinc-900/50">
+          <p className="rounded-md border border-default bg-surface-subtle p-3 text-muted">
             {logs.message}
           </p>
         )}

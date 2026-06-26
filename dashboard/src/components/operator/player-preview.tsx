@@ -78,7 +78,7 @@ export function PlayerPreview({
             className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-black/70 text-center"
           >
             <p className="text-sm font-medium text-white">Stream is offline</p>
-            <p className="mt-1 px-4 text-xs text-zinc-200 dark:text-zinc-300">{offlineMessage}</p>
+            <p className="mt-1 px-4 text-xs text-subtle">{offlineMessage}</p>
           </div>
         )}
       </div>

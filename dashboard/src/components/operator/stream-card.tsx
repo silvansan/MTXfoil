@@ -51,14 +51,14 @@ export function StreamCard({ stream, status, urls }: StreamCardProps) {
 
           <div className="flex items-center gap-3 text-xs text-muted">
             <span>
-              <span className="text-zinc-500">Readers</span>{' '}
-              <span className="font-mono text-zinc-800 dark:text-zinc-200">{status?.readerCount ?? 0}</span>
+              <span className="text-subtle">Readers</span>{' '}
+              <span className="font-mono text-value">{status?.readerCount ?? 0}</span>
             </span>
             {urls && (
               <button
                 type="button"
                 data-no-row-nav
-                className="inline-flex items-center gap-1 rounded-md border border-zinc-300 px-2 py-0.5 text-xs text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                className="interactive-chip"
                 onClick={() => setUrlsOpen((v) => !v)}
                 aria-expanded={urlsOpen}
               >
@@ -91,7 +91,7 @@ function UrlRow({
 }) {
   return (
     <div className={cn('bg-code flex items-center gap-2 rounded-md px-2 py-1 font-mono text-xs')}>
-      <span className="shrink-0 text-zinc-500">{label}</span>
+      <span className="shrink-0 text-subtle">{label}</span>
       <span className="min-w-0 flex-1 truncate">{value}</span>
       <CopyButton value={value} label={copyLabel} />
     </div>

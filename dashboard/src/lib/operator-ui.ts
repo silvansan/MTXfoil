@@ -1,51 +1,40 @@
 import { cn } from '@/lib/utils'
 
-/** Theme-aware form input — mirrors globals.css `.input-field` */
-export const inputClass =
-  'w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-600'
+/** Theme-aware form input — uses CSS variables from globals.css */
+export const inputClass = 'input-field'
 
-export const inputMonoClass = cn(inputClass, 'font-mono')
+export const inputMonoClass = cn(inputClass, 'input-field-mono')
 
-export const labelClass = 'text-sm font-medium text-zinc-700 dark:text-zinc-300'
+export const labelClass = 'text-sm font-medium text-label'
 
-export const checkboxLabelClass =
-  'flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300'
+export const checkboxLabelClass = 'checkbox-label'
 
-export const codeRowClass =
-  'flex items-center justify-between gap-2 rounded-md bg-code p-2 font-mono text-xs'
+export const codeRowClass = 'code-row'
 
-export const urlRowClass =
-  'flex flex-col gap-2 rounded-md bg-code p-3 sm:flex-row sm:items-center sm:justify-between'
+export const urlRowClass = 'url-row'
 
-export const urlRowPrimaryClass =
-  'flex flex-col gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/5 p-3 sm:flex-row sm:items-center sm:justify-between dark:bg-emerald-500/10'
+export const urlRowPrimaryClass = 'url-row-primary'
 
-export const urlRowValueClass = 'font-mono text-sm break-all text-zinc-900 dark:text-zinc-100'
+export const urlRowValueClass = 'url-row-value'
 
-export const panelClass =
-  'rounded-md border border-zinc-200 bg-white p-3 shadow-xl dark:border-zinc-700 dark:bg-zinc-900'
+export const panelClass = 'panel'
 
-export const statBoxClass = 'rounded-md bg-code p-3'
+export const statBoxClass = 'stat-box'
 
-export const statValueClass = 'mt-1 font-mono text-base text-zinc-900 dark:text-zinc-100'
+export const statValueClass = 'stat-value'
 
-export const chipClass =
-  'rounded-md border border-zinc-300 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300'
+export const chipClass = 'chip'
 
-export const protocolToggleActive =
-  'rounded-md border border-emerald-500 bg-emerald-500/20 px-3 py-1.5 text-sm text-emerald-700 transition-colors dark:text-emerald-200'
+export const protocolToggleActive = 'protocol-toggle-active'
 
-export const protocolToggleInactive =
-  'rounded-md border border-zinc-300 px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800'
+export const protocolToggleInactive = 'protocol-toggle-inactive'
 
-export const errorBannerClass =
-  'rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/50 dark:text-red-300'
+export const errorBannerClass = 'error-banner'
 
-export const formSectionBorderClass =
-  'space-y-4 rounded-md border border-zinc-200 p-4 dark:border-zinc-700'
+export const formSectionBorderClass = 'form-section'
 
-export const inlineCodeClass = 'text-zinc-700 dark:text-zinc-300'
+export const inlineCodeClass = 'inline-code'
 
-export const sectionDividerClass = 'border-t border-zinc-200 pt-4 dark:border-zinc-800'
+export const sectionDividerClass = 'section-divider'
 
-export const listItemCodeClass = 'rounded bg-code p-2 font-mono text-xs'
+export const listItemCodeClass = 'list-item-code'

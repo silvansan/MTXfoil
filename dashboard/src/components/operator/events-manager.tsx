@@ -286,9 +286,9 @@ export function EventsManager({
                   {ev.date && <p>Date: {new Date(ev.date).toLocaleDateString()}</p>}
                   {ev.description && <p>{ev.description}</p>}
                   <div className="pt-2">
-                    <p className="text-xs uppercase tracking-wide text-zinc-500">Streams ({ev.streams.length})</p>
+                    <p className="text-xs uppercase tracking-wide text-subtle">Streams ({ev.streams.length})</p>
                     {ev.streams.length === 0 ? (
-                      <p className="text-zinc-500">No streams linked to this event.</p>
+                      <p className="text-subtle">No streams linked to this event.</p>
                     ) : (
                       <ul className="mt-1 space-y-1">
                         {ev.streams.map((s) => (
@@ -324,7 +324,7 @@ export function EventsManager({
         )}
         {events.length === 0 && !creating && (
           <Card className="md:col-span-2">
-            <CardContent className="py-8 text-center text-zinc-500">
+            <CardContent className="py-8 text-center text-subtle">
               No events yet.{canManage ? ' Create one to group streams.' : ''}
             </CardContent>
           </Card>

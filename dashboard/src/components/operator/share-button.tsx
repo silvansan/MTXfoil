@@ -19,7 +19,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   }
   return (
     <div className="space-y-1">
-      <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
+      <p className="text-xs uppercase tracking-wide text-subtle">{label}</p>
       <div className={codeRowClass}>
         <span className="truncate text-zinc-900 dark:text-zinc-100">{value}</span>
         <Button variant="outline" size="sm" type="button" onClick={copy}>
@@ -113,7 +113,7 @@ export function ShareButton({
           <CopyRow label="Embed (iframe)" value={buildEmbed(playerUrl)} />
           {isToken && (
             <div className="space-y-2 border-t border-zinc-200 pt-2 dark:border-zinc-800">
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-subtle">
                 This stream requires a playback token. Generate a time-limited shareable link.
               </p>
               {tokenUrl ? (

@@ -192,17 +192,17 @@ export function SystemMetricsPanel({
 
         {metrics && (
           <div>
-            <p className="text-xs uppercase tracking-wide text-zinc-500">
+            <p className="text-xs uppercase tracking-wide text-subtle">
               MediaMTX connections {totalConns > 0 ? `(${totalConns})` : ''}
             </p>
             {connEntries.length === 0 ? (
-              <p className="mt-1 text-zinc-500">No active connections.</p>
+              <p className="mt-1 text-subtle">No active connections.</p>
             ) : (
               <div className="mt-2 flex flex-wrap gap-2">
                 {connEntries.map(([name, count]) => (
                   <span
                     key={name}
-                    className="rounded-md border border-zinc-300 bg-zinc-50 px-2.5 py-1 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-300"
+                    className="chip"
                   >
                     {labelFor(name)}: <span className="font-semibold text-emerald-600 dark:text-emerald-300">{count}</span>
                   </span>
@@ -218,10 +218,10 @@ export function SystemMetricsPanel({
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="rounded-md border border-zinc-200 bg-zinc-50 p-2.5 dark:border-zinc-800 dark:bg-zinc-950">
-      <p className="text-[10px] uppercase tracking-wide text-zinc-500">{label}</p>
-      <p className="mt-0.5 font-mono text-sm text-zinc-900 dark:text-zinc-100">{value}</p>
-      {hint && <p className="mt-0.5 truncate text-[10px] text-zinc-500">{hint}</p>}
+    <div className="stat-box border border-default">
+      <p className="text-[10px] uppercase tracking-wide text-subtle">{label}</p>
+      <p className="mt-0.5 font-mono text-sm text-value">{value}</p>
+      {hint && <p className="mt-0.5 truncate text-[10px] text-subtle">{hint}</p>}
     </div>
   )
 }
@@ -248,12 +248,12 @@ function MetricChart({
   return (
     <div className="rounded-md border border-zinc-200 p-3 dark:border-zinc-800">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400">{title}</p>
-        <p className="font-mono text-xs text-zinc-800 dark:text-zinc-200">{display}</p>
+        <p className="text-xs font-medium text-muted">{title}</p>
+        <p className="font-mono text-xs text-value">{display}</p>
       </div>
       <Sparkline values={values} maxY={maxY} />
       {values.length === 0 && (
-        <p className="mt-1 text-center text-[10px] text-zinc-500">No samples yet — leave dashboard open to collect.</p>
+        <p className="mt-1 text-center text-[10px] text-subtle">No samples yet — leave dashboard open to collect.</p>
       )}
     </div>
   )
@@ -261,7 +261,7 @@ function MetricChart({
 
 function Sparkline({ values, maxY }: { values: number[]; maxY?: number }) {
   if (values.length < 2) {
-    return <div className="h-16 rounded bg-zinc-100 dark:bg-zinc-900" />
+    return <div className="h-16 rounded bg-surface-muted" />
   }
 
   const width = 320

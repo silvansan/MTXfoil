@@ -51,7 +51,7 @@ export function MetricsSummary({
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Live Metrics</span>
-          <span className="text-sm font-normal text-zinc-500">{metrics.paths.length} active paths</span>
+          <span className="text-sm font-normal text-subtle">{metrics.paths.length} active paths</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 text-sm">
@@ -63,11 +63,11 @@ export function MetricsSummary({
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-wide text-zinc-500">
+          <p className="text-xs uppercase tracking-wide text-subtle">
             Connections {totalConns > 0 ? `(${totalConns})` : ''}
           </p>
           {connEntries.length === 0 ? (
-            <p className="mt-1 text-zinc-500">No active connections.</p>
+            <p className="mt-1 text-subtle">No active connections.</p>
           ) : (
             <div className="mt-2 flex flex-wrap gap-2">
               {connEntries.map(([name, count]) => (
@@ -89,7 +89,7 @@ export function MetricsSummary({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className={statBoxClass}>
-      <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
+      <p className="text-xs uppercase tracking-wide text-subtle">{label}</p>
       <p className={statValueClass}>{value}</p>
     </div>
   )

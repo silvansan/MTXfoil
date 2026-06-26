@@ -203,7 +203,7 @@ export function StreamForm({
                 required
                 readOnly={isEdit}
               />
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-subtle">
                 {isEdit
                   ? 'Slug is the MediaMTX path and cannot be changed after creation.'
                   : 'MediaMTX path name. Lowercase, no spaces.'}
@@ -261,7 +261,7 @@ export function StreamForm({
                 onChange={(e) => setSourceUrl(e.target.value)}
                 placeholder="rtsp://camera.local:554/stream"
               />
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-subtle">
                 Scheme sets the pull protocol (rtsp / rtmp / srt / http HLS).
               </p>
             </div>
@@ -284,7 +284,7 @@ export function StreamForm({
                   </option>
                 ))}
               </select>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-subtle">
                 How your source publishes into MediaMTX. Determines the ingest URL shown on the
                 stream page. MediaMTX still accepts any enabled publish protocol.
               </p>
@@ -293,7 +293,7 @@ export function StreamForm({
 
           <div className="space-y-1.5">
             <span className={labelClass}>Playback protocols</span>
-            <p className="text-xs text-zinc-500">Read endpoints advertised to viewers.</p>
+            <p className="text-xs text-subtle">Read endpoints advertised to viewers.</p>
             <div className="flex flex-wrap gap-2">
               {PROTOCOLS.map((p) => {
                 const active = enabledProtocols.includes(p.value)

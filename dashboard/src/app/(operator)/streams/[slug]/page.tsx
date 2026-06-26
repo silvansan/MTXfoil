@@ -34,7 +34,7 @@ type UrlRow = { label: string; value: string; primary?: boolean }
 
 function UrlList({ rows }: { rows: UrlRow[] }) {
   if (rows.length === 0) {
-    return <p className="text-sm text-zinc-500">None enabled.</p>
+    return <p className="text-sm text-subtle">None enabled.</p>
   }
   return (
     <div className="space-y-3">
@@ -44,7 +44,7 @@ function UrlList({ rows }: { rows: UrlRow[] }) {
           className={row.primary ? urlRowPrimaryClass : urlRowClass}
         >
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-wide text-zinc-500">
+            <p className="text-xs uppercase tracking-wide text-subtle">
               {row.label}
               {row.primary ? ' · primary' : ''}
             </p>
@@ -105,7 +105,7 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
       )}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-subtle">
             <Link href="/streams" className="hover:underline">Streams</Link> / {stream.slug}
           </p>
           <h1 className="text-3xl font-bold">{stream.name}</h1>
@@ -169,13 +169,13 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
           <CardContent className="space-y-3">
             <div className="space-y-1 text-sm text-muted">
               <p>
-                Source type: <span className="text-zinc-200">{sourceType}</span>
+                Source type: <span className="text-value">{sourceType}</span>
               </p>
               <p className="break-all">
                 Pull source:{' '}
-                <span className="font-mono text-zinc-200">{stream.sourceUrl || '—'}</span>
+                <span className="font-mono text-value">{stream.sourceUrl || '—'}</span>
               </p>
-              <p className="text-zinc-500">
+              <p className="text-subtle">
                 MediaMTX pulls this source on demand; there is no push ingest URL.
               </p>
             </div>
@@ -191,7 +191,7 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
           {stream.playbackEnabled ?? true ? (
             <UrlList rows={playbackRows} />
           ) : (
-            <p className="text-sm text-zinc-500">Playback is disabled for this stream.</p>
+            <p className="text-sm text-subtle">Playback is disabled for this stream.</p>
           )}
         </CardContent>
       </Card>

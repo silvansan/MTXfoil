@@ -40,7 +40,7 @@ export default async function NewStreamPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-subtle">
           <Link href="/streams" className="hover:underline">
             Streams
           </Link>{' '}

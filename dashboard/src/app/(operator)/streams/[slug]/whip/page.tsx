@@ -60,7 +60,7 @@ export default async function WhipPublishPage({ params }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-subtle">
           <Link href="/streams" className="hover:underline">
             Streams
           </Link>{' '}
@@ -72,7 +72,7 @@ export default async function WhipPublishPage({ params }: Props) {
         </p>
         <h1 className="text-3xl font-bold">Browser publish (WHIP)</h1>
         <p className="mt-2 text-muted">
-          Publish camera and microphone to <span className="font-mono text-zinc-200">{stream.slug}</span>{' '}
+          Publish camera and microphone to <span className="font-mono text-value">{stream.slug}</span>{' '}
           via WebRTC WHIP. For external encoders, copy the WHIP URL below.
         </p>
       </div>
