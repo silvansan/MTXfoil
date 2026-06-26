@@ -19,6 +19,7 @@
     "@payloadcms/next": "3.84.1",
     "@payloadcms/richtext-lexical": "3.84.1",
     "@payloadcms/ui": "3.84.1",
+    "@radix-ui/react-accordion": "^1.2.14",
     "@radix-ui/react-slot": "^1.2.3",
     "bull": "^4.16.5",
     "class-variance-authority": "^0.7.1",

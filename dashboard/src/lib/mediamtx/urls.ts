@@ -68,6 +68,59 @@ export const INGEST_PROTOCOL_HINTS: Record<IngestProtocol, string> = {
   webrtc: 'Publish from a browser or WHIP-capable encoder to the WHIP endpoint.',
 }
 
+/** Global ProtocolSettings toggles that gate ingest (publish) endpoints. */
+export type IngestProtocolAvailability = Record<IngestProtocol, boolean>
+
+export function getIngestAvailabilityFromSettings(settings: {
+  srtEnabled?: boolean | null
+  rtmpEnabled?: boolean | null
+  rtmpsEnabled?: boolean | null
+  rtspEnabled?: boolean | null
+  webrtcEnabled?: boolean | null
+}): IngestProtocolAvailability {
+  return {
+    srt: settings.srtEnabled ?? true,
+    rtmp: settings.rtmpEnabled ?? true,
+    rtmps: settings.rtmpsEnabled ?? false,
+    rtsp: settings.rtspEnabled ?? true,
+    webrtc: settings.webrtcEnabled ?? true,
+  }
+}
+
+/** Ingest protocols enabled globally, with the stream primary listed first. */
+export function getAvailableIngestProtocols(
+  ingestProtocol: IngestProtocol,
+  availability: IngestProtocolAvailability,
+): IngestProtocol[] {
+  const enabled = INGEST_PROTOCOLS.filter((p) => availability[p])
+  if (enabled.length === 0) return []
+  if (availability[ingestProtocol]) {
+    return [ingestProtocol, ...enabled.filter((p) => p !== ingestProtocol)]
+  }
+  return enabled
+}
+
+/** Playback protocols enabled on the stream and globally in ProtocolSettings. */
+export function getAvailablePlaybackProtocols(
+  streamEnabled: string[],
+  settings: {
+    srtEnabled?: boolean | null
+    rtmpEnabled?: boolean | null
+    rtspEnabled?: boolean | null
+    webrtcEnabled?: boolean | null
+    hlsEnabled?: boolean | null
+  },
+): PlaybackProtocol[] {
+  const global: Record<PlaybackProtocol, boolean> = {
+    hls: settings.hlsEnabled ?? true,
+    webrtc: settings.webrtcEnabled ?? true,
+    rtsp: settings.rtspEnabled ?? true,
+    rtmp: settings.rtmpEnabled ?? true,
+    srt: settings.srtEnabled ?? true,
+  }
+  return PLAYBACK_PROTOCOLS.filter((p) => streamEnabled.includes(p) && global[p])
+}
+
 export function applyTemplate(template: string, vars: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(vars[key] ?? `{${key}}`))
 }

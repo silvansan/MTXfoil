@@ -16,9 +16,10 @@ import { canManageStreams, isAdmin } from '@/lib/permissions'
 import { loadUrlTemplates } from '@/lib/url-templates'
 import {
   buildStreamUrls,
+  getAvailablePlaybackProtocols,
+  getIngestAvailabilityFromSettings,
   getPlaybackUrl,
   PLAYBACK_PROTOCOL_LABELS,
-  PLAYBACK_PROTOCOLS,
   type IngestProtocol,
   type PlaybackProtocol,
 } from '@/lib/mediamtx/urls'
@@ -75,6 +76,8 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
 
   const urlTemplates = await loadUrlTemplates(payload)
   const urls = buildStreamUrls(stream.slug, urlTemplates)
+  const protocolSettings = await payload.findGlobal({ slug: 'protocol-settings' })
+  const ingestAvailability = getIngestAvailabilityFromSettings(protocolSettings)
   let status = null
   try {
     status = await getStreamStatus(stream.slug, Boolean(stream.recordingEnabled))
@@ -86,10 +89,10 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
   const isPublisher = sourceType === 'publisher'
   const ingestProtocol = (stream.ingestProtocol || 'srt') as IngestProtocol
 
-  // Playback section: only the protocols enabled on the stream.
+  // Playback section: stream-enabled protocols that are also globally enabled.
   const enabled = (stream.enabledProtocols || []) as string[]
   const playbackRows: UrlRow[] = (stream.playbackEnabled ?? true)
-    ? PLAYBACK_PROTOCOLS.filter((p) => enabled.includes(p)).map((p: PlaybackProtocol) => ({
+    ? getAvailablePlaybackProtocols(enabled, protocolSettings).map((p: PlaybackProtocol) => ({
         label: `${PLAYBACK_PROTOCOL_LABELS[p]} playback`,
         value: getPlaybackUrl(urls, p),
       }))
@@ -155,7 +158,11 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
       </div>
 
       {isPublisher ? (
-        <ConnectEncoder slug={stream.slug} ingestProtocol={ingestProtocol} />
+        <ConnectEncoder
+          slug={stream.slug}
+          ingestProtocol={ingestProtocol}
+          availability={ingestAvailability}
+        />
       ) : (
         <Card>
           <CardHeader>
