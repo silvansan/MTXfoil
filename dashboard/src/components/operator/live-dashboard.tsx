@@ -99,7 +99,7 @@ export function LiveDashboard({ intervalSec = 5 }: { intervalSec?: number }) {
       {data?.streams.length === 0 && (
         <Card>
           <CardContent className="py-8 text-center text-muted">
-            No streams configured yet. <Link href="/streams/new" className="text-emerald-600 underline dark:text-emerald-400">Create a stream</Link> or use <Link href="/admin" className="text-emerald-600 underline dark:text-emerald-400">Admin</Link>.
+            No streams configured yet. <Link href="/streams/new" className="text-accent-link underline">Create a stream</Link> or use <Link href="/admin" className="text-accent-link underline">Admin</Link>.
           </CardContent>
         </Card>
       )}

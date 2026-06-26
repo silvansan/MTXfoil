@@ -154,15 +154,15 @@ function ForwardingForm({
 
       <div className="flex flex-wrap gap-6">
         <label className={checkboxLabelClass}>
-          <input type="checkbox" className="h-4 w-4 accent-emerald-500" checked={form.enabled} onChange={(e) => set('enabled', e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-brand" checked={form.enabled} onChange={(e) => set('enabled', e.target.checked)} />
           Enabled
         </label>
         <label className={checkboxLabelClass}>
-          <input type="checkbox" className="h-4 w-4 accent-emerald-500" checked={form.autoStart} onChange={(e) => set('autoStart', e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-brand" checked={form.autoStart} onChange={(e) => set('autoStart', e.target.checked)} />
           Auto-start
         </label>
         <label className={checkboxLabelClass}>
-          <input type="checkbox" className="h-4 w-4 accent-emerald-500" checked={form.restartOnFailure} onChange={(e) => set('restartOnFailure', e.target.checked)} />
+          <input type="checkbox" className="h-4 w-4 accent-brand" checked={form.restartOnFailure} onChange={(e) => set('restartOnFailure', e.target.checked)} />
           Restart on failure
         </label>
       </div>

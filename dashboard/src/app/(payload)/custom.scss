@@ -1,13 +1,17 @@
 /* Payload admin — do not override --theme-* on body; Payload sets html[data-theme]. */
 
 @layer payload {
-  /* Align Payload surfaces with MTXfoil zinc palette while keeping theme-aware inputs/labels. */
+  /* Align Payload surfaces with foil zinc palette + brand accent. */
   html[data-theme='light'] {
     --color-bg: #ffffff;
+    --theme-success-500: #0b6b62;
+    --theme-success-150: rgb(64 224 208 / 0.12);
   }
 
   html[data-theme='dark'] {
     --color-bg: #09090b;
+    --theme-success-500: #33ffcc;
+    --theme-success-150: rgb(51 255 204 / 0.12);
   }
 
   /* Auth / bootstrap views (login, create-first-user) must stay internally consistent. */

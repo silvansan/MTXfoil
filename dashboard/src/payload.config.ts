@@ -53,7 +53,7 @@ export default buildConfig({
       },
     },
     meta: {
-      titleSuffix: '— MTXfoil',
+      titleSuffix: '— foil',
     },
   },
   collections: [Users, Events, Streams, ForwardingJobs, CorsPresets, AuditLogs],

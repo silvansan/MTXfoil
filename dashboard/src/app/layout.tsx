@@ -5,7 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'MTXfoil',
+  title: 'foil',
   description: 'MediaMTX control panel',
 }
 

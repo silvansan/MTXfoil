@@ -204,7 +204,7 @@ export function SystemMetricsPanel({
                     key={name}
                     className="chip"
                   >
-                    {labelFor(name)}: <span className="font-semibold text-emerald-600 dark:text-emerald-300">{count}</span>
+                    {labelFor(name)}: <span className="font-semibold text-accent">{count}</span>
                   </span>
                 ))}
               </div>
@@ -278,7 +278,7 @@ function Sparkline({ values, maxY }: { values: number[]; maxY?: number }) {
   })
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-16 w-full text-emerald-500" aria-hidden>
+    <svg viewBox={`0 0 ${width} ${height}`} className="h-16 w-full text-[var(--mtx-accent-primary)]" aria-hidden>
       <polyline
         fill="none"
         stroke="currentColor"

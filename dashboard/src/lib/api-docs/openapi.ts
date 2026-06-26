@@ -262,10 +262,10 @@ export function buildOpenApiDocument(baseUrl = ''): OpenApiDocument {
   return {
     openapi: '3.1.0',
     info: {
-      title: 'MTXfoil Dashboard API',
+      title: 'foil Dashboard API',
       version: API_DOCS_VERSION,
       description:
-        'Operator and admin HTTP API for the MTXfoil control panel. Authentication uses the Payload CMS session cookie (`payload-token`) set after login at `/admin`. Role checks are enforced per route via `api-auth.ts` and `permissions.ts`. This documents dashboard-owned routes only — not the external MediaMTX control API.',
+        'Operator and admin HTTP API for the foil control panel. Authentication uses the Payload CMS session cookie (`payload-token`) set after login at `/admin`. Role checks are enforced per route via `api-auth.ts` and `permissions.ts`. This documents dashboard-owned routes only — not the external MediaMTX control API.',
     },
     servers: baseUrl ? [{ url: baseUrl, description: 'Current host' }] : [{ url: '/', description: 'Relative to dashboard origin' }],
     tags,

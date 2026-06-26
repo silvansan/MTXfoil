@@ -59,7 +59,7 @@ export function WhipPublisher({
       </div>
 
       {publishing && (
-        <p className="text-sm text-emerald-400" role="status" aria-live="polite">
+        <p className="text-sm text-accent-link" role="status" aria-live="polite">
           Publishing to MediaMTX via WHIP.
         </p>
       )}

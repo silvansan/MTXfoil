@@ -143,11 +143,11 @@ export default async function PlayerPage({ params, searchParams }: Props) {
             Paste into a post or page after installing the{' '}
             <a
               href="https://github.com/silvansan/MTXfoil/tree/main/deploy/wordpress/mtxfoil-player"
-              className="text-emerald-400 hover:underline"
+              className="text-accent-link hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              MTXfoil Player plugin
+              foil Player plugin
             </a>{' '}
             (<code>deploy/wordpress/mtxfoil-player/</code> — upload to <code>wp-content/plugins</code> or install
             the zip). For token-gated streams, add <code>token=&quot;...&quot;</code> to the shortcode.

@@ -44,7 +44,7 @@ export default async function WhipPublishPage({ params }: Props) {
           This stream pulls from an external source ({sourceType}). WHIP browser publish only applies to
           publisher paths.
         </p>
-        <Link href={`/streams/${stream.slug}`} className="text-emerald-400 hover:underline">
+        <Link href={`/streams/${stream.slug}`} className="text-accent-link hover:underline">
           Back to stream
         </Link>
       </div>
@@ -92,7 +92,7 @@ export default async function WhipPublishPage({ params }: Props) {
           </p>
           <p>
             After going live, open{' '}
-            <Link href={`/player/${stream.slug}`} className="text-emerald-400 hover:underline">
+            <Link href={`/player/${stream.slug}`} className="text-accent-link hover:underline">
               player preview
             </Link>{' '}
             to verify WHEP playback.

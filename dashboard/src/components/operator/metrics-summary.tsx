@@ -75,7 +75,7 @@ export function MetricsSummary({
                   key={name}
                   className={chipClass}
                 >
-                  {labelFor(name)}: <span className="font-semibold text-emerald-600 dark:text-emerald-300">{count}</span>
+                  {labelFor(name)}: <span className="font-semibold text-accent">{count}</span>
                 </span>
               ))}
             </div>

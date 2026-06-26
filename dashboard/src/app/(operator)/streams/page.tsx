@@ -68,7 +68,7 @@ export default async function StreamsPage() {
             <CardContent className="py-8 text-center text-muted">
               No streams configured yet.{' '}
               {canManage ? (
-                <Link href="/streams/new" className="text-emerald-400 underline">
+                <Link href="/streams/new" className="text-accent-link underline">
                   Create your first stream
                 </Link>
               ) : (

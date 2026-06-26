@@ -6,7 +6,7 @@
   --font-sans: ui-sans-serif, system-ui, sans-serif;
 }
 
-/* ── MTXfoil design tokens (operator UI) ───────────────────────────── */
+/* ── foil design tokens (operator UI) ─────────────────────────────── */
 :root {
   color-scheme: light;
 
@@ -40,9 +40,16 @@
   --mtx-error-border: #fca5a5;
   --mtx-error-text: #b91c1c;
 
-  --mtx-accent-border: rgb(16 185 129 / 0.4);
-  --mtx-accent-bg: rgb(16 185 129 / 0.05);
-  --mtx-accent-text: #047857;
+  /* Brand: teal (#40E0D0) → periwinkle (#7B96FF) */
+  --mtx-accent-primary: #40e0d0;
+  --mtx-accent-secondary: #7b96ff;
+  --mtx-accent-border: rgb(64 224 208 / 0.45);
+  --mtx-accent-bg: rgb(64 224 208 / 0.07);
+  --mtx-accent-bg-strong: rgb(64 224 208 / 0.14);
+  --mtx-accent-text: #0b6b62;
+  --mtx-accent-text-muted: #0d7a6f;
+  --mtx-accent-link: #0b6b62;
+  --mtx-accent-focus: #40e0d0;
 }
 
 .dark {
@@ -78,9 +85,15 @@
   --mtx-error-border: #7f1d1d;
   --mtx-error-text: #fca5a5;
 
-  --mtx-accent-border: rgb(16 185 129 / 0.4);
-  --mtx-accent-bg: rgb(16 185 129 / 0.1);
-  --mtx-accent-text: #a7f3d0;
+  --mtx-accent-primary: #33ffcc;
+  --mtx-accent-secondary: #7b96ff;
+  --mtx-accent-border: rgb(51 255 204 / 0.35);
+  --mtx-accent-bg: rgb(51 255 204 / 0.08);
+  --mtx-accent-bg-strong: rgb(123 150 255 / 0.15);
+  --mtx-accent-text: #33ffcc;
+  --mtx-accent-text-muted: #a5b4fc;
+  --mtx-accent-link: #5eead4;
+  --mtx-accent-focus: #33ffcc;
 }
 
 /* Operator UI only — Payload admin uses html[data-theme] instead of .dark */
@@ -125,6 +138,43 @@ a {
   font-size: 0.75rem;
   line-height: 1rem;
   color: var(--mtx-text-subtle);
+}
+
+.text-accent {
+  color: var(--mtx-accent-text);
+}
+
+.text-accent-muted {
+  color: var(--mtx-accent-text-muted);
+}
+
+.text-accent-link {
+  color: var(--mtx-accent-link);
+}
+
+.text-accent-link:hover {
+  text-decoration: underline;
+}
+
+.border-accent {
+  border-color: var(--mtx-accent-border);
+}
+
+.bg-accent-subtle {
+  background-color: var(--mtx-accent-bg);
+}
+
+.bg-accent-strong {
+  background-color: var(--mtx-accent-bg-strong);
+}
+
+.accent-brand {
+  accent-color: var(--mtx-accent-primary);
+}
+
+.outline-accent:focus-visible {
+  outline: 2px solid var(--mtx-accent-focus);
+  outline-offset: 2px;
 }
 
 /* ── Surface & layout utilities ────────────────────────────────────── */
@@ -318,8 +368,8 @@ a {
 
 .protocol-toggle-active {
   border-radius: 0.375rem;
-  border: 1px solid rgb(16 185 129);
-  background-color: rgb(16 185 129 / 0.2);
+  border: 1px solid var(--mtx-accent-primary);
+  background-color: var(--mtx-accent-bg-strong);
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -423,7 +473,7 @@ a {
 
 .video-js .vjs-play-progress,
 .video-js .vjs-volume-level {
-  background-color: #10b981;
+  background-color: var(--mtx-accent-primary);
 }
 
 .video-js .vjs-load-progress {

@@ -54,7 +54,7 @@ export function ClickableRow({
       className={cn(
         disabled
           ? undefined
-          : 'cursor-pointer transition-colors hover:border-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 dark:hover:border-zinc-600',
+          : 'cursor-pointer transition-colors hover:border-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mtx-accent-focus)] dark:hover:border-zinc-600',
         className,
       )}
     >

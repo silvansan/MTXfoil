@@ -293,7 +293,7 @@ export function EventsManager({
                       <ul className="mt-1 space-y-1">
                         {ev.streams.map((s) => (
                           <li key={s.slug}>
-                            <Link href={`/streams/${s.slug}`} className="text-emerald-600 hover:underline dark:text-emerald-400" data-no-row-nav>
+                            <Link href={`/streams/${s.slug}`} className="text-accent-link hover:underline" data-no-row-nav>
                               {s.name}
                             </Link>
                             {' · '}

@@ -376,7 +376,7 @@ export function StreamForm({
             <label className={checkboxLabelClass}>
               <input
                 type="checkbox"
-                className="h-4 w-4 accent-emerald-500"
+                className="h-4 w-4 accent-brand"
                 checked={playbackEnabled}
                 onChange={(e) => setPlaybackEnabled(e.target.checked)}
               />
@@ -385,7 +385,7 @@ export function StreamForm({
             <label className={checkboxLabelClass}>
               <input
                 type="checkbox"
-                className="h-4 w-4 accent-emerald-500"
+                className="h-4 w-4 accent-brand"
                 checked={recordingEnabled}
                 onChange={(e) => setRecordingEnabled(e.target.checked)}
               />

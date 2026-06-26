@@ -31,7 +31,7 @@ function ConnectionFields({
       {connection.protocol === 'webrtc' && (
         <p className="mt-2 text-xs text-muted">
           Or{' '}
-          <Link href={`/streams/${slug}/whip`} className="text-emerald-600 hover:underline dark:text-emerald-400">
+          <Link href={`/streams/${slug}/whip`} className="text-accent-link hover:underline">
             publish from this browser (WHIP)
           </Link>
           .
@@ -48,7 +48,7 @@ function ConnectionFields({
               {field.label === 'Browser publish' ? (
                 <Link
                   href={field.value}
-                  className="font-mono text-sm text-emerald-600 hover:underline dark:text-emerald-400"
+                  className="font-mono text-sm text-accent-link hover:underline"
                 >
                   {field.value}
                 </Link>
@@ -92,7 +92,7 @@ export function ConnectEncoder({
         <CardContent>
           <p className="text-sm text-muted">
             No publish protocols are enabled. Enable SRT, RTMP, or another ingest protocol in{' '}
-            <Link href="/protocols" className="text-emerald-600 hover:underline dark:text-emerald-400">
+            <Link href="/protocols" className="text-accent-link hover:underline">
               Protocol settings
             </Link>
             .
@@ -123,7 +123,7 @@ export function ConnectEncoder({
                 value={protocol}
                 className={
                   primary
-                    ? 'rounded-lg border border-emerald-500/40 bg-emerald-500/5 px-4 dark:bg-emerald-500/10'
+                    ? 'rounded-lg border border-accent bg-accent-subtle px-4 dark:bg-accent-strong'
                     : 'rounded-lg border border-transparent px-4'
                 }
               >
@@ -131,7 +131,7 @@ export function ConnectEncoder({
                   <span className="flex items-center gap-2">
                     <span className="font-semibold">{connection.label}</span>
                     {primary && (
-                      <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      <span className="rounded-full bg-accent-strong px-2 py-0.5 text-xs font-medium text-accent">
                         Primary
                       </span>
                     )}

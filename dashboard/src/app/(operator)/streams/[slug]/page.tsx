@@ -99,7 +99,7 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
   return (
     <div className="space-y-6">
       {created && isPublisher && (
-        <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+        <div className="rounded-lg border border-accent bg-accent-subtle px-4 py-3 text-sm text-accent">
           Stream created. Connect your encoder using the fields below to go live.
         </div>
       )}
@@ -132,11 +132,11 @@ export default async function StreamDetailPage({ params, searchParams }: Props) 
             <CardTitle>Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <Link href={`/player/${stream.slug}`} className="block text-emerald-400 underline">
+            <Link href={`/player/${stream.slug}`} className="block text-accent-link underline">
               Open player preview
             </Link>
             {isPublisher && (
-              <Link href={`/streams/${stream.slug}/whip`} className="block text-emerald-400 underline">
+              <Link href={`/streams/${stream.slug}/whip`} className="block text-accent-link underline">
                 Browser publish (WHIP)
               </Link>
             )}

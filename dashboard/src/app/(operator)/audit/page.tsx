@@ -32,7 +32,7 @@ export default async function AuditPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent events</CardTitle>
-          <Link href="/admin/collections/audit-logs" className="text-sm text-emerald-400 underline">
+          <Link href="/admin/collections/audit-logs" className="text-sm text-accent-link underline">
             Full log in Admin →
           </Link>
         </CardHeader>
