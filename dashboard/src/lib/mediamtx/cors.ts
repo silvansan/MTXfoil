@@ -7,6 +7,22 @@ export type CorsSettings = {
   trustedProxies?: string[]
 }
 
+/** MediaMTX has per-service trusted proxy lists, not a global `trustedProxies` key. */
+const TRUSTED_PROXY_YAML_FIELDS = [
+  'apiTrustedProxies',
+  'metricsTrustedProxies',
+  'hlsTrustedProxies',
+  'webrtcTrustedProxies',
+  'playbackTrustedProxies',
+  'rtmpTrustedProxies',
+  'rtspTrustedProxies',
+] as const
+
+/** Remove invalid global key left by older MTXfoil builds (MediaMTX 1.11.x rejects it). */
+export function stripLegacyTrustedProxies(doc: Record<string, unknown>): void {
+  delete doc.trustedProxies
+}
+
 export function mapCorsToYaml(settings: CorsSettings): Record<string, unknown> {
   const result: Record<string, unknown> = {}
   if (settings.apiAllowOrigins) result.apiAllowOrigins = settings.apiAllowOrigins
@@ -14,7 +30,11 @@ export function mapCorsToYaml(settings: CorsSettings): Record<string, unknown> {
   if (settings.webrtcAllowOrigins) result.webrtcAllowOrigins = settings.webrtcAllowOrigins
   if (settings.playbackAllowOrigins) result.playbackAllowOrigins = settings.playbackAllowOrigins
   if (settings.metricsAllowOrigins) result.metricsAllowOrigins = settings.metricsAllowOrigins
-  if (settings.trustedProxies) result.trustedProxies = settings.trustedProxies
+  if (settings.trustedProxies?.length) {
+    for (const field of TRUSTED_PROXY_YAML_FIELDS) {
+      result[field] = settings.trustedProxies
+    }
+  }
   return result
 }
 

@@ -50,4 +50,3 @@ paths:
     source: publisher
     record: false
     overridePublisher: true
-trustedProxies: []

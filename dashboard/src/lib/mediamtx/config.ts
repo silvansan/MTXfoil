@@ -4,7 +4,7 @@ import yaml from 'js-yaml'
 
 import type { Stream } from '@/payload-types'
 import { mapStreamAuthToPath } from './auth'
-import { mapCorsToYaml, type CorsSettings } from './cors'
+import { mapCorsToYaml, stripLegacyTrustedProxies, type CorsSettings } from './cors'
 import { mtxFetch } from './client'
 import type { PathConf } from './types'
 
@@ -294,13 +294,15 @@ export async function generateYamlDocument(
   const current = await readCurrentYaml()
   const paths = buildPathsSection(streams, jobsBySlug)
 
-  return {
+  const doc: Record<string, unknown> = {
     ...current,
     ...buildAuthSection(streams, authSettings),
     ...(cors ? mapCorsToYaml(cors) : {}),
     ...(protocolPatch || {}),
     paths,
   }
+  stripLegacyTrustedProxies(doc)
+  return doc
 }
 
 export async function backupConfig(): Promise<string> {
